@@ -46,6 +46,50 @@
       });
     }
 
+    // 2b. Precio con transferencia — inyectar badge y ahorrás en cards del listado
+    function initTransferSavings() {
+      if (document.querySelector('#single-product')) return;
+
+      document.querySelectorAll('.item-product .js-payment-discount-price-product-container').forEach(function(container) {
+        if (container.querySelector('.transfer-top-row')) return; // ya procesado
+
+        var precioSpan = container.querySelector('.js-payment-discount-price-product');
+        var metodoSpan = container.querySelector('.js-payment-discount-name-product');
+        if (!precioSpan || !metodoSpan) return;
+
+        // Calcular ahorro: el descuento es siempre 25%, entonces ahorro = precioDescuento / 3
+        var rawDescuento = parseInt(precioSpan.getAttribute('data-priceraw-without-shipping'), 10);
+        var rawAhorro = Math.round(rawDescuento / 3);
+        var pesosAhorro = Math.round(rawAhorro / 100);
+        var ahorroFormateado = '$' + pesosAhorro.toLocaleString('es-AR', { maximumFractionDigits: 0 });
+
+        // Construir fila superior: método + badge
+        var topRow = document.createElement('div');
+        topRow.className = 'transfer-top-row';
+
+        var badge = document.createElement('span');
+        badge.className = 'transfer-badge';
+        badge.textContent = '25% OFF';
+
+        // Ocultar el span "con" literal (segundo hijo original)
+        container.querySelectorAll(':scope > span').forEach(function(span) {
+          if (span.textContent.trim() === 'con') {
+            span.classList.add('transfer-con-hidden');
+          }
+        });
+
+        topRow.appendChild(metodoSpan); // mover el span existente al div
+        topRow.appendChild(badge);
+        container.insertBefore(topRow, precioSpan);
+
+        // Insertar "Ahorrás $X" después del precio
+        var savingSpan = document.createElement('span');
+        savingSpan.className = 'transfer-saving';
+        savingSpan.textContent = 'Ahorrás ' + ahorroFormateado;
+        precioSpan.insertAdjacentElement('afterend', savingSpan);
+      });
+    }
+
     // 3. Badge "por encargo" en cards del listado
     function marcarProductosEncargo() {
       if (document.querySelector('#single-product')) return;
@@ -100,6 +144,7 @@
 
     marcarProductosEncargo();
     revisarEnvioGratis();
+    initTransferSavings(); // ← agregar esta línea
     setTimeout(marcarProductosEncargo, 1500);
     setTimeout(initMarqueeAdbar, 800);
 
@@ -139,6 +184,7 @@
       revisarEnvioGratis();
       clearTimeout(_encargoTimer);
       _encargoTimer = setTimeout(marcarProductosEncargo, 300);
+      initTransferSavings(); // ← agregar esta línea
     });
     observador.observe(document.body, { childList: true, subtree: true });
   }
