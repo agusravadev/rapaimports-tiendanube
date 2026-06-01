@@ -633,9 +633,13 @@ a.btn.btn-encargar:hover {
 	text-align: left !important;
 }
 
-/* ── Homepage: texto más arriba, nivelado con el badge ── */
+/* ── Homepage: texto nivelado con el badge ── */
+body.template-index .item-product .payment-discount-price-product-container {
+	padding-top: 6px !important;
+}
+
 body.template-index .item-product .transfer-top-row {
-	padding-top: 3px !important;
+	padding-top: 0 !important;
 }
 
 /* ── Categoría: texto debajo del badge, centrado, ancho completo ── */
