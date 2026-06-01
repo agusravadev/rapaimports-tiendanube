@@ -631,14 +631,14 @@ a.btn.btn-encargar:hover {
 	white-space: nowrap !important;
 }
 
-/* Badge "25% OFF" */
+/* Badge "25% OFF" — igual al de la página de producto */
 .item-product .transfer-badge {
-	background: #15803d !important;
+	background: #16a34a !important;
 	color: #fff !important;
 	font-size: 10px !important;
-	font-weight: 800 !important;
-	border-radius: 20px !important;
-	padding: 3px 10px !important;
+	font-weight: 700 !important;
+	border-radius: 0 10px 0 10px !important;
+	padding: 4px 12px !important;
 	white-space: nowrap !important;
 	flex-shrink: 0 !important;
 }
@@ -669,7 +669,7 @@ a.btn.btn-encargar:hover {
 
 	.item-product .transfer-badge {
 		font-size: 9px !important;
-		padding: 2px 8px !important;
+		padding: 3px 8px !important;
 	}
 
 	.item-product .js-payment-discount-price-product {
