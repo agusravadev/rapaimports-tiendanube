@@ -617,10 +617,10 @@ a.btn.btn-encargar:hover {
 	display: none !important;
 }
 
-/* Fila superior: solo el método */
+/* Fila superior: solo el método — reserva espacio para el badge absoluto */
 .item-product .transfer-top-row {
 	width: 100% !important;
-	text-align: center !important;
+	padding-right: 64px !important;
 }
 
 /* Texto del método de pago */
@@ -629,6 +629,8 @@ a.btn.btn-encargar:hover {
 	font-weight: 600 !important;
 	color: #111827 !important;
 	white-space: nowrap !important;
+	display: block !important;
+	text-align: left !important;
 }
 
 /* Badge absoluto — esquina superior derecha del contenedor */
@@ -664,9 +666,12 @@ a.btn.btn-encargar:hover {
 		border-radius: 10px !important;
 	}
 
+	.item-product .transfer-top-row {
+		padding-right: 56px !important;
+	}
+
 	.item-product .js-payment-discount-name-product {
 		font-size: 10px !important;
-		white-space: nowrap !important;
 	}
 
 	.item-product .transfer-badge {
