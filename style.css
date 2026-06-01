@@ -666,13 +666,18 @@ a.btn.btn-encargar:hover {
 @media (max-width: 480px) {
 	.item-product .payment-discount-price-product-container {
 		padding: 8px 10px !important;
-		gap: 4px !important;
+		gap: 3px !important;
 		border-radius: 10px !important;
 	}
 
+	/* En mobile: stack vertical, badge arriba */
 	.item-product .transfer-top-row {
-		flex-wrap: wrap !important;
-		gap: 4px !important;
+		flex-direction: column !important;
+		gap: 3px !important;
+	}
+
+	.item-product .transfer-badge {
+		order: -1 !important;
 	}
 
 	.item-product .js-payment-discount-name-product {
