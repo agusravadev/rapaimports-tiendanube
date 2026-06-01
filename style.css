@@ -638,15 +638,17 @@ body.template-index .item-product .transfer-top-row {
 	padding-top: 3px !important;
 }
 
-/* ── Categoría: texto más abajo para no quedar tapado por el badge ── */
+/* ── Categoría: texto debajo del badge, centrado, ancho completo ── */
 body.template-category .item-product .transfer-top-row {
-	padding-top: 16px !important;
-	padding-right: 68px !important;
+	padding-top: 22px !important;
+	padding-right: 0 !important;
+	text-align: center !important;
 }
 
 body.template-category .item-product .js-payment-discount-name-product {
-	white-space: normal !important;
+	white-space: nowrap !important;
 	font-size: 10px !important;
+	text-align: center !important;
 }
 
 /* Badge absoluto — esquina superior derecha del contenedor */
