@@ -633,6 +633,22 @@ a.btn.btn-encargar:hover {
 	text-align: left !important;
 }
 
+/* ── Homepage: texto más arriba, nivelado con el badge ── */
+body.template-index .item-product .transfer-top-row {
+	padding-top: 3px !important;
+}
+
+/* ── Categoría: texto más abajo para no quedar tapado por el badge ── */
+body.template-category .item-product .transfer-top-row {
+	padding-top: 16px !important;
+	padding-right: 68px !important;
+}
+
+body.template-category .item-product .js-payment-discount-name-product {
+	white-space: normal !important;
+	font-size: 10px !important;
+}
+
 /* Badge absoluto — esquina superior derecha del contenedor */
 .item-product .transfer-badge {
 	position: absolute !important;
