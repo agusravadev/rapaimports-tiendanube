@@ -600,14 +600,13 @@ a.btn.btn-encargar:hover {
 	flex-direction: column !important;
 	align-items: center !important;
 	text-align: center !important;
-	gap: 5px !important;
+	gap: 8px !important;
 	background: #f0fdf4 !important;
 	border: 1px solid #bbf7d0 !important;
 	border-radius: 12px !important;
-	padding: 10px 12px !important;
-	padding-right: 14px !important;
-	margin-top: 6px !important;
-	margin-bottom: 6px !important;
+	padding: 16px 16px !important;
+	margin-top: 8px !important;
+	margin-bottom: 8px !important;
 	width: 100% !important;
 	box-sizing: border-box !important;
 }
@@ -683,8 +682,8 @@ body.template-category .item-product .js-payment-discount-name-product {
 
 @media (max-width: 480px) {
 	.item-product .payment-discount-price-product-container {
-		padding: 8px 10px !important;
-		gap: 3px !important;
+		padding: 12px 12px !important;
+		gap: 6px !important;
 		border-radius: 10px !important;
 	}
 
