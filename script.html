@@ -64,17 +64,17 @@
           }
         });
 
-        // Fila superior: método izquierda, badge derecha
+        // Fila superior: solo método (badge va absoluto en esquina)
         var topRow = document.createElement('div');
         topRow.className = 'transfer-top-row';
+        topRow.appendChild(metodoSpan);
+        container.insertBefore(topRow, precioSpan);
 
+        // Badge absoluto — esquina superior derecha del contenedor
         var badge = document.createElement('span');
         badge.className = 'transfer-badge';
         badge.textContent = '25% OFF';
-
-        topRow.appendChild(metodoSpan);
-        topRow.appendChild(badge);
-        container.insertBefore(topRow, precioSpan);
+        container.appendChild(badge);
       });
     }
 
