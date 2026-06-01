@@ -64,11 +64,17 @@
           }
         });
 
-        // Badge al final — el CSS lo posiciona con order
+        // Fila superior: método izquierda, badge derecha
+        var topRow = document.createElement('div');
+        topRow.className = 'transfer-top-row';
+
         var badge = document.createElement('span');
         badge.className = 'transfer-badge';
         badge.textContent = '25% OFF';
-        container.appendChild(badge);
+
+        topRow.appendChild(metodoSpan);
+        topRow.appendChild(badge);
+        container.insertBefore(topRow, precioSpan);
       });
     }
 
