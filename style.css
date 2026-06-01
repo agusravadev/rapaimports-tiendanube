@@ -604,7 +604,7 @@ a.btn.btn-encargar:hover {
 	background: #f0fdf4 !important;
 	border: 1px solid #bbf7d0 !important;
 	border-radius: 12px !important;
-	padding: 16px 16px !important;
+	padding: 4px 16px 16px 16px !important;
 	margin-top: 8px !important;
 	margin-bottom: 8px !important;
 	width: 100% !important;
@@ -632,46 +632,6 @@ a.btn.btn-encargar:hover {
 	text-align: left !important;
 }
 
-/* ── Homepage: grid de 2 columnas — método izquierda, badge derecha ── */
-body.template-index .item-product .payment-discount-price-product-container {
-	display: grid !important;
-	grid-template-columns: 1fr auto !important;
-	grid-template-rows: auto auto !important;
-	align-items: center !important;
-	padding-top: 12px !important;
-}
-
-body.template-index .item-product .transfer-top-row {
-	grid-column: 1 !important;
-	grid-row: 1 !important;
-	padding-right: 0 !important;
-	padding-top: 0 !important;
-	text-align: left !important;
-	width: auto !important;
-}
-
-body.template-index .item-product .js-payment-discount-name-product {
-	white-space: nowrap !important;
-}
-
-/* Badge inline en la misma fila, no absoluto */
-body.template-index .item-product .transfer-badge {
-	position: relative !important;
-	top: auto !important;
-	right: auto !important;
-	grid-column: 2 !important;
-	grid-row: 1 !important;
-	border-radius: 6px !important;
-	align-self: center !important;
-}
-
-/* Precio ocupa las 2 columnas, centrado */
-body.template-index .item-product .js-payment-discount-price-product {
-	grid-column: 1 / -1 !important;
-	grid-row: 2 !important;
-	text-align: center !important;
-	margin-top: 4px !important;
-}
 
 /* ── Categoría: texto debajo del badge, centrado, ancho completo ── */
 body.template-category .item-product .transfer-top-row {
