@@ -662,3 +662,31 @@ a.btn.btn-encargar:hover {
 	display: block !important;
 	text-align: center !important;
 }
+
+@media (max-width: 480px) {
+	.item-product .payment-discount-price-product-container {
+		padding: 8px 10px !important;
+		gap: 4px !important;
+		border-radius: 10px !important;
+	}
+
+	.item-product .transfer-top-row {
+		flex-wrap: wrap !important;
+		gap: 4px !important;
+	}
+
+	.item-product .js-payment-discount-name-product {
+		font-size: 10px !important;
+		white-space: normal !important;
+		text-align: center !important;
+	}
+
+	.item-product .js-payment-discount-price-product {
+		font-size: 16px !important;
+		letter-spacing: -0.5px !important;
+	}
+
+	.item-product .transfer-saving {
+		font-size: 10px !important;
+	}
+}
