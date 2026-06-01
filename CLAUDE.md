@@ -16,6 +16,42 @@ No hay build system, tests, ni servidor local. Los cambios se verifican en la ti
 - **Nunca modificar código sin permiso explícito del usuario.**
 - Cuando se trabaje en una sección, indicar qué otros archivos o partes requieren cambios para que funcione correctamente.
 
+## Flujo de trabajo: armar descripción HTML de un producto
+
+Cuando el usuario pida crear o completar la descripción HTML de un producto, seguir este flujo **siempre**:
+
+1. **Preguntar si el producto es por encargo o tiene stock físico.**
+   - Por encargo → usar [`Default-structure/encargo.html`](Default-structure/encargo.html)
+   - Stock físico → usar [`Default-structure/stock.html`](Default-structure/stock.html)
+
+2. **Buscar información del producto en internet** (nombre, specs técnicas, modelos compatibles, pasos de instalación, contenido del kit). Usar fuentes confiables: fabricante, tiendas especializadas, foros de la marca del vehículo.
+
+3. **Completar todos los placeholders** `{{...}}` de la estructura base elegida con los datos reales del producto. No dejar ningún placeholder sin reemplazar.
+
+4. **Entregar el HTML listo para copiar** en el panel de descripción de Tiendanube.
+
+### Diferencias clave entre los dos templates
+
+| Sección | `encargo.html` | `stock.html` |
+|---|---|---|
+| Bloque "Encargar por WhatsApp" (arriba) | ✓ Presente | ✗ Ausente |
+| Script WA (`WA_SALUDO`) | Orientado a encargo | Consulta estándar |
+| Sección Beneficios/Características | Incluida | Opcional (ver comentario en template) |
+
+### Placeholders comunes a ambos templates
+
+- `{{BADGE_CATEGORIA}}` — categoría breve del producto (ej: "Accesorios Tuning de primera línea")
+- `{{TITULO_PRODUCTO}}` — nombre del producto en mayúsculas
+- `{{SUBTITULO_PRODUCTO}}` — specs resumidas en una línea separadas por `·`
+- `{{DESCRIPCION_CORTA}}` — párrafo introductorio (~2-3 oraciones)
+- `{{FILAS_ESPECIFICACIONES}}` — filas `<tr>` de la tabla técnica
+- `{{MODELOS_COMPATIBLES}}` — `<span>` por cada modelo compatible
+- `{{TEXTO_COMPATIBILIDAD}}` — frase antes del botón WhatsApp en compatibilidad
+- `{{PASOS_INSTALACION}}` — bloques numerados 01/02/03/04
+- `{{TEXTO_RECOMENDACION}}` — aviso del bloque 🔧 amarillo
+- `{{ITEMS_KIT}}` — `<span>` con el contenido de la caja (neutros en gris, incluidos en verde)
+- `{{FOOTER_LINEA1}}` / `{{FOOTER_LINEA2}}` — CTA del footer rojo
+
 ## Arquitectura del sistema de personalización
 
 ### Convención "producto por encargo" (stock 9999)
