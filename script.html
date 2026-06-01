@@ -46,7 +46,7 @@
       });
     }
 
-    // 2b. Precio con transferencia — inyectar badge y ahorrás en cards del listado
+    // 2b. Precio con transferencia — inyectar badge en cards del listado
     function initTransferSavings() {
       if (document.querySelector('#single-product')) return;
 
@@ -57,12 +57,12 @@
         var metodoSpan = container.querySelector('.js-payment-discount-name-product');
         if (!precioSpan || !metodoSpan) return;
 
-        // Calcular ahorro: el descuento es siempre 25%, entonces ahorro = precioDescuento / 3
-        var rawDescuento = parseInt(precioSpan.getAttribute('data-priceraw-without-shipping'), 10);
-        if (!rawDescuento || isNaN(rawDescuento)) return;
-        var rawAhorro = Math.round(rawDescuento / 3);
-        var pesosAhorro = Math.round(rawAhorro / 100);
-        var ahorroFormateado = '$' + pesosAhorro.toLocaleString('es-AR', { maximumFractionDigits: 0 });
+        // Ocultar el span "con" literal
+        container.querySelectorAll(':scope > span').forEach(function(span) {
+          if (span.textContent.trim() === 'con') {
+            span.classList.add('transfer-con-hidden');
+          }
+        });
 
         // Construir fila superior: método + badge
         var topRow = document.createElement('div');
@@ -72,22 +72,9 @@
         badge.className = 'transfer-badge';
         badge.textContent = '25% OFF';
 
-        // Ocultar el span "con" literal (segundo hijo original)
-        container.querySelectorAll(':scope > span').forEach(function(span) {
-          if (span.textContent.trim() === 'con') {
-            span.classList.add('transfer-con-hidden');
-          }
-        });
-
-        topRow.appendChild(metodoSpan); // mover el span existente al div
+        topRow.appendChild(metodoSpan);
         topRow.appendChild(badge);
         container.insertBefore(topRow, precioSpan);
-
-        // Insertar "Ahorrás $X" después del precio
-        var savingSpan = document.createElement('span');
-        savingSpan.className = 'transfer-saving';
-        savingSpan.textContent = 'Ahorrás ' + ahorroFormateado;
-        precioSpan.insertAdjacentElement('afterend', savingSpan);
       });
     }
 

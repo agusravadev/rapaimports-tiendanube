@@ -645,22 +645,14 @@ a.btn.btn-encargar:hover {
 
 /* Precio con descuento */
 .item-product .js-payment-discount-price-product {
-	font-size: 18px !important;
+	font-size: 20px !important;
 	font-weight: 800 !important;
 	color: #15803d !important;
 	letter-spacing: -0.8px !important;
 	line-height: 1 !important;
 	display: block !important;
 	text-align: center !important;
-}
-
-/* Línea "Ahorrás $X" */
-.item-product .transfer-saving {
-	font-size: 11px !important;
-	font-weight: 600 !important;
-	color: #111827 !important;
-	display: block !important;
-	text-align: center !important;
+	margin-top: 2px !important;
 }
 
 @media (max-width: 480px) {
@@ -687,11 +679,7 @@ a.btn.btn-encargar:hover {
 	}
 
 	.item-product .js-payment-discount-price-product {
-		font-size: 16px !important;
+		font-size: 17px !important;
 		letter-spacing: -0.5px !important;
-	}
-
-	.item-product .transfer-saving {
-		font-size: 10px !important;
 	}
 }
