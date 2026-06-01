@@ -59,6 +59,7 @@
 
         // Calcular ahorro: el descuento es siempre 25%, entonces ahorro = precioDescuento / 3
         var rawDescuento = parseInt(precioSpan.getAttribute('data-priceraw-without-shipping'), 10);
+        if (!rawDescuento || isNaN(rawDescuento)) return;
         var rawAhorro = Math.round(rawDescuento / 3);
         var pesosAhorro = Math.round(rawAhorro / 100);
         var ahorroFormateado = '$' + pesosAhorro.toLocaleString('es-AR', { maximumFractionDigits: 0 });
@@ -180,11 +181,13 @@
     }
 
     var _encargoTimer = null;
+    var _transferTimer = null;
     var observador = new MutationObserver(function() {
       revisarEnvioGratis();
       clearTimeout(_encargoTimer);
       _encargoTimer = setTimeout(marcarProductosEncargo, 300);
-      initTransferSavings(); // ← agregar esta línea
+      clearTimeout(_transferTimer);
+      _transferTimer = setTimeout(initTransferSavings, 300);
     });
     observador.observe(document.body, { childList: true, subtree: true });
   }
