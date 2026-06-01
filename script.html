@@ -51,7 +51,7 @@
       if (document.querySelector('#single-product')) return;
 
       document.querySelectorAll('.item-product .js-payment-discount-price-product-container').forEach(function(container) {
-        if (container.querySelector('.transfer-top-row')) return; // ya procesado
+        if (container.querySelector('.transfer-badge')) return; // ya procesado
 
         var precioSpan = container.querySelector('.js-payment-discount-price-product');
         var metodoSpan = container.querySelector('.js-payment-discount-name-product');
@@ -64,17 +64,11 @@
           }
         });
 
-        // Construir fila superior: método + badge
-        var topRow = document.createElement('div');
-        topRow.className = 'transfer-top-row';
-
+        // Badge al final — el CSS lo posiciona con order
         var badge = document.createElement('span');
         badge.className = 'transfer-badge';
         badge.textContent = '25% OFF';
-
-        topRow.appendChild(metodoSpan);
-        topRow.appendChild(badge);
-        container.insertBefore(topRow, precioSpan);
+        container.appendChild(badge);
       });
     }
 

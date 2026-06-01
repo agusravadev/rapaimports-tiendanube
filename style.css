@@ -614,37 +614,18 @@ a.btn.btn-encargar:hover {
 	display: none !important;
 }
 
-/* Fila superior: "Transferencia bancaria" + badge "25% OFF" */
-.item-product .transfer-top-row {
-	display: flex !important;
-	align-items: center !important;
-	justify-content: center !important;
-	gap: 6px !important;
-	flex-wrap: nowrap !important;
-}
-
-/* Texto del método de pago */
+/* Método de pago — arriba */
 .item-product .js-payment-discount-name-product {
+	order: 1 !important;
 	font-size: 11px !important;
 	font-weight: 600 !important;
 	color: #111827 !important;
 	white-space: nowrap !important;
 }
 
-/* Badge "25% OFF" */
-.item-product .transfer-badge {
-	background: #15803d !important;
-	color: #fff !important;
-	font-size: 10px !important;
-	font-weight: 800 !important;
-	border-radius: 20px !important;
-	padding: 2px 8px !important;
-	white-space: nowrap !important;
-	flex-shrink: 0 !important;
-}
-
-/* Precio con descuento */
+/* Precio — medio */
 .item-product .js-payment-discount-price-product {
+	order: 2 !important;
 	font-size: 20px !important;
 	font-weight: 800 !important;
 	color: #15803d !important;
@@ -652,7 +633,18 @@ a.btn.btn-encargar:hover {
 	line-height: 1 !important;
 	display: block !important;
 	text-align: center !important;
-	margin-top: 2px !important;
+}
+
+/* Badge "25% OFF" — abajo */
+.item-product .transfer-badge {
+	order: 3 !important;
+	background: #15803d !important;
+	color: #fff !important;
+	font-size: 10px !important;
+	font-weight: 800 !important;
+	border-radius: 20px !important;
+	padding: 3px 12px !important;
+	white-space: nowrap !important;
 }
 
 @media (max-width: 480px) {
@@ -662,20 +654,9 @@ a.btn.btn-encargar:hover {
 		border-radius: 10px !important;
 	}
 
-	/* En mobile: stack vertical, badge arriba */
-	.item-product .transfer-top-row {
-		flex-direction: column !important;
-		gap: 3px !important;
-	}
-
-	.item-product .transfer-badge {
-		order: -1 !important;
-	}
-
 	.item-product .js-payment-discount-name-product {
 		font-size: 10px !important;
 		white-space: normal !important;
-		text-align: center !important;
 	}
 
 	.item-product .js-payment-discount-price-product {
