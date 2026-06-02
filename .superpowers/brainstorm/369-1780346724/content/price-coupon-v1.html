@@ -1,0 +1,310 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f8fafc;
+    padding: 32px 24px;
+    color: #111827;
+  }
+
+  h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .subtitle { font-size: 13px; color: #6b7280; margin-bottom: 32px; }
+
+  .cards-col {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  .design-card {
+    background: #fff;
+    border: 2px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 22px;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .design-card:hover { border-color: #94a3b8; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+  .design-card.selected { border-color: #3b82f6 !important; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+
+  .card-title { font-size: 14px; font-weight: 700; color: #111827; margin-bottom: 3px; }
+  .card-desc { font-size: 11px; color: #6b7280; line-height: 1.5; margin-bottom: 16px; }
+
+  .preview-wrap {
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .ctx-price { font-size: 26px; font-weight: 800; color: #111827; letter-spacing: -1px; margin-bottom: 2px; }
+  .ctx-compare { font-size: 13px; color: #9ca3af; text-decoration: line-through; margin-bottom: 14px; }
+
+  /* ─── V1: Cupón clásico partido ─── */
+  .v1-coupon {
+    display: flex;
+    align-items: stretch;
+    background: #f0fdf4;
+    border: 2px dashed #4ade80;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Efecto perforado */
+  .v1-coupon::before, .v1-coupon::after {
+    content: "";
+    position: absolute;
+    left: calc(38% - 8px);
+    width: 16px;
+    height: 16px;
+    background: #f8fafc;
+    border-radius: 50%;
+    border: 2px dashed #4ade80;
+    z-index: 2;
+  }
+  .v1-coupon::before { top: -9px; }
+  .v1-coupon::after  { bottom: -9px; }
+
+  .v1-left {
+    width: 38%;
+    background: #15803d;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 10px;
+    flex-shrink: 0;
+  }
+
+  .v1-pct {
+    font-size: 30px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -2px;
+    line-height: 1;
+  }
+
+  .v1-off {
+    font-size: 11px;
+    font-weight: 700;
+    color: #bbf7d0;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .v1-right {
+    flex: 1;
+    padding: 13px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .v1-method { font-size: 10px; font-weight: 600; color: #15803d; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .v1-price {
+    font-size: 20px;
+    font-weight: 800;
+    color: #14532d;
+    letter-spacing: -0.8px;
+    line-height: 1;
+  }
+
+  .v1-saving {
+    font-size: 11px;
+    font-weight: 700;
+    color: #15803d;
+    background: #dcfce7;
+    border-radius: 5px;
+    padding: 2px 7px;
+    width: fit-content;
+  }
+
+  /* ─── V2: Cupón full verde con corte ─── */
+  .v2-coupon {
+    background: #15803d;
+    border-radius: 12px;
+    overflow: visible;
+    position: relative;
+  }
+
+  .v2-top {
+    padding: 14px 16px 10px;
+  }
+
+  .v2-method {
+    font-size: 10px;
+    font-weight: 700;
+    color: #86efac;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+  }
+
+  .v2-price {
+    font-size: 24px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+
+  /* Separador dentado */
+  .v2-divider {
+    height: 12px;
+    background-image: radial-gradient(circle at 8px 0, #f8fafc 6px, transparent 7px);
+    background-size: 16px 12px;
+    background-repeat: repeat-x;
+    background-position: 0 0;
+    margin: 0;
+    position: relative;
+  }
+
+  .v2-bottom {
+    background: #166534;
+    border-radius: 0 0 12px 12px;
+    padding: 10px 16px 13px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .v2-saving-label { font-size: 11px; color: #86efac; font-weight: 500; }
+  .v2-saving-amount { font-size: 14px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+
+  .v2-off-badge {
+    font-size: 11px;
+    font-weight: 800;
+    color: #14532d;
+    background: #4ade80;
+    border-radius: 6px;
+    padding: 3px 9px;
+  }
+
+  /* ─── V3: Cupón outline minimalista ─── */
+  .v3-coupon {
+    border: 2px dashed #15803d;
+    border-radius: 12px;
+    background: #f0fdf4;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .v3-header {
+    background: #fff;
+    padding: 9px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px dashed #bbf7d0;
+  }
+
+  .v3-method { font-size: 11px; font-weight: 600; color: #374151; }
+
+  .v3-off {
+    font-size: 11px;
+    font-weight: 800;
+    color: #15803d;
+  }
+
+  .v3-body { padding: 12px 14px; }
+
+  .v3-price {
+    font-size: 26px;
+    font-weight: 900;
+    color: #15803d;
+    letter-spacing: -1.2px;
+    line-height: 1;
+    margin-bottom: 5px;
+  }
+
+  .v3-saving {
+    font-size: 12px;
+    font-weight: 700;
+    color: #166534;
+  }
+
+  .v3-saving span {
+    color: #15803d;
+  }
+
+</style>
+
+<h2>Cupones — sin íconos, fondo verde</h2>
+<p class="subtitle">Tres variantes de estética cupón con "Ahorrás" incorporado. Hacé clic para seleccionar.</p>
+
+<div class="cards-col">
+
+  <!-- V1 -->
+  <div class="design-card" data-choice="v1" onclick="toggleSelect(this)">
+    <div class="card-title">Cupón partido</div>
+    <div class="card-desc">Lado oscuro con el % grande, lado claro con precio y chip "Ahorrás". Perforado arriba y abajo.</div>
+    <div class="preview-wrap">
+      <div class="ctx-price">$962.000,00</div>
+      <div class="ctx-compare">$1.000.000,00</div>
+      <div class="v1-coupon">
+        <div class="v1-left">
+          <div class="v1-pct">25%</div>
+          <div class="v1-off">off</div>
+        </div>
+        <div class="v1-right">
+          <div class="v1-method">Transferencia bancaria</div>
+          <div class="v1-price">$721.500,00</div>
+          <div class="v1-saving">Ahorrás $240.500</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V2 -->
+  <div class="design-card" data-choice="v2" onclick="toggleSelect(this)">
+    <div class="card-title">Cupón full verde con corte dentado</div>
+    <div class="card-desc">Bloque completamente verde. Arriba el precio, separador dentado, abajo el ahorro en pesos y el badge "25% OFF".</div>
+    <div class="preview-wrap">
+      <div class="ctx-price">$962.000,00</div>
+      <div class="ctx-compare">$1.000.000,00</div>
+      <div class="v2-coupon">
+        <div class="v2-top">
+          <div class="v2-method">Transferencia bancaria</div>
+          <div class="v2-price">$721.500,00</div>
+        </div>
+        <div class="v2-divider"></div>
+        <div class="v2-bottom">
+          <div>
+            <div class="v2-saving-label">Ahorrás</div>
+            <div class="v2-saving-amount">$240.500</div>
+          </div>
+          <div class="v2-off-badge">25% OFF</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V3 -->
+  <div class="design-card" data-choice="v3" onclick="toggleSelect(this)">
+    <div class="card-title">Cupón outline dashed</div>
+    <div class="card-desc">Borde punteado verde, cabecera blanca con el método, cuerpo verde claro con el precio grande y el ahorro debajo.</div>
+    <div class="preview-wrap">
+      <div class="ctx-price">$962.000,00</div>
+      <div class="ctx-compare">$1.000.000,00</div>
+      <div class="v3-coupon">
+        <div class="v3-header">
+          <div class="v3-method">Transferencia bancaria</div>
+          <div class="v3-off">25% OFF</div>
+        </div>
+        <div class="v3-body">
+          <div class="v3-price">$721.500,00</div>
+          <div class="v3-saving">Ahorrás <span>$240.500</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,234 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f8fafc;
+    padding: 32px 24px;
+    color: #111827;
+  }
+
+  h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .subtitle { font-size: 13px; color: #6b7280; margin-bottom: 32px; }
+
+  .cards-col {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    max-width: 380px;
+    margin: 0 auto;
+  }
+
+  .design-card {
+    background: #fff;
+    border: 2px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 22px;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .design-card:hover { border-color: #94a3b8; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+  .design-card.selected { border-color: #3b82f6 !important; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+
+  .card-title { font-size: 14px; font-weight: 700; color: #111827; margin-bottom: 3px; }
+  .card-desc { font-size: 11px; color: #6b7280; line-height: 1.5; margin-bottom: 16px; }
+
+  .preview-wrap {
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .ctx-price { font-size: 26px; font-weight: 800; color: #111827; letter-spacing: -1px; margin-bottom: 2px; }
+  .ctx-compare { font-size: 13px; color: #9ca3af; text-decoration: line-through; margin-bottom: 14px; }
+
+
+  /* ─── E1: Tres líneas, sin decoración ─── */
+  .e1 {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+
+  .e1-method {
+    font-size: 11px;
+    font-weight: 500;
+    color: #15803d;
+    margin-bottom: 5px;
+  }
+
+  .e1-price {
+    font-size: 24px;
+    font-weight: 800;
+    color: #14532d;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 5px;
+  }
+
+  .e1-saving {
+    font-size: 12px;
+    font-weight: 600;
+    color: #15803d;
+  }
+
+
+  /* ─── E2: Precio + chip de descuento ─── */
+  .e2 {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .e2-left { display: flex; flex-direction: column; gap: 4px; }
+
+  .e2-method {
+    font-size: 11px;
+    font-weight: 500;
+    color: #15803d;
+  }
+
+  .e2-price {
+    font-size: 22px;
+    font-weight: 800;
+    color: #14532d;
+    letter-spacing: -0.8px;
+    line-height: 1;
+  }
+
+  .e2-saving {
+    font-size: 12px;
+    font-weight: 600;
+    color: #15803d;
+  }
+
+  .e2-badge {
+    background: #15803d;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 900;
+    border-radius: 10px;
+    padding: 8px 12px;
+    text-align: center;
+    line-height: 1.1;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .e2-badge small {
+    font-size: 9px;
+    font-weight: 500;
+    color: #bbf7d0;
+    display: block;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+
+  /* ─── E3: Split horizontal precio + ahorro ─── */
+  .e3 {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+
+  .e3-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 5px;
+  }
+
+  .e3-price {
+    font-size: 22px;
+    font-weight: 800;
+    color: #14532d;
+    letter-spacing: -0.8px;
+    line-height: 1;
+  }
+
+  .e3-saving {
+    font-size: 13px;
+    font-weight: 700;
+    color: #15803d;
+  }
+
+  .e3-bottom {
+    font-size: 11px;
+    font-weight: 400;
+    color: #6b7280;
+  }
+
+  .e3-bottom b {
+    font-weight: 600;
+    color: #374151;
+  }
+
+</style>
+
+<h2>Verde transparente — minimalista</h2>
+<p class="subtitle">Fondo #f0fdf4, lo más limpio posible. Clic para elegir.</p>
+
+<div class="cards-col">
+
+  <!-- E1 -->
+  <div class="design-card" data-choice="e1" onclick="toggleSelect(this)">
+    <div class="card-title">Solo tres líneas</div>
+    <div class="card-desc">Método · precio grande · ahorro. Sin badges, sin chips, sin nada más.</div>
+    <div class="preview-wrap">
+      <div class="ctx-price">$962.000,00</div>
+      <div class="ctx-compare">$1.000.000,00</div>
+      <div class="e1">
+        <div class="e1-method">Transferencia bancaria</div>
+        <div class="e1-price">$721.500,00</div>
+        <div class="e1-saving">Ahorrás $240.500</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- E2 -->
+  <div class="design-card" data-choice="e2" onclick="toggleSelect(this)">
+    <div class="card-title">Tres líneas + badge de descuento</div>
+    <div class="card-desc">Igual al anterior pero con el porcentaje en un bloque verde oscuro a la derecha. Un solo elemento decorativo.</div>
+    <div class="preview-wrap">
+      <div class="ctx-price">$962.000,00</div>
+      <div class="ctx-compare">$1.000.000,00</div>
+      <div class="e2">
+        <div class="e2-left">
+          <div class="e2-method">Transferencia bancaria</div>
+          <div class="e2-price">$721.500,00</div>
+          <div class="e2-saving">Ahorrás $240.500</div>
+        </div>
+        <div class="e2-badge"><small>hasta</small>25% OFF</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- E3 -->
+  <div class="design-card" data-choice="e3" onclick="toggleSelect(this)">
+    <div class="card-title">Precio y ahorro en la misma fila</div>
+    <div class="card-desc">Precio grande a la izquierda, "Ahorrás $X" a la derecha en la misma línea. El método queda debajo en gris discreto.</div>
+    <div class="preview-wrap">
+      <div class="ctx-price">$962.000,00</div>
+      <div class="ctx-compare">$1.000.000,00</div>
+      <div class="e3">
+        <div class="e3-top">
+          <div class="e3-price">$721.500,00</div>
+          <div class="e3-saving">Ahorrás $240.500</div>
+        </div>
+        <div class="e3-bottom">con <b>Transferencia bancaria</b> · 25% OFF</div>
+      </div>
+    </div>
+  </div>
+
+</div>

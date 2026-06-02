@@ -90,7 +90,7 @@ body.producto-encargo #single-product .price-container::after {
 	position: relative !important;
 	display: flex !important;
 	align-items: center !important;
-	flex-wrap: nowrap !important;
+	flex-wrap: wrap !important;
 	gap: 0 !important;
 	background: #f0fdf4 !important;
 	border: 1px solid #bbf7d0 !important;
@@ -132,6 +132,24 @@ body.producto-encargo #single-product .price-container::after {
 	display: inline-block !important;
 	line-height: 1;
 	margin-right: 6px;
+}
+
+#single-product .transfer-savings-label {
+	flex-basis: 100% !important;
+	display: block !important;
+	margin: 8px 0 0 !important;
+	padding: 6px 0 0 !important;
+	border-top: 1px solid #86efac !important;
+	text-align: center !important;
+	font-size: 12px !important;
+	font-weight: 400 !important;
+	color: #6b7280 !important;
+	letter-spacing: .2px !important;
+}
+
+#single-product .transfer-savings-label strong {
+	font-weight: 800 !important;
+	color: #15803d !important;
 }
 
 #single-product .payment-discount-price-product-container>span:nth-child(2) {
@@ -595,16 +613,16 @@ a.btn.btn-encargar:hover {
 
 .item-product .payment-discount-price-product-container {
 	position: relative !important;
-	overflow: visible !important;
+	overflow: hidden !important;
 	display: flex !important;
 	flex-direction: column !important;
 	align-items: center !important;
 	text-align: center !important;
-	gap: 8px !important;
+	gap: 4px !important;
 	background: #f0fdf4 !important;
 	border: 1px solid #bbf7d0 !important;
 	border-radius: 12px !important;
-	padding: 4px 16px 16px 16px !important;
+	padding: 26px 16px 12px !important;
 	margin-top: 8px !important;
 	margin-bottom: 8px !important;
 	width: 100% !important;
@@ -616,84 +634,70 @@ a.btn.btn-encargar:hover {
 	display: none !important;
 }
 
-/* Fila superior: solo el método — reserva espacio para el badge absoluto */
-.item-product .transfer-top-row {
-	width: 100% !important;
-	padding-right: 64px !important;
-}
-
-/* Texto del método de pago */
-.item-product .js-payment-discount-name-product {
-	font-size: 11px !important;
-	font-weight: 600 !important;
-	color: #111827 !important;
-	white-space: nowrap !important;
-	display: block !important;
-	text-align: left !important;
-}
-
-
-/* ── Categoría: texto debajo del badge, centrado, ancho completo ── */
-body.template-category .item-product .transfer-top-row {
-	padding-top: 22px !important;
-	padding-right: 0 !important;
-	text-align: center !important;
-}
-
-body.template-category .item-product .js-payment-discount-name-product {
-	white-space: nowrap !important;
-	font-size: 10px !important;
-	text-align: center !important;
-}
-
-/* Badge absoluto — esquina superior derecha del contenedor */
+/* Badge — notch sólido pequeño desde adentro del borde superior */
 .item-product .transfer-badge {
 	position: absolute !important;
-	top: -1px !important;
-	right: -1px !important;
+	top: 0 !important;
+	left: 50% !important;
+	transform: translateX(-50%) !important;
 	background: #16a34a !important;
 	color: #fff !important;
 	font-size: 10px !important;
 	font-weight: 700 !important;
-	border-radius: 0 12px 0 12px !important;
-	padding: 4px 12px !important;
+	border-radius: 0 0 10px 10px !important;
+	padding: 3px 14px !important;
 	white-space: nowrap !important;
+	letter-spacing: .3px !important;
 }
 
-/* Precio centrado debajo, un escalón más grande */
+/* Precio — número grande, centrado */
 .item-product .js-payment-discount-price-product {
-	font-size: 22px !important;
+	order: 1 !important;
+	display: block !important;
+	font-size: 24px !important;
 	font-weight: 800 !important;
 	color: #15803d !important;
 	letter-spacing: -0.8px !important;
 	line-height: 1 !important;
+	text-align: center !important;
+}
+
+/* Fila del método — abajo del precio */
+.item-product .transfer-top-row {
+	order: 2 !important;
+	width: 100% !important;
+	text-align: center !important;
+}
+
+/* Texto del método de pago */
+.item-product .js-payment-discount-name-product {
 	display: block !important;
 	text-align: center !important;
-	margin-top: 4px !important;
+	font-size: 11px !important;
+	font-weight: 500 !important;
+	color: #6b7280 !important;
+	white-space: nowrap !important;
 }
 
 @media (max-width: 480px) {
 	.item-product .payment-discount-price-product-container {
-		padding: 12px 12px !important;
-		gap: 6px !important;
+		padding: 24px 12px 10px !important;
+		gap: 3px !important;
 		border-radius: 10px !important;
-	}
-
-	.item-product .transfer-top-row {
-		padding-right: 56px !important;
-	}
-
-	.item-product .js-payment-discount-name-product {
-		font-size: 10px !important;
 	}
 
 	.item-product .transfer-badge {
 		font-size: 9px !important;
-		padding: 3px 9px !important;
+		padding: 3px 12px !important;
+		border-radius: 0 0 8px 8px !important;
 	}
 
 	.item-product .js-payment-discount-price-product {
-		font-size: 18px !important;
+		font-size: 20px !important;
 		letter-spacing: -0.5px !important;
+	}
+
+	.item-product .js-payment-discount-name-product {
+		font-size: 10px !important;
 	}
 }

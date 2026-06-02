@@ -1,0 +1,135 @@
+<h2>¿Cómo querés integrar el badge al borde?</h2>
+<p class="subtitle">Las 3 opciones usan el mismo contenido. Hacé clic en la que más te convence.</p>
+
+<style>
+  .all-opts { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; margin-top: 8px; }
+
+  /* ── Wrapper seleccionable ── */
+  .opt-wrap {
+    background: #f9fafb;
+    border-radius: 14px;
+    padding: 20px 20px 16px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: border-color .2s, box-shadow .2s;
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+    width: 240px;
+  }
+  .opt-wrap:hover { border-color: #a5b4fc; box-shadow: 0 4px 12px rgba(99,102,241,.15); }
+  .opt-wrap.selected { border-color: #6366f1; box-shadow: 0 4px 16px rgba(99,102,241,.3); }
+  .opt-label { display: flex; align-items: center; gap: 8px; }
+  .opt-letter { background: #6366f1; color: #fff; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .opt-title { font-weight: 700; font-size: 13px; }
+  .opt-desc { font-size: 11px; color: #6b7280; text-align: center; }
+
+  /* ── Card base ── */
+  .mk-card {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 12px;
+    width: 200px;
+    padding: 12px 16px 14px;
+    box-sizing: border-box;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    position: relative;
+  }
+  .mk-price { font-size: 22px; font-weight: 800; color: #15803d; letter-spacing: -0.8px; line-height: 1; }
+  .mk-name { font-size: 11px; font-weight: 500; color: #6b7280; }
+
+  /* ── A: Badge flotante centrado sobre el borde ── */
+  .badge-a-wrap { margin-top: 14px; } /* espacio para que el badge sobresalga */
+  .card-a { padding-top: 14px !important; }
+  .badge-a {
+    position: absolute;
+    top: -13px; left: 50%; transform: translateX(-50%);
+    background: #16a34a; color: #fff;
+    font-size: 12px; font-weight: 700;
+    border-radius: 20px;
+    padding: 4px 16px;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(22,163,74,.3);
+  }
+
+  /* ── B: Badge como franja integrada en el borde superior (sin sombra, mismo radio) ── */
+  .card-b {
+    padding-top: 0 !important;
+    overflow: hidden !important;
+    gap: 6px;
+  }
+  .badge-b {
+    /* ocupa todo el ancho del card como franja superior */
+    width: calc(100% + 32px); /* compensa el padding del card */
+    margin: -12px -16px 6px -16px;
+    background: #16a34a; color: #fff;
+    font-size: 12px; font-weight: 700;
+    text-align: center;
+    padding: 6px 0;
+    border-radius: 10px 10px 0 0;
+    letter-spacing: .3px;
+    white-space: nowrap;
+  }
+
+  /* ── C: Badge esquina (original — fallback) ── */
+  .card-c { padding-top: 10px !important; overflow: visible !important; }
+  .badge-c {
+    position: absolute;
+    top: -1px; right: -1px;
+    background: #16a34a; color: #fff;
+    font-size: 11px; font-weight: 700;
+    border-radius: 0 12px 0 12px;
+    padding: 4px 12px;
+    white-space: nowrap;
+  }
+</style>
+
+<div class="all-opts">
+
+  <!-- A: Flotante centrado -->
+  <div class="opt-wrap" data-choice="a" onclick="toggleSelect(this)">
+    <div class="opt-label">
+      <div class="opt-letter">A</div>
+      <span class="opt-title">Flotante sobre el borde</span>
+    </div>
+    <p class="opt-desc">El badge sale a mitad del borde superior, centrado. Efecto "etiqueta que pertenece al card".</p>
+    <div class="badge-a-wrap">
+      <div class="mk-card card-a">
+        <span class="badge-a">25% OFF</span>
+        <div class="mk-price">$975.000</div>
+        <div class="mk-name">Transferencia bancaria</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B: Franja superior integrada -->
+  <div class="opt-wrap" data-choice="b" onclick="toggleSelect(this)">
+    <div class="opt-label">
+      <div class="opt-letter">B</div>
+      <span class="opt-title">Franja integrada al card</span>
+    </div>
+    <p class="opt-desc">El badge es una franja verde que forma parte del card, continúa el borde redondeado arriba.</p>
+    <div>
+      <div class="mk-card card-b">
+        <div class="badge-b">25% OFF</div>
+        <div class="mk-price">$975.000</div>
+        <div class="mk-name">Transferencia bancaria</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C: Esquina (fallback original) -->
+  <div class="opt-wrap" data-choice="c" onclick="toggleSelect(this)">
+    <div class="opt-label">
+      <div class="opt-letter">C</div>
+      <span class="opt-title">Esquina (original)</span>
+    </div>
+    <p class="opt-desc">El badge vuelve a la esquina superior derecha, con el borde complementario al card. Opción de fallback.</p>
+    <div style="margin-top:14px;">
+      <div class="mk-card card-c">
+        <span class="badge-c">25% OFF</span>
+        <div class="mk-price">$975.000</div>
+        <div class="mk-name">Transferencia bancaria</div>
+      </div>
+    </div>
+  </div>
+
+</div>

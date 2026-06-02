@@ -1,0 +1,183 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f8fafc;
+    padding: 40px 24px;
+    color: #111827;
+  }
+
+  h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .subtitle { font-size: 13px; color: #6b7280; margin-bottom: 36px; }
+
+  .cards-col {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    max-width: 380px;
+    margin: 0 auto;
+  }
+
+  .design-card {
+    background: #fff;
+    border: 2px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 22px;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .design-card:hover { border-color: #94a3b8; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+  .design-card.selected { border-color: #3b82f6 !important; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+
+  .card-title { font-size: 12px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 14px; }
+
+  .preview-wrap {
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .ctx-price { font-size: 26px; font-weight: 800; color: #111827; letter-spacing: -1px; margin-bottom: 2px; }
+  .ctx-compare { font-size: 13px; color: #9ca3af; text-decoration: line-through; margin-bottom: 14px; }
+
+  .badge-pill {
+    background: #15803d;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    border-radius: 20px;
+    padding: 3px 12px;
+    display: inline-block;
+  }
+
+  /* ── F1: Todo centrado ── */
+  .f1 {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 7px;
+  }
+
+  .f1 .method { font-size: 12px; font-weight: 600; color: #111827; }
+  .f1 .price  { font-size: 26px; font-weight: 800; color: #15803d; letter-spacing: -1.2px; line-height: 1; }
+  .f1 .saving { font-size: 12px; font-weight: 600; color: #111827; }
+
+
+  /* ── F2: Badge arriba centrado, info abajo izquierda ── */
+  .f2 {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .f2-top {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2px;
+  }
+
+  .f2 .method { font-size: 12px; font-weight: 600; color: #111827; }
+  .f2 .price  { font-size: 26px; font-weight: 800; color: #15803d; letter-spacing: -1.2px; line-height: 1; }
+  .f2 .saving { font-size: 12px; font-weight: 600; color: #111827; }
+
+
+  /* ── F3: Método + badge en fila, precio y ahorro centrados ── */
+  .f3 {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+
+  .f3-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .f3 .method { font-size: 12px; font-weight: 600; color: #111827; }
+
+  .f3-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 5px;
+  }
+
+  .f3 .price  { font-size: 26px; font-weight: 800; color: #15803d; letter-spacing: -1.2px; line-height: 1; }
+  .f3 .saving { font-size: 12px; font-weight: 600; color: #111827; }
+
+</style>
+
+<h2>Centrado y alineado</h2>
+<p class="subtitle">Tres formas de centrar el mismo diseño.</p>
+
+<div class="cards-col">
+
+  <!-- F1: Todo centrado -->
+  <div class="design-card" data-choice="f1" onclick="toggleSelect(this)">
+    <div class="card-title">Todo centrado</div>
+    <div class="preview-wrap">
+      <div class="ctx-price">$962.000,00</div>
+      <div class="ctx-compare">$1.000.000,00</div>
+      <div class="f1">
+        <span class="method">Transferencia bancaria</span>
+        <span class="badge-pill">25% OFF</span>
+        <span class="price">$721.500,00</span>
+        <span class="saving">Ahorrás $240.500</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- F2: Badge centrado, resto izquierda -->
+  <div class="design-card" data-choice="f2" onclick="toggleSelect(this)">
+    <div class="card-title">Badge centrado, texto izquierda</div>
+    <div class="preview-wrap">
+      <div class="ctx-price">$962.000,00</div>
+      <div class="ctx-compare">$1.000.000,00</div>
+      <div class="f2">
+        <div class="f2-top"><span class="badge-pill">25% OFF</span></div>
+        <span class="method">Transferencia bancaria</span>
+        <span class="price">$721.500,00</span>
+        <span class="saving">Ahorrás $240.500</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- F3: Fila superior + precio/ahorro centrado -->
+  <div class="design-card" data-choice="f3" onclick="toggleSelect(this)">
+    <div class="card-title">Método y badge en fila · precio centrado</div>
+    <div class="preview-wrap">
+      <div class="ctx-price">$962.000,00</div>
+      <div class="ctx-compare">$1.000.000,00</div>
+      <div class="f3">
+        <div class="f3-top">
+          <span class="method">Transferencia bancaria</span>
+          <span class="badge-pill">25% OFF</span>
+        </div>
+        <div class="f3-body">
+          <span class="price">$721.500,00</span>
+          <span class="saving">Ahorrás $240.500</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

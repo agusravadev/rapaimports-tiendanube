@@ -1,0 +1,140 @@
+<h2>Estilo "notch" — badge desde adentro del borde</h2>
+<p class="subtitle">El badge cuelga desde el borde superior hacia adentro del card. Elegí la forma que más te convence.</p>
+
+<style>
+  .all-opts { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; margin-top: 8px; }
+
+  .opt-wrap {
+    background: #f9fafb;
+    border-radius: 14px;
+    padding: 20px 20px 16px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: border-color .2s, box-shadow .2s;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    width: 220px;
+  }
+  .opt-wrap:hover { border-color: #a5b4fc; box-shadow: 0 4px 12px rgba(99,102,241,.15); }
+  .opt-wrap.selected { border-color: #6366f1; box-shadow: 0 4px 16px rgba(99,102,241,.3); }
+  .opt-label { display: flex; align-items: center; gap: 8px; }
+  .opt-letter { background: #6366f1; color: #fff; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .opt-title { font-weight: 700; font-size: 13px; }
+  .opt-desc { font-size: 11px; color: #6b7280; text-align: center; line-height: 1.5; }
+
+  /* ── Card base ── */
+  .mk-card {
+    background: #f0fdf4;
+    border: 1.5px solid #bbf7d0;
+    border-radius: 12px;
+    width: 190px;
+    box-sizing: border-box;
+    display: flex; flex-direction: column; align-items: center;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+  .mk-body { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 16px 14px; width: 100%; box-sizing: border-box; }
+  .mk-price { font-size: 22px; font-weight: 800; color: #15803d; letter-spacing: -0.8px; line-height: 1; }
+  .mk-name  { font-size: 11px; font-weight: 500; color: #6b7280; }
+
+  /* ── A: Notch pill angosto (más iPhone) ── */
+  .badge-a {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    background: #16a34a; color: #fff;
+    font-size: 12px; font-weight: 700;
+    border-radius: 0 0 14px 14px;
+    padding: 5px 22px;
+    white-space: nowrap;
+    letter-spacing: .2px;
+  }
+  .body-a { padding-top: 34px !important; }
+
+  /* ── B: Notch más ancho con borde del mismo color ── */
+  .badge-b {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    background: #16a34a; color: #fff;
+    font-size: 12px; font-weight: 700;
+    border-radius: 0 0 20px 20px;
+    padding: 5px 32px;
+    white-space: nowrap;
+    letter-spacing: .2px;
+  }
+  .body-b { padding-top: 34px !important; }
+
+  /* ── C: Notch sutil — fondo verde claro, texto verde oscuro, borde verde ── */
+  .mk-card-c {
+    background: #f0fdf4;
+    border: 1.5px solid #16a34a; /* borde más marcado */
+    border-radius: 12px;
+    width: 190px;
+    box-sizing: border-box;
+    display: flex; flex-direction: column; align-items: center;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+  .badge-c {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    background: #16a34a; color: #fff;
+    font-size: 12px; font-weight: 700;
+    border-radius: 0 0 14px 14px;
+    padding: 5px 22px;
+    white-space: nowrap;
+    /* línea del borde continúa visualmente con el card */
+    box-shadow: 0 0 0 1.5px #16a34a;
+  }
+  .body-c { padding-top: 34px !important; }
+
+</style>
+
+<div class="all-opts">
+
+  <!-- A: Pill angosto -->
+  <div class="opt-wrap" data-choice="a" onclick="toggleSelect(this)">
+    <div class="opt-label">
+      <div class="opt-letter">A</div>
+      <span class="opt-title">Notch angosto</span>
+    </div>
+    <p class="opt-desc">Pill centrado, solo el ancho del texto. La forma redondeada abajo lo hace parecer un notch de iPhone.</p>
+    <div class="mk-card">
+      <span class="badge-a">25% OFF</span>
+      <div class="mk-body body-a">
+        <div class="mk-price">$975.000</div>
+        <div class="mk-name">Transferencia bancaria</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B: Pill más ancho -->
+  <div class="opt-wrap" data-choice="b" onclick="toggleSelect(this)">
+    <div class="opt-label">
+      <div class="opt-letter">B</div>
+      <span class="opt-title">Notch ancho</span>
+    </div>
+    <p class="opt-desc">Más protagonismo al badge. Se expande más hacia los costados, curva más pronunciada abajo.</p>
+    <div class="mk-card">
+      <span class="badge-b">25% OFF</span>
+      <div class="mk-body body-b">
+        <div class="mk-price">$975.000</div>
+        <div class="mk-name">Transferencia bancaria</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C: Notch con borde integrado -->
+  <div class="opt-wrap" data-choice="c" onclick="toggleSelect(this)">
+    <div class="opt-label">
+      <div class="opt-letter">C</div>
+      <span class="opt-title">Notch + borde integrado</span>
+    </div>
+    <p class="opt-desc">El borde del card pasa a ser verde también, haciendo que el notch y el card sean un solo objeto visual.</p>
+    <div class="mk-card-c">
+      <span class="badge-c">25% OFF</span>
+      <div class="mk-body body-c">
+        <div class="mk-price">$975.000</div>
+        <div class="mk-name">Transferencia bancaria</div>
+      </div>
+    </div>
+  </div>
+
+</div>

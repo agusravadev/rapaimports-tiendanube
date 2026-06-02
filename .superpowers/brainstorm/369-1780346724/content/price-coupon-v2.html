@@ -1,0 +1,333 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f8fafc;
+    padding: 32px 24px;
+    color: #111827;
+  }
+
+  h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .subtitle { font-size: 13px; color: #6b7280; margin-bottom: 32px; }
+
+  .cards-col {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  .design-card {
+    background: #fff;
+    border: 2px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 22px;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .design-card:hover { border-color: #94a3b8; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+  .design-card.selected { border-color: #3b82f6 !important; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+
+  .card-title { font-size: 14px; font-weight: 700; color: #111827; margin-bottom: 3px; }
+  .card-desc { font-size: 11px; color: #6b7280; line-height: 1.5; margin-bottom: 16px; }
+
+  .preview-wrap {
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .ctx-price { font-size: 26px; font-weight: 800; color: #111827; letter-spacing: -1px; margin-bottom: 2px; }
+  .ctx-compare { font-size: 13px; color: #9ca3af; text-decoration: line-through; margin-bottom: 14px; }
+
+
+  /* ─── D1: Cupón bicolor sólido ─── */
+  .d1 {
+    display: flex;
+    align-items: stretch;
+    border-radius: 14px;
+    overflow: hidden;
+    /* Muescas laterales con sombra */
+    box-shadow:
+      -10px 0 0 -2px #f8fafc,
+       10px 0 0 -2px #f8fafc;
+  }
+
+  .d1-left {
+    width: 36%;
+    background: #15803d;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 10px;
+    flex-shrink: 0;
+    gap: 1px;
+  }
+
+  .d1-pct {
+    font-size: 36px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -3px;
+    line-height: 1;
+  }
+
+  .d1-off {
+    font-size: 12px;
+    font-weight: 700;
+    color: #86efac;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .d1-right {
+    flex: 1;
+    background: #f0fdf4;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  .d1-method {
+    font-size: 10px;
+    font-weight: 700;
+    color: #4ade80;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .d1-price {
+    font-size: 21px;
+    font-weight: 800;
+    color: #14532d;
+    letter-spacing: -0.8px;
+    line-height: 1;
+  }
+
+  .d1-saving {
+    font-size: 12px;
+    font-weight: 600;
+    color: #15803d;
+  }
+
+
+  /* ─── D2: Verde oscuro full con franja inferior ─── */
+  .d2 {
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .d2-body {
+    background: #15803d;
+    padding: 16px 18px 14px;
+  }
+
+  .d2-method {
+    font-size: 10px;
+    font-weight: 700;
+    color: #86efac;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+
+  .d2-price {
+    font-size: 26px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -1.2px;
+    line-height: 1;
+  }
+
+  .d2-footer {
+    background: #14532d;
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .d2-saving-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .d2-saving-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: #86efac;
+    margin-bottom: 1px;
+  }
+
+  .d2-badge {
+    background: #4ade80;
+    color: #14532d;
+    font-size: 12px;
+    font-weight: 900;
+    border-radius: 8px;
+    padding: 5px 12px;
+    letter-spacing: 0.2px;
+    flex-shrink: 0;
+  }
+
+
+  /* ─── D3: Verde claro, notch lateral real ─── */
+  .d3-outer {
+    position: relative;
+    padding: 0 10px; /* espacio para los circles */
+  }
+
+  /* Muescas reales — círculos blancos que muerden la tarjeta */
+  .d3-outer::before,
+  .d3-outer::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background: #f8fafc;
+    border-radius: 50%;
+    z-index: 2;
+  }
+  .d3-outer::before { left: 0; }
+  .d3-outer::after  { right: 0; }
+
+  .d3 {
+    background: #f0fdf4;
+    border: 2px solid #bbf7d0;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .d3-top {
+    padding: 13px 16px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .d3-method {
+    font-size: 11px;
+    font-weight: 600;
+    color: #15803d;
+  }
+
+  .d3-off {
+    font-size: 11px;
+    font-weight: 800;
+    color: #fff;
+    background: #15803d;
+    border-radius: 6px;
+    padding: 3px 10px;
+  }
+
+  .d3-sep {
+    height: 1px;
+    background: #bbf7d0;
+    margin: 0 16px;
+  }
+
+  .d3-bottom {
+    padding: 11px 16px 14px;
+  }
+
+  .d3-price {
+    font-size: 24px;
+    font-weight: 900;
+    color: #14532d;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .d3-saving {
+    font-size: 12px;
+    font-weight: 700;
+    color: #15803d;
+  }
+
+</style>
+
+<h2>Cupones sólidos — sin líneas punteadas</h2>
+<p class="subtitle">Todo bordes sólidos, fondo verde, "Ahorrás" incluido. Clic para elegir.</p>
+
+<div class="cards-col">
+
+  <!-- D1 -->
+  <div class="design-card" data-choice="d1" onclick="toggleSelect(this)">
+    <div class="card-title">Bicolor sólido</div>
+    <div class="card-desc">Zona verde oscura con el porcentaje grande. Zona verde claro con el precio y el ahorro. Sin líneas.</div>
+    <div class="preview-wrap">
+      <div class="ctx-price">$962.000,00</div>
+      <div class="ctx-compare">$1.000.000,00</div>
+      <div class="d1">
+        <div class="d1-left">
+          <div class="d1-pct">25%</div>
+          <div class="d1-off">off</div>
+        </div>
+        <div class="d1-right">
+          <div class="d1-method">Transferencia bancaria</div>
+          <div class="d1-price">$721.500,00</div>
+          <div class="d1-saving">Ahorrás $240.500</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- D2 -->
+  <div class="design-card" data-choice="d2" onclick="toggleSelect(this)">
+    <div class="card-title">Verde oscuro con franja inferior</div>
+    <div class="card-desc">Bloque verde oscuro arriba con precio, franja aún más oscura abajo con "Ahorrás" y el badge del descuento.</div>
+    <div class="preview-wrap">
+      <div class="ctx-price">$962.000,00</div>
+      <div class="ctx-compare">$1.000.000,00</div>
+      <div class="d2">
+        <div class="d2-body">
+          <div class="d2-method">Transferencia bancaria</div>
+          <div class="d2-price">$721.500,00</div>
+        </div>
+        <div class="d2-footer">
+          <div>
+            <div class="d2-saving-label">Ahorrás</div>
+            <div class="d2-saving-text">$240.500</div>
+          </div>
+          <div class="d2-badge">25% OFF</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- D3 -->
+  <div class="design-card" data-choice="d3" onclick="toggleSelect(this)">
+    <div class="card-title">Verde claro con muescas laterales</div>
+    <div class="card-desc">Fondo verde claro con borde sólido. Cabecera con método y badge "25% OFF". Abajo precio grande y ahorro. Los círculos laterales dan el look de cupón físico sin ninguna línea.</div>
+    <div class="preview-wrap">
+      <div class="ctx-price">$962.000,00</div>
+      <div class="ctx-compare">$1.000.000,00</div>
+      <div class="d3-outer">
+        <div class="d3">
+          <div class="d3-top">
+            <div class="d3-method">Transferencia bancaria</div>
+            <div class="d3-off">25% OFF</div>
+          </div>
+          <div class="d3-sep"></div>
+          <div class="d3-bottom">
+            <div class="d3-price">$721.500,00</div>
+            <div class="d3-saving">Ahorrás $240.500</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

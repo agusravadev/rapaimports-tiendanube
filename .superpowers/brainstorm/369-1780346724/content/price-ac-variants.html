@@ -1,0 +1,318 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f8fafc;
+    padding: 32px 24px;
+    color: #111827;
+  }
+
+  h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .subtitle { font-size: 13px; color: #6b7280; margin-bottom: 32px; }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #9ca3af;
+    margin-bottom: 16px;
+    padding-left: 4px;
+  }
+
+  .section-group {
+    margin-bottom: 36px;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    max-width: 740px;
+    margin: 0 auto;
+  }
+
+  .design-card {
+    background: #fff;
+    border: 2px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 20px;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .design-card:hover { border-color: #94a3b8; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+  .design-card.selected { border-color: #3b82f6 !important; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+
+  .card-label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .card-label.green { color: #15803d; }
+  .card-label.slate { color: #475569; }
+
+  .card-title { font-size: 14px; font-weight: 700; color: #111827; margin-bottom: 3px; }
+  .card-desc { font-size: 11px; color: #6b7280; line-height: 1.5; margin-bottom: 16px; }
+
+  .preview-wrap {
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .ctx-price { font-size: 26px; font-weight: 800; color: #111827; letter-spacing: -1px; margin-bottom: 2px; }
+  .ctx-compare { font-size: 13px; color: #9ca3af; text-decoration: line-through; margin-bottom: 12px; }
+
+  /* ─── A1: Chip compacto sin ícono ─── */
+  .a1-box {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border: 1px solid #86efac;
+    border-radius: 12px;
+    padding: 13px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .a1-left { display: flex; flex-direction: column; gap: 5px; }
+
+  .a1-tags { display: flex; align-items: center; gap: 5px; }
+
+  .a1-method {
+    font-size: 10px; font-weight: 700; color: #15803d;
+    background: #fff; border: 1px solid #86efac;
+    border-radius: 20px; padding: 2px 8px;
+    text-transform: uppercase; letter-spacing: 0.3px;
+  }
+
+  .a1-price { font-size: 21px; font-weight: 800; color: #15803d; letter-spacing: -0.8px; line-height: 1; }
+
+  .a1-right {
+    background: #15803d;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: -0.3px;
+    border-radius: 10px;
+    padding: 8px 12px;
+    text-align: center;
+    line-height: 1.1;
+    flex-shrink: 0;
+  }
+
+  .a1-right small { font-size: 9px; font-weight: 600; letter-spacing: 0.5px; display: block; text-transform: uppercase; opacity: 0.8; margin-bottom: 1px; }
+
+  /* ─── A2: Ahorro real en pesos ─── */
+  .a2-box {
+    background: #fff;
+    border: 1.5px solid #22c55e;
+    border-radius: 12px;
+    padding: 13px 15px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .a2-box::before {
+    content: "";
+    position: absolute;
+    top: -20px; right: -20px;
+    width: 80px; height: 80px;
+    background: radial-gradient(circle, rgba(34,197,94,0.12), transparent 70%);
+  }
+
+  .a2-top {
+    display: flex; align-items: center; gap: 7px; margin-bottom: 6px;
+  }
+
+  .a2-dot { width: 7px; height: 7px; background: #22c55e; border-radius: 50%; flex-shrink: 0; }
+
+  .a2-method-name { font-size: 11px; font-weight: 600; color: #374151; }
+
+  .a2-row { display: flex; align-items: baseline; gap: 10px; }
+
+  .a2-price { font-size: 22px; font-weight: 800; color: #111827; letter-spacing: -0.8px; line-height: 1; }
+
+  .a2-saving {
+    font-size: 11px; font-weight: 700; color: #15803d;
+    background: #f0fdf4; border: 1px solid #bbf7d0;
+    border-radius: 6px; padding: 2px 7px;
+  }
+
+  /* ─── C1: Solo tipografía ─── */
+  .c1-box {
+    padding: 13px 15px;
+    background: #fafafa;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+  }
+
+  .c1-row1 {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 5px;
+  }
+
+  .c1-method { font-size: 11px; font-weight: 500; color: #6b7280; }
+
+  .c1-badge {
+    font-size: 10px; font-weight: 800;
+    color: #15803d;
+    letter-spacing: 0.3px;
+  }
+
+  .c1-price { font-size: 24px; font-weight: 800; color: #15803d; letter-spacing: -1px; line-height: 1; margin-bottom: 3px; }
+
+  .c1-sub { font-size: 10px; color: #9ca3af; }
+
+  /* ─── C2: Línea doble con separador ─── */
+  .c2-box {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .c2-top {
+    display: flex; align-items: center;
+    padding: 8px 14px;
+    background: #f9fafb;
+    border-bottom: 1px solid #f3f4f6;
+    gap: 6px;
+  }
+
+  .c2-top-icon {
+    width: 16px; height: 16px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2315803d' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/%3E%3Cpolyline points='9 22 9 12 15 12 15 22'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+    flex-shrink: 0;
+  }
+
+  .c2-method-text { font-size: 11px; font-weight: 600; color: #374151; flex: 1; }
+
+  .c2-off-chip {
+    font-size: 10px; font-weight: 800; color: #fff;
+    background: #15803d; border-radius: 5px; padding: 2px 6px;
+    letter-spacing: 0.3px;
+  }
+
+  .c2-bottom { padding: 10px 14px 12px; }
+
+  .c2-price { font-size: 23px; font-weight: 800; color: #111827; letter-spacing: -0.8px; line-height: 1; margin-bottom: 2px; }
+
+  .c2-note { font-size: 10px; color: #9ca3af; }
+  .c2-note strong { color: #15803d; font-weight: 600; }
+
+</style>
+
+<h2>Variaciones de A y C</h2>
+<p class="subtitle">Cuatro versiones que profundizan las dos direcciones que te gustaron. Hacé clic para seleccionar.</p>
+
+<div style="max-width:740px;margin:0 auto;">
+
+  <!-- Derivadas de A -->
+  <div class="section-group">
+    <div class="section-title">↳ Derivadas de A — Chip Bancario</div>
+    <div class="cards-grid">
+
+      <div class="design-card" data-choice="a1" onclick="toggleSelect(this)">
+        <div class="card-label green">A1</div>
+        <div class="card-title">Chip sin ícono + bloque OFF</div>
+        <div class="card-desc">El ahorro queda en un bloque verde oscuro a la derecha. Más compacto y directo, sin el ícono de banco.</div>
+        <div class="preview-wrap">
+          <div class="ctx-price">$962.000,00</div>
+          <div class="ctx-compare">$1.000.000,00</div>
+          <div class="a1-box">
+            <div class="a1-left">
+              <div class="a1-tags">
+                <span class="a1-method">Transferencia</span>
+              </div>
+              <div class="a1-price">$721.500,00</div>
+            </div>
+            <div class="a1-right">
+              <small>ahorrás</small>
+              25%
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="design-card" data-choice="a2" onclick="toggleSelect(this)">
+        <div class="card-label green">A2</div>
+        <div class="card-title">Ahorro en pesos reales</div>
+        <div class="card-desc">Muestra cuánto ahorra el cliente en pesos ($240.500), no solo el porcentaje. Más concreto y persuasivo.</div>
+        <div class="preview-wrap">
+          <div class="ctx-price">$962.000,00</div>
+          <div class="ctx-compare">$1.000.000,00</div>
+          <div class="a2-box">
+            <div class="a2-top">
+              <span class="a2-dot"></span>
+              <span class="a2-method-name">Transferencia bancaria</span>
+            </div>
+            <div class="a2-row">
+              <div class="a2-price">$721.500,00</div>
+              <div class="a2-saving">−$240.500</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Derivadas de C -->
+  <div class="section-group">
+    <div class="section-title">↳ Derivadas de C — Franja de Ahorro</div>
+    <div class="cards-grid">
+
+      <div class="design-card" data-choice="c1" onclick="toggleSelect(this)">
+        <div class="card-label slate">C1</div>
+        <div class="card-title">Solo tipografía</div>
+        <div class="card-desc">Sin bordes decorativos. El precio directamente en verde con el método arriba en gris. Mínimo y elegante.</div>
+        <div class="preview-wrap">
+          <div class="ctx-price">$962.000,00</div>
+          <div class="ctx-compare">$1.000.000,00</div>
+          <div class="c1-box">
+            <div class="c1-row1">
+              <div class="c1-method">con Transferencia bancaria</div>
+              <div class="c1-badge">25% OFF</div>
+            </div>
+            <div class="c1-price">$721.500,00</div>
+            <div class="c1-sub">Mejor precio disponible</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="design-card" data-choice="c2" onclick="toggleSelect(this)">
+        <div class="card-label slate">C2</div>
+        <div class="card-title">Cabecera separada + nota de ahorro</div>
+        <div class="card-desc">Franja gris arriba con el método y el chip "25% OFF". Abajo el precio y la nota de ahorro en verde. Estructura muy clara.</div>
+        <div class="preview-wrap">
+          <div class="ctx-price">$962.000,00</div>
+          <div class="ctx-compare">$1.000.000,00</div>
+          <div class="c2-box">
+            <div class="c2-top">
+              <span class="c2-top-icon"></span>
+              <span class="c2-method-text">Transferencia bancaria</span>
+              <span class="c2-off-chip">25% OFF</span>
+            </div>
+            <div class="c2-bottom">
+              <div class="c2-price">$721.500,00</div>
+              <div class="c2-note">Ahorrás <strong>$240.500</strong> vs precio de lista</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

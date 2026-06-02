@@ -130,9 +130,39 @@
       });
     }
 
+    // 4. "AHORRAS $xxx" debajo del bloque transferencia en página de producto
+    function initTransferSavingsProduct() {
+      var single = document.querySelector('#single-product');
+      if (!single) return;
+
+      // Remover label anterior si existe (para re-ejecución por cambio de variante)
+      var old = single.querySelector('.js-transfer-savings-label');
+      if (old) old.remove();
+
+      var container = single.querySelector('.payment-discount-price-product-container');
+      if (!container) return;
+
+      var precioTransSpan = container.querySelector('.js-payment-discount-price-product[data-priceraw-without-shipping]');
+      var precioRegSpan   = single.querySelector('.js-price-display[data-product-price]');
+      if (!precioTransSpan || !precioRegSpan) return;
+
+      var transRaw = parseInt(precioTransSpan.getAttribute('data-priceraw-without-shipping'), 10);
+      var regRaw   = parseInt(precioRegSpan.getAttribute('data-product-price'), 10);
+      if (!transRaw || !regRaw || transRaw >= regRaw) return;
+
+      var ahorro = Math.round((regRaw - transRaw) / 100);
+      var ahorroFmt = ahorro.toLocaleString('es-AR');
+
+      var label = document.createElement('p');
+      label.className = 'js-transfer-savings-label transfer-savings-label';
+      label.innerHTML = 'AHORRAS <strong>$' + ahorroFmt + '</strong>';
+      container.appendChild(label);
+    }
+
     marcarProductosEncargo();
     revisarEnvioGratis();
-    initTransferSavings(); // ← agregar esta línea
+    initTransferSavings();
+    initTransferSavingsProduct();
     setTimeout(marcarProductosEncargo, 1500);
     setTimeout(initMarqueeAdbar, 800);
 
@@ -169,12 +199,15 @@
 
     var _encargoTimer = null;
     var _transferTimer = null;
+    var _savingsTimer = null;
     var observador = new MutationObserver(function() {
       revisarEnvioGratis();
       clearTimeout(_encargoTimer);
       _encargoTimer = setTimeout(marcarProductosEncargo, 300);
       clearTimeout(_transferTimer);
       _transferTimer = setTimeout(initTransferSavings, 300);
+      clearTimeout(_savingsTimer);
+      _savingsTimer = setTimeout(initTransferSavingsProduct, 300);
     });
     observador.observe(document.body, { childList: true, subtree: true });
   }
