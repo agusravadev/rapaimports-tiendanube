@@ -48,8 +48,6 @@
 
     // 2b. Precio con transferencia — inyectar badge en cards del listado
     function initTransferSavings() {
-      if (document.querySelector('#single-product')) return;
-
       document.querySelectorAll('.item-product .js-payment-discount-price-product-container').forEach(function(container) {
         if (container.querySelector('.transfer-badge')) return; // ya procesado
 
