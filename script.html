@@ -165,6 +165,7 @@
     initTransferSavingsProduct();
     setTimeout(marcarProductosEncargo, 1500);
     setTimeout(initMarqueeAdbar, 800);
+    setTimeout(initBrandsMarquee, 1000);
 
     function initMarqueeAdbar() {
       var adbar = document.querySelector('.js-swiper-adbar');
@@ -195,6 +196,127 @@
       if (next) next.style.setProperty('display', 'none', 'important');
 
       container.insertBefore(wrapper, adbar);
+    }
+
+    function initBrandsMarquee() {
+      var brandsEl = document.querySelector('.js-swiper-brands');
+      if (!brandsEl || brandsEl.dataset.marqueeInit) return;
+      brandsEl.dataset.marqueeInit = '1';
+
+      var existing = brandsEl.swiper;
+      if (existing) existing.destroy(false, true);
+
+      var slides = brandsEl.querySelectorAll('.swiper-slide:not(.swiper-slide-duplicate)');
+      if (!slides.length) return;
+
+      var items = Array.from(slides).map(function(s) {
+        var img = s.querySelector('img');
+        var link = s.querySelector('a');
+        if (!img) return '';
+        var imgClone = img.cloneNode(false);
+        imgClone.src = img.getAttribute('data-src') || img.src;
+        imgClone.alt = img.alt;
+        imgClone.removeAttribute('data-src');
+        imgClone.className = 'brand-image';
+        var div = document.createElement('div');
+        div.className = 'brands-marquee-item';
+        if (link) {
+          var a = document.createElement('a');
+          a.href = link.href;
+          a.appendChild(imgClone);
+          div.appendChild(a);
+        } else {
+          div.appendChild(imgClone);
+        }
+        return div.outerHTML;
+      }).filter(Boolean);
+
+      var inner = document.createElement('div');
+      inner.className = 'brands-marquee-inner';
+      inner.innerHTML = items.join('') + items.join('');
+
+      var wrapper = document.createElement('div');
+      wrapper.className = 'brands-marquee-custom';
+      wrapper.appendChild(inner);
+
+      var container = brandsEl.parentNode;
+      brandsEl.style.setProperty('display', 'none', 'important');
+
+      var section = brandsEl.closest('[data-store="home-brands"]') || brandsEl.closest('section') || container;
+      var prevBtn = section.querySelector('.js-swiper-brands-prev');
+      var nextBtn = section.querySelector('.js-swiper-brands-next');
+      if (prevBtn) prevBtn.style.setProperty('display', 'none', 'important');
+      if (nextBtn) nextBtn.style.setProperty('display', 'none', 'important');
+
+      container.insertBefore(wrapper, brandsEl);
+
+      // rAF-driven scroll con soporte de drag/touch
+      var SPEED = 55; // px por segundo
+      var pos = 0;
+      var isDragging = false;
+      var userInteracted = false;
+      var resumeTimer = null;
+      var lastX = 0;
+      var lastTime = null;
+
+      function onDragEnd() {
+        isDragging = false;
+        userInteracted = true;
+        wrapper.style.cursor = '';
+        clearTimeout(resumeTimer);
+        resumeTimer = setTimeout(function() {
+          userInteracted = false;
+        }, 5000);
+      }
+
+      function tick(ts) {
+        if (!lastTime) lastTime = ts;
+        var dt = Math.min(ts - lastTime, 50) / 1000;
+        lastTime = ts;
+
+        var half = inner.scrollWidth / 2;
+        if (half > 0) {
+          if (!isDragging && !userInteracted) pos -= SPEED * dt;
+          // módulo para normalización inmediata sin importar cuánto se acumuló
+          pos = pos % half;
+          if (pos > 0) pos -= half;
+          inner.style.transform = 'translateX(' + pos + 'px)';
+        }
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+
+      wrapper.addEventListener('touchstart', function(e) {
+        isDragging = true;
+        userInteracted = false;
+        clearTimeout(resumeTimer);
+        lastX = e.touches[0].clientX;
+      }, { passive: true });
+      wrapper.addEventListener('touchmove', function(e) {
+        if (!isDragging) return;
+        pos += e.touches[0].clientX - lastX;
+        lastX = e.touches[0].clientX;
+      }, { passive: true });
+      wrapper.addEventListener('touchend',   function() { onDragEnd(); });
+      wrapper.addEventListener('touchcancel',function() { onDragEnd(); });
+
+      wrapper.addEventListener('mousedown', function(e) {
+        isDragging = true;
+        userInteracted = false;
+        clearTimeout(resumeTimer);
+        lastX = e.clientX;
+        wrapper.style.cursor = 'grabbing';
+        e.preventDefault();
+      });
+      document.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        pos += e.clientX - lastX;
+        lastX = e.clientX;
+      });
+      document.addEventListener('mouseup', function() {
+        if (!isDragging) return;
+        onDragEnd();
+      });
     }
 
     var _encargoTimer = null;

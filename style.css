@@ -701,3 +701,74 @@ a.btn.btn-encargar:hover {
 		font-size: 10px !important;
 	}
 }
+
+/* =============================================
+   SECCIÓN DE MARCAS — FONDO NEGRO + RAF MARQUEE
+   ============================================= */
+.section-brands-home {
+	background-color: #000 !important;
+	padding: 20px 0 !important;
+	overflow: hidden !important;
+}
+
+.section-brands-home {
+	position: relative !important;
+}
+
+.section-brands-home::before {
+	content: "MARCAS";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	text-align: center;
+	font-size: 14px;
+	font-weight: 700;
+	letter-spacing: 4px;
+	color: #fff;
+	pointer-events: none;
+	z-index: 2;
+}
+
+.section-brands-home::after {
+	display: none !important;
+}
+
+.brands-marquee-custom {
+	overflow: hidden;
+	width: 100%;
+	padding: 12px 0;
+	cursor: grab;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.brands-marquee-inner {
+	display: flex;
+	align-items: center;
+	width: -webkit-max-content;
+	width: max-content;
+	will-change: transform;
+}
+
+.brands-marquee-item {
+	flex-shrink: 0;
+	margin: 0 20px;
+}
+
+.brands-marquee-item .brand-image {
+	width: 160px !important;
+	height: auto !important;
+	display: block !important;
+	-webkit-user-drag: none;
+	pointer-events: none;
+}
+
+@media (max-width: 768px) {
+	.brands-marquee-item {
+		margin: 0 8px !important;
+	}
+	.brands-marquee-item .brand-image {
+		width: 130px !important;
+	}
+}
