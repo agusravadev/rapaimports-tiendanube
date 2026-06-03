@@ -619,6 +619,97 @@ a.btn.btn-encargar:hover {
 	margin-bottom: 0 !important;
 }
 
+/* ── Banners de categoría: carrusel horizontal en mobile ── */
+@media (max-width: 767px) {
+	.banners-carousel-wrapper {
+		position: relative !important;
+	}
+
+	.banners-carousel-wrapper > .row {
+		display: flex !important;
+		flex-wrap: nowrap !important;
+		overflow-x: auto !important;
+		overflow-y: hidden !important;
+		scroll-snap-type: x mandatory !important;
+		scroll-behavior: smooth !important;
+		-webkit-overflow-scrolling: touch !important;
+		scrollbar-width: none !important;
+		margin-left: 0 !important;
+		margin-right: 0 !important;
+		padding-bottom: 8px !important;
+	}
+
+	.banners-carousel-wrapper > .row::-webkit-scrollbar {
+		display: none !important;
+	}
+
+	.banners-carousel-wrapper > .row > .js-promotional-banner-container {
+		flex: 0 0 100% !important;
+		max-width: 100% !important;
+		scroll-snap-align: center !important;
+		scroll-snap-stop: always !important;
+		padding-left: 0 !important;
+		padding-right: 0 !important;
+		position: relative !important;
+	}
+
+	/* Flechas de navegación */
+	.banners-carousel-arrow {
+		position: absolute !important;
+		top: 50% !important;
+		width: 42px !important;
+		height: 42px !important;
+		border: none !important;
+		border-radius: 50% !important;
+		background-color: rgba(0, 0, 0, 0.55) !important;
+		background-repeat: no-repeat !important;
+		background-position: center !important;
+		background-size: 22px 22px !important;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+		cursor: pointer !important;
+		z-index: 5 !important;
+		padding: 0 !important;
+		transition: background-color 0.2s ease, opacity 0.2s ease !important;
+		animation: banner-arrow-breathe 2.6s ease-in-out infinite !important;
+	}
+
+	.banners-carousel-arrow:hover,
+	.banners-carousel-arrow:active {
+		background-color: rgba(0, 0, 0, 0.75) !important;
+	}
+
+	.banners-carousel-prev {
+		left: 12px !important;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 6 9 12 15 18'/%3E%3C/svg%3E") !important;
+		animation-delay: 1.3s !important;
+	}
+
+	.banners-carousel-next {
+		right: 12px !important;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 6 15 12 9 18'/%3E%3C/svg%3E") !important;
+	}
+}
+
+@keyframes banner-arrow-breathe {
+	0%, 100% {
+		transform: translateY(-50%) scale(1);
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+		opacity: 0.9;
+	}
+	50% {
+		transform: translateY(-50%) scale(1.08);
+		box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+		opacity: 1;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.banners-carousel-arrow {
+		animation: none !important;
+		transform: translateY(-50%) !important;
+	}
+}
+
 /* ── Precio con transferencia bancaria — cards del listado ── */
 
 .item-product .payment-discount-price-product-container {

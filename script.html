@@ -323,6 +323,172 @@
     var _encargoTimer = null;
     var _transferTimer = null;
     var _savingsTimer = null;
+
+    // Carrusel de banners de categoría (mobile, infinito)
+    function initBannersCategoriaCarousel() {
+      var rows = document.querySelectorAll('.row');
+      rows.forEach(function(row) {
+        if (!row.querySelector('.js-promotional-banner-container')) return;
+        if (row.parentNode && row.parentNode.classList.contains('banners-carousel-wrapper')) return;
+
+        var wrapper = document.createElement('div');
+        wrapper.className = 'banners-carousel-wrapper';
+        row.parentNode.insertBefore(wrapper, row);
+        wrapper.appendChild(row);
+
+        // Reordenar físicamente: Volantes (2) → Tableros (1) → Accesorios (3)
+        var b1 = row.querySelector('.js-promotional-banner-container-1');
+        var b2 = row.querySelector('.js-promotional-banner-container-2');
+        var b3 = row.querySelector('.js-promotional-banner-container-3');
+        if (b1 && b2 && b3) {
+          row.appendChild(b2);
+          row.appendChild(b1);
+          row.appendChild(b3);
+        }
+
+        // Clones para loop infinito
+        var reales = Array.prototype.slice.call(row.querySelectorAll('.js-promotional-banner-container'));
+        var n = reales.length;
+        if (n > 1) {
+          var cloneOfFirst = reales[0].cloneNode(true);
+          cloneOfFirst.classList.add('banner-clone');
+          cloneOfFirst.setAttribute('aria-hidden', 'true');
+          var cloneOfLast = reales[n - 1].cloneNode(true);
+          cloneOfLast.classList.add('banner-clone');
+          cloneOfLast.setAttribute('aria-hidden', 'true');
+          row.insertBefore(cloneOfLast, reales[0]);
+          row.appendChild(cloneOfFirst);
+        }
+
+        // Flechas
+        var prev = document.createElement('button');
+        prev.type = 'button';
+        prev.className = 'banners-carousel-arrow banners-carousel-prev';
+        prev.setAttribute('aria-label', 'Anterior');
+        var next = document.createElement('button');
+        next.type = 'button';
+        next.className = 'banners-carousel-arrow banners-carousel-next';
+        next.setAttribute('aria-label', 'Siguiente');
+        wrapper.appendChild(prev);
+        wrapper.appendChild(next);
+
+        function getStep() {
+          var first = row.querySelector('.js-promotional-banner-container');
+          return first ? first.getBoundingClientRect().width : 0;
+        }
+
+        function totalSlides() {
+          return row.querySelectorAll('.js-promotional-banner-container').length;
+        }
+
+        function jumpNoAnim(left) {
+          var prevBehavior = row.style.scrollBehavior;
+          row.style.scrollBehavior = 'auto';
+          row.scrollLeft = left;
+          requestAnimationFrame(function() {
+            row.style.scrollBehavior = prevBehavior || '';
+          });
+        }
+
+        function setInitialPosition() {
+          var step = getStep();
+          if (!step) return;
+          jumpNoAnim(n > 1 ? step : 0);
+        }
+
+        // Si quedamos en una clon, saltamos silenciosamente al slide real
+        function checkLoop() {
+          if (n <= 1) return;
+          var step = getStep();
+          if (!step) return;
+          var total = totalSlides();
+          var idx = Math.round(row.scrollLeft / step);
+          if (idx <= 0) {
+            jumpNoAnim(n * step);
+          } else if (idx >= total - 1) {
+            jumpNoAnim(step);
+          }
+        }
+
+        function snapToNearest(thenCheckLoop) {
+          var step = getStep();
+          if (!step) return;
+          var idx = Math.round(row.scrollLeft / step);
+          var target = idx * step;
+          if (Math.abs(row.scrollLeft - target) > 1) {
+            row.scrollTo({ left: target, behavior: 'smooth' });
+          }
+          if (thenCheckLoop) setTimeout(checkLoop, 380);
+        }
+
+        function scrollByOne(dir) {
+          wrapper.setAttribute('data-user-interacted', '1');
+          var step = getStep();
+          if (!step) return;
+          var currentIdx = Math.round(row.scrollLeft / step);
+          var targetIdx = currentIdx + dir;
+          row.scrollTo({ left: targetIdx * step, behavior: 'smooth' });
+          setTimeout(checkLoop, 420);
+        }
+
+        prev.addEventListener('click', function() { scrollByOne(-1); });
+        next.addEventListener('click', function() { scrollByOne(1); });
+
+        var _snapTimer = null;
+        var _touchStartX = 0;
+        var _touchStartScroll = 0;
+        var _touchActive = false;
+
+        row.addEventListener('scroll', function() {
+          if (_touchActive) return;
+          clearTimeout(_snapTimer);
+          _snapTimer = setTimeout(function() { snapToNearest(true); }, 140);
+        }, { passive: true });
+
+        row.addEventListener('touchstart', function(e) {
+          if (!e.touches.length) return;
+          _touchActive = true;
+          _touchStartX = e.touches[0].clientX;
+          _touchStartScroll = row.scrollLeft;
+          clearTimeout(_snapTimer);
+        }, { passive: true });
+
+        row.addEventListener('touchend', function(e) {
+          _touchActive = false;
+          wrapper.setAttribute('data-user-interacted', '1');
+          var step = getStep();
+          if (!step) return;
+          var endX = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientX : _touchStartX;
+          var deltaX = _touchStartX - endX;
+          var startIdx = Math.round(_touchStartScroll / step);
+          var threshold = Math.min(35, step * 0.08);
+          var targetIdx;
+          if (Math.abs(deltaX) > threshold) {
+            targetIdx = startIdx + (deltaX > 0 ? 1 : -1);
+          } else {
+            targetIdx = Math.round(row.scrollLeft / step);
+          }
+          row.scrollTo({ left: targetIdx * step, behavior: 'smooth' });
+          setTimeout(checkLoop, 450);
+        }, { passive: true });
+
+        row.addEventListener('touchcancel', function() {
+          _touchActive = false;
+        }, { passive: true });
+
+        window.addEventListener('resize', function() {
+          var step = getStep();
+          if (!step) return;
+          var idx = Math.round(row.scrollLeft / step);
+          jumpNoAnim(idx * step);
+        });
+
+        setTimeout(setInitialPosition, 50);
+      });
+    }
+    initBannersCategoriaCarousel();
+
+    var _bannersCarouselTimer = null;
     var observador = new MutationObserver(function() {
       revisarEnvioGratis();
       clearTimeout(_encargoTimer);
@@ -331,6 +497,8 @@
       _transferTimer = setTimeout(initTransferSavings, 300);
       clearTimeout(_savingsTimer);
       _savingsTimer = setTimeout(initTransferSavingsProduct, 300);
+      clearTimeout(_bannersCarouselTimer);
+      _bannersCarouselTimer = setTimeout(initBannersCategoriaCarousel, 300);
     });
     observador.observe(document.body, { childList: true, subtree: true });
   }
