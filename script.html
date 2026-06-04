@@ -1,5 +1,70 @@
 
 <script>
+  // Transición fade entre páginas:
+  //  - View Transitions nativa para atrás/adelante.
+  //  - Prefetch al hover/touchstart para que la página destino ya esté
+  //    en caché al hacer click → la View Transition alcanza a ejecutarse
+  //    también en navegación adelante (igual que al volver).
+  (function() {
+    try {
+      var s = document.createElement('style');
+      s.textContent = [
+        '@view-transition { navigation: auto; }',
+        '::view-transition-old(root), ::view-transition-new(root) {',
+        '  animation-duration: 450ms;',
+        '  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);',
+        '}'
+      ].join('\n');
+      document.head.appendChild(s);
+    } catch(e) {}
+
+    var prefetched = new Set();
+
+    function isInternalCandidate(link) {
+      if (!link || !link.href) return false;
+      if (link.target && link.target !== '' && link.target !== '_self') return false;
+      if (link.hasAttribute('download')) return false;
+
+      var href = link.getAttribute('href') || '';
+      if (!href || href.charAt(0) === '#') return false;
+      if (/^(mailto:|tel:|javascript:|whatsapp:)/i.test(href)) return false;
+
+      var url;
+      try { url = new URL(link.href, location.href); } catch(_) { return false; }
+      if (url.origin !== location.origin) return false;
+      if (url.pathname === location.pathname && url.search === location.search) return false;
+
+      // No prefetchear carrito/checkout/cuenta para no disparar acciones server-side
+      if (/\/(checkout|cart|carrito|account|admin|api)(\/|$|\?)/i.test(url.pathname)) return false;
+
+      return url.href;
+    }
+
+    function prefetch(href) {
+      if (prefetched.has(href)) return;
+      prefetched.add(href);
+      try {
+        var l = document.createElement('link');
+        l.rel = 'prefetch';
+        l.href = href;
+        l.as = 'document';
+        document.head.appendChild(l);
+      } catch(e) {}
+    }
+
+    function handleIntent(e) {
+      var link = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+      if (!link) return;
+      var href = isInternalCandidate(link);
+      if (href) prefetch(href);
+    }
+
+    // Mobile: el toque inicial nos da ~50-150ms de cabeza antes del click final
+    document.addEventListener('touchstart', handleIntent, { capture: true, passive: true });
+    // PC: el hover nos da varios cientos de ms antes del click
+    document.addEventListener('mouseover', handleIntent, { capture: true, passive: true });
+  })();
+
   var m = document.querySelector('meta[property="tiendanube:stock"]');
   if (m && m.content === '9999') {
     document.body.classList.add('producto-encargo');

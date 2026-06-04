@@ -619,6 +619,18 @@ a.btn.btn-encargar:hover {
 	margin-bottom: 0 !important;
 }
 
+/* ── Banners de categoría: en PC ocultar los clones del loop infinito ── */
+@media (min-width: 768px) {
+	.banner-clone {
+		display: none !important;
+	}
+}
+
+/* ── Transición fade entre páginas (View Transitions API nativa) ── */
+@view-transition {
+	navigation: auto;
+}
+
 /* ── Banners de categoría: carrusel horizontal en mobile ── */
 @media (max-width: 767px) {
 	.banners-carousel-wrapper {
@@ -808,28 +820,15 @@ a.btn.btn-encargar:hover {
    ============================================= */
 .section-brands-home {
 	background-color: #000 !important;
-	padding: 20px 0 !important;
 	overflow: hidden !important;
+	padding: 20 0 !important;
+    margin-top: -24px !important;
 }
 
 .section-brands-home {
 	position: relative !important;
 }
 
-.section-brands-home::before {
-	content: "MARCAS";
-	position: absolute;
-	top: -35px;
-	left: 0;
-	right: 0;
-	text-align: center;
-	font-size: 14px;
-	font-weight: 700;
-	letter-spacing: 4px;
-	color: #fff;
-	pointer-events: none;
-	z-index: 2;
-}
 
 .section-brands-home::after {
 	display: none !important;
