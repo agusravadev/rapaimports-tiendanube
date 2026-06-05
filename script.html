@@ -87,6 +87,13 @@
       }
     });
 
+    // Botón flotante de WhatsApp (fixed bottom): mensaje por defecto genérico
+    var mensajeFixed = 'Hola Rapa Imports, queria hacerte una consulta...';
+    document.querySelectorAll('.js-btn-fixed-bottom.btn-whatsapp, a.btn-whatsapp[href^="https://wa.me/"]:not(.wa-btn)').forEach(function(btn) {
+      if (btn.closest('#single-product .product-description')) return;
+      btn.href = 'https://wa.me/542364626266?text=' + encodeURIComponent(mensajeFixed);
+    });
+
     // 2. Lógica para "incluso en este producto" en página de producto
     function revisarEnvioGratis() {
       var contenedores = document.querySelectorAll('.free-shipping-message, .js-product-form-free-shipping-message');
