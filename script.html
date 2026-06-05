@@ -79,20 +79,19 @@
   })();
 
   function initTiendaNubePersonalizado() {
-    // 1. Lógica de WhatsApp
+    // 1. Lógica de WhatsApp en descripciones (botones de consulta)
+    //    El botón "Encargar" ya no vive en la descripción: se inyecta
+    //    dinámicamente desde marcarProductosEncargo / initEncargoDetalle
+    //    según la variante seleccionada. Acá solo manejamos los botones
+    //    de consulta (.wa-btn y links wa.me en .product-description).
     var nombre = (document.querySelector('meta[property="og:title"]') || {}).content || document.title || 'este producto';
     var url = (document.querySelector('link[rel="canonical"]') || {}).href || (document.querySelector('meta[property="og:url"]') || {}).content || window.location.href;
 
-    var mensajeEncargar = 'Hola Rapa Imports! Quiero encargar el producto *' + nombre + '* que vi en: ' + url + ' ¿Me podés dar más info?';
     var mensajeConsultar = 'Hola Rapa Imports! Tengo una consulta sobre el producto *' + nombre + '* que vi en: ' + url;
+    var hrefConsulta = 'https://wa.me/542364626266?text=' + encodeURIComponent(mensajeConsultar);
 
     document.querySelectorAll('.wa-btn, #single-product .product-description a[href*="wa.me"]').forEach(function(btn) {
-      var texto = btn.innerText.toLowerCase();
-      if (texto.includes('encargar')) {
-        btn.href = 'https://wa.me/542364626266?text=' + encodeURIComponent(mensajeEncargar);
-      } else {
-        btn.href = 'https://wa.me/542364626266?text=' + encodeURIComponent(mensajeConsultar);
-      }
+      btn.href = hrefConsulta;
     });
 
     // Botón flotante de WhatsApp (fixed bottom): mensaje por defecto genérico

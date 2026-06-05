@@ -34,9 +34,9 @@ Cuando el usuario pida crear o completar la descripción HTML de un producto, se
 
 | Sección | `encargo.html` | `stock.html` |
 |---|---|---|
-| Bloque "Encargar por WhatsApp" (arriba) | ✓ Presente | ✗ Ausente |
-| Script WA (`WA_SALUDO`) | Orientado a encargo | Consulta estándar |
 | Sección Beneficios/Características | Incluida | Opcional (ver comentario en template) |
+
+> El botón "Encargar" ya no vive en la descripción. Se inyecta automáticamente desde `script.html` en la zona de compra (junto al botón Agregar al carrito) cuando la variante seleccionada es 9999. Los dos templates solo se diferencian por la sección de beneficios.
 
 ### Placeholders comunes a ambos templates
 
@@ -70,9 +70,8 @@ El sistema usa `stock = 9999` como señal de que esa variante es por encargo (si
 
 ### Botones de WhatsApp
 
-- El script busca elementos `.wa-btn` y `#single-product .product-description a[href*="wa.me"]`.
-- Según el texto del botón: si contiene "encargar" → mensaje de encargo; si no → mensaje de consulta.
-- Los mensajes incluyen el nombre del producto (desde `og:title`) y la URL canónica.
+- **Botones de consulta** (`.wa-btn` y links `wa.me` en `.product-description`): el script los reescribe todos al mismo `wa.me` con `mensajeConsultar` (nombre del producto desde `og:title` + URL canónica). Ya no se distinguen por texto — el botón "Encargar" dejó de vivir en la descripción.
+- **Botones de encargo** (listado y detalle): se inyectan dinámicamente desde `marcarProductosEncargo()` y `initEncargoDetalle()` según la variante seleccionada, con un mensaje propio (`mensajeEncargar`).
 - Número de WhatsApp: `542364626266`.
 - El CSS estiliza los links `a[href*="wa.me"]` dentro de `.product-description` como botón verde animado con ícono de WhatsApp incrustado como SVG en `::before`.
 

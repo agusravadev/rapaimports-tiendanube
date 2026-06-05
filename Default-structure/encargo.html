@@ -2,9 +2,10 @@
   TEMPLATE: PRODUCTO POR ENCARGO
   ================================
   Usar cuando el producto tiene stock = 9999 (por encargo).
+  El botón "Encargar" se inyecta automáticamente en la zona de compra
+  (script.html → initEncargoDetalle) según la variante seleccionada; no
+  va en la descripción.
   Diferencias vs stock.html:
-    - Bloque superior con enlace "Encargar por WhatsApp" + aviso de tiempo de entrega.
-    - Script de WA usa WA_SALUDO orientado a encargo.
     - NO incluye sección de BENEFICIOS/CARACTERÍSTICAS (opcional agregarla si aplica).
 
   PLACEHOLDERS — reemplazar antes de publicar:
@@ -42,12 +43,6 @@
       <div style="font-size: 13px; color: #a0a0a0; line-height: 1.8;">Texto del paso...</div>
     </div>
 -->
-
-<!-- BOTÓN ENCARGAR (solo en productos por encargo) -->
-<div style="text-align: center; margin: 24px 0;">
-  <a href="https://wa.me/542364626266" target="_blank" rel="noopener">Encargar por WhatsApp</a>
-  <p style="font-size: 13px; color: #8a8a8a; margin-top: 10px; font-family: Arial, sans-serif;">Producto por encargo &middot; Tiempo de entrega a confirmar</p>
-</div>
 
 <p>
 <script>
