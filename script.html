@@ -65,10 +65,18 @@
     document.addEventListener('mouseover', handleIntent, { capture: true, passive: true });
   })();
 
-  var m = document.querySelector('meta[property="tiendanube:stock"]');
-  if (m && m.content === '9999') {
-    document.body.classList.add('producto-encargo');
-  }
+  // Detección temprana sin parpadeo: si LS.variants ya está disponible y la
+  // variante por defecto del detalle es 9999, marcamos body antes del primer
+  // paint. El meta tiendanube:stock no sirve para productos con variantes
+  // mixtas porque informa la suma de stocks, no la variante seleccionada.
+  (function() {
+    if (!document.querySelector('#single-product')) return;
+    if (typeof LS === 'undefined' || !LS.variants || !LS.variants.length) return;
+    var defecto = LS.variants[0];
+    if (defecto && Number(defecto.stock) === 9999) {
+      document.body.classList.add('producto-encargo');
+    }
+  })();
 
   function initTiendaNubePersonalizado() {
     // 1. Lógica de WhatsApp
@@ -148,56 +156,193 @@
       });
     }
 
-    // 3. Badge "por encargo" en cards del listado
+    // 3. Badge "por encargo" reactivo en cards del listado
+    //    La señal "encargo" depende de la variante seleccionada en el swatch,
+    //    no del producto. Si ninguna variante es 9999, no se toca la card.
+    //    Si alguna lo es, se instala un listener en los swatches y se evalúa
+    //    el estado cada vez que cambia la selección.
     function marcarProductosEncargo() {
       if (document.querySelector('#single-product')) return;
 
       document.querySelectorAll('.item-product').forEach(function(item) {
-        if (item.querySelector('.btn-encargar')) return;
         var container = item.querySelector('.js-quickshop-container[data-variants]');
         if (!container) return;
 
-        var esEncargo = false;
+        var variantes;
         try {
-          var variantes = JSON.parse(container.getAttribute('data-variants'));
-          esEncargo = variantes.some(function(v) { return Number(v.stock) === 9999; });
-        } catch (e) {}
+          variantes = JSON.parse(container.getAttribute('data-variants'));
+        } catch (e) { return; }
+        if (!variantes || !variantes.length) return;
 
-        if (!esEncargo) return;
+        var anyEncargo = variantes.some(function(v) { return Number(v.stock) === 9999; });
+        if (!anyEncargo) return;
 
-        item.classList.add('item-encargo');
+        function variantePorOption(option) {
+          if (option != null) {
+            var match = variantes.find(function(v) { return String(v.option0) === String(option); });
+            if (match) return match;
+          }
+          return variantes[0];
+        }
 
-        item.querySelectorAll('.js-item-buy-open, .item-buy-open, [data-component*="add-to-cart"]').forEach(function(b) {
-          b.style.setProperty('display', 'none', 'important');
-        });
+        function getVarianteActiva() {
+          var activo = item.querySelector('.js-color-variant.item-colors-bullet.js-color-variant-active');
+          if (activo && activo.dataset.option) return variantePorOption(activo.dataset.option);
+          // Algunos temas exponen el option activo en otro nodo helper
+          var helper = item.querySelector('[class*="js-color-variant-available-"][class*="js-color-variant-active"]');
+          if (helper) {
+            var idx = parseInt(helper.dataset.option, 10);
+            if (!isNaN(idx) && variantes[idx]) return variantes[idx];
+          }
+          return variantes[0];
+        }
 
-        var linkEl = item.querySelector('a.btn-secondary');
-        var url = linkEl ? linkEl.href : window.location.href;
-        var nameEl = item.querySelector('.js-item-name');
-        var nombre = nameEl ? nameEl.innerText.trim() : 'este producto';
+        function construirBtnEncargar() {
+          var linkEl = item.querySelector('a.btn-secondary');
+          var url = linkEl ? linkEl.href : window.location.href;
+          var nameEl = item.querySelector('.js-item-name');
+          var nombre = nameEl ? nameEl.innerText.trim() : 'este producto';
+          var mensaje = 'Hola Rapa Imports! Quiero encargar el producto *' + nombre + '* que vi en: ' + url + ' ¿Me podés dar más info?';
+          var waUrl = 'https://wa.me/542364626266?text=' + encodeURIComponent(mensaje);
 
-        var mensaje = 'Hola Rapa Imports! Quiero encargar el producto *' + nombre + '* que vi en: ' + url + ' ¿Me podés dar más info?';
-        var waUrl = 'https://wa.me/542364626266?text=' + encodeURIComponent(mensaje);
-
-        var buyBtn = item.querySelector('.js-item-buy-open');
-        var insertionPoint = buyBtn || item.querySelector('a.btn-secondary');
-        if (insertionPoint) {
-          var encargarBtn = document.createElement('a');
-          encargarBtn.href = waUrl;
-          encargarBtn.target = '_blank';
-          encargarBtn.rel = 'noopener noreferrer';
-          encargarBtn.className = 'btn btn-primary btn-small btn-encargar';
-          encargarBtn.textContent = 'Encargar';
+          var insertionPoint = item.querySelector('.js-item-buy-open') || item.querySelector('a.btn-secondary');
+          if (!insertionPoint) return;
           var colDiv = insertionPoint.parentNode;
           var rowDiv = colDiv && colDiv.parentNode;
+
+          var btn = document.createElement('a');
+          btn.href = waUrl;
+          btn.target = '_blank';
+          btn.rel = 'noopener noreferrer';
+          btn.className = 'btn btn-primary btn-small btn-encargar';
+          btn.textContent = 'Encargar';
+
           if (rowDiv && rowDiv !== item && rowDiv.parentNode) {
-            rowDiv.parentNode.insertBefore(encargarBtn, rowDiv);
+            rowDiv.parentNode.insertBefore(btn, rowDiv);
             rowDiv.style.setProperty('display', 'none', 'important');
+            btn.dataset.rowHidden = '1';
           } else {
-            colDiv.insertBefore(encargarBtn, insertionPoint);
+            colDiv.insertBefore(btn, insertionPoint);
           }
         }
+
+        function quitarBtnEncargar() {
+          var btn = item.querySelector('.btn-encargar');
+          if (!btn) return;
+          if (btn.dataset.rowHidden === '1') {
+            var sibling = btn.nextElementSibling;
+            if (sibling) sibling.style.removeProperty('display');
+          }
+          btn.remove();
+        }
+
+        function aplicarEstado() {
+          var v = getVarianteActiva();
+          if (!v) return;
+          var esEncargo = Number(v.stock) === 9999;
+          // Guard: si nada cambió, salir
+          if (item.dataset.encargoEstado === (esEncargo ? '1' : '0')) return;
+          item.dataset.encargoEstado = esEncargo ? '1' : '0';
+
+          if (esEncargo) {
+            item.classList.add('item-encargo');
+            if (!item.querySelector('.btn-encargar')) construirBtnEncargar();
+          } else {
+            item.classList.remove('item-encargo');
+            quitarBtnEncargar();
+          }
+        }
+
+        // Listener de swatches (idempotente)
+        if (!item.dataset.encargoListener) {
+          item.dataset.encargoListener = '1';
+          item.querySelectorAll('.js-color-variant.item-colors-bullet[data-option]').forEach(function(sw) {
+            sw.addEventListener('click', function() {
+              // Tiendanube actualiza la clase active de forma síncrona,
+              // pero damos un microtask por las dudas.
+              setTimeout(aplicarEstado, 30);
+            });
+          });
+        }
+
+        aplicarEstado();
       });
+    }
+
+    // 3b. Encargo reactivo en página de detalle (#single-product)
+    //     Inyecta/quita un botón "Encargar" en la zona de compra y togglea
+    //     body.producto-encargo según la variante seleccionada.
+    function initEncargoDetalle() {
+      var single = document.querySelector('#single-product');
+      if (!single) return;
+      if (typeof LS === 'undefined' || !LS.variants || !LS.variants.length) return;
+
+      function variantePorOption(option) {
+        if (option != null) {
+          var match = LS.variants.find(function(v) { return String(v.option0) === String(option); });
+          if (match) return match;
+        }
+        return LS.variants[0];
+      }
+
+      function getVarianteActiva() {
+        var activo = single.querySelector('.js-insta-variant.selected');
+        if (activo && activo.dataset.option) return variantePorOption(activo.dataset.option);
+        return LS.variants[0];
+      }
+
+      function ensureBtnEncargar() {
+        if (single.querySelector('.btn-encargar-detalle')) return;
+        var buyBtn = single.querySelector('[data-store="product-buy-button"], .js-addtocart:not(.js-addtocart-placeholder)');
+        if (!buyBtn) return;
+        var parent = buyBtn.parentElement;
+        if (!parent) return;
+
+        var nombre = (document.querySelector('meta[property="og:title"]') || {}).content || document.title || 'este producto';
+        var url = (document.querySelector('link[rel="canonical"]') || {}).href || (document.querySelector('meta[property="og:url"]') || {}).content || window.location.href;
+        var mensaje = 'Hola Rapa Imports! Quiero encargar el producto *' + nombre + '* que vi en: ' + url + ' ¿Me podés dar más info?';
+
+        var btn = document.createElement('a');
+        btn.href = 'https://wa.me/542364626266?text=' + encodeURIComponent(mensaje);
+        btn.target = '_blank';
+        btn.rel = 'noopener noreferrer';
+        btn.className = 'btn btn-primary btn-small btn-encargar btn-encargar-detalle';
+        btn.textContent = 'Encargar';
+        parent.appendChild(btn);
+      }
+
+      function quitarBtnEncargar() {
+        var btn = single.querySelector('.btn-encargar-detalle');
+        if (btn) btn.remove();
+      }
+
+      function aplicarEstado() {
+        var v = getVarianteActiva();
+        if (!v) return;
+        var esEncargo = Number(v.stock) === 9999;
+        if (single.dataset.encargoEstado === (esEncargo ? '1' : '0')) return;
+        single.dataset.encargoEstado = esEncargo ? '1' : '0';
+
+        if (esEncargo) {
+          document.body.classList.add('producto-encargo');
+          ensureBtnEncargar();
+        } else {
+          document.body.classList.remove('producto-encargo');
+          quitarBtnEncargar();
+        }
+      }
+
+      // Listeners (idempotentes)
+      if (!single.dataset.encargoListener) {
+        single.dataset.encargoListener = '1';
+        single.querySelectorAll('.js-insta-variant').forEach(function(sw) {
+          sw.addEventListener('click', function() { setTimeout(aplicarEstado, 30); });
+        });
+        var sel = single.querySelector('.js-variation-option');
+        if (sel) sel.addEventListener('change', function() { setTimeout(aplicarEstado, 30); });
+      }
+
+      aplicarEstado();
     }
 
     // 4. "AHORRAS $xxx" debajo del bloque transferencia en página de producto
@@ -230,10 +375,12 @@
     }
 
     marcarProductosEncargo();
+    initEncargoDetalle();
     revisarEnvioGratis();
     initTransferSavings();
     initTransferSavingsProduct();
     setTimeout(marcarProductosEncargo, 1500);
+    setTimeout(initEncargoDetalle, 1500);
     initMarqueeAdbar();
     setTimeout(initMarqueeAdbar, 200);
     setTimeout(initBrandsMarquee, 1000);
@@ -391,6 +538,7 @@
     }
 
     var _encargoTimer = null;
+    var _encargoDetalleTimer = null;
     var _transferTimer = null;
     var _savingsTimer = null;
 
@@ -569,6 +717,8 @@
       revisarEnvioGratis();
       clearTimeout(_encargoTimer);
       _encargoTimer = setTimeout(marcarProductosEncargo, 300);
+      clearTimeout(_encargoDetalleTimer);
+      _encargoDetalleTimer = setTimeout(initEncargoDetalle, 300);
       clearTimeout(_transferTimer);
       _transferTimer = setTimeout(initTransferSavings, 300);
       clearTimeout(_savingsTimer);

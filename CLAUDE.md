@@ -56,11 +56,13 @@ Cuando el usuario pida crear o completar la descripción HTML de un producto, se
 
 ### Convención "producto por encargo" (stock 9999)
 
-El sistema usa `stock = 9999` como señal especial para marcar productos que son por encargo (no disponibles en inventario físico). Esto se implementa en dos capas:
+El sistema usa `stock = 9999` como señal de que esa variante es por encargo (sin inventario físico). La señal vive **a nivel de variante**, no de producto: un producto puede tener variantes mixtas (ej: rojo con stock 9 + blanco con stock 9999) y la UI reacciona a la variante seleccionada en tiempo real.
 
-**Script (detección, `script.html`):**
-- Al cargar, lee la meta tag `<meta property="tiendanube:stock">`. Si el valor es `"9999"`, agrega la clase `producto-encargo` al `<body>`.
-- En el listado de productos (fuera de `#single-product`), parsea `data-variants` de cada `.js-quickshop-container` y agrega la clase `item-encargo` a las cards cuyo stock sea 9999.
+**Script (detección reactiva, `script.html`):**
+- Detección temprana sin parpadeo: si `LS.variants` está disponible y la variante por defecto del detalle es 9999, agrega `body.producto-encargo` antes del primer paint. El meta `tiendanube:stock` no se usa: informa la suma de stocks (ej: 10008 = 9999 + 9), no la variante seleccionada.
+- `marcarProductosEncargo()` (listado): si alguna variante del card es 9999, instala listener en los swatches `.js-color-variant.item-colors-bullet[data-option]` (activo: `js-color-variant-active`) y togglea `item-encargo` + botón `.btn-encargar` según el stock de la variante actual.
+- `initEncargoDetalle()` (página de producto): lee `LS.variants` (global de Tiendanube), identifica la variante por `.js-insta-variant.selected[data-option]`, togglea `body.producto-encargo` e inyecta/quita un botón `.btn-encargar-detalle` en el contenedor de `Agregar al carrito`. Escucha clicks en swatches y `change` en el `<select>` oculto `.js-variation-option`.
+- Ambas usan `data-encargo-estado` para no re-aplicar si el estado no cambió (evita bucles del MutationObserver).
 
 **CSS (visualización, `style.css`):**
 - `body.producto-encargo` en la página de producto oculta botones de compra, cantidad y descuento (`display: none !important`), y muestra el badge naranja "Producto por encargo" + texto "15 a 20 días hábiles" vía `::before`/`::after` en `.price-container`.
