@@ -404,6 +404,12 @@
         var wrapper = document.createElement('div');
         wrapper.className = 'banners-carousel-wrapper';
         row.parentNode.insertBefore(wrapper, row);
+
+        var titulo = document.createElement('h2');
+        titulo.className = 'banners-carousel-title h6 text-primary h1-md';
+        titulo.textContent = 'Lo más buscado...';
+        wrapper.appendChild(titulo);
+
         wrapper.appendChild(row);
 
         // Reordenar físicamente: Volantes (2) → Tableros (1) → Accesorios (3)

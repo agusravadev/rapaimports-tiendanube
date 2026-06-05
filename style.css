@@ -631,6 +631,24 @@ a.btn.btn-encargar:hover {
 	navigation: auto;
 }
 
+/* ── Título "Lo más buscado..." sobre los banners de categoría ── */
+.banners-carousel-title {
+	font-family: "Montserrat", Sans-serif;
+	color: #000;
+	margin: 32px 0 16px;
+	padding: 0 15px;
+	font-weight: 700;
+	font-size: 34px;
+	line-height: 1.2;
+	text-align: center;
+}
+
+@media (min-width: 768px) {
+	.banners-carousel-title {
+		margin: 48px 0 24px;
+	}
+}
+
 /* ── Banners de categoría: carrusel horizontal en mobile ── */
 @media (max-width: 767px) {
 	.banners-carousel-wrapper {
