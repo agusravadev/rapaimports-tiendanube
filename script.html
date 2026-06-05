@@ -186,14 +186,11 @@
         }
 
         function getVarianteActiva() {
-          var activo = item.querySelector('.js-color-variant.item-colors-bullet.js-color-variant-active');
+          // El bullet activo se marca con .selected al hacer click.
+          // En carga inicial nada está .selected → defaulteamos a la
+          // primera variante (que es la que Tiendanube muestra como default).
+          var activo = item.querySelector('.js-color-variant.item-colors-bullet.selected');
           if (activo && activo.dataset.option) return variantePorOption(activo.dataset.option);
-          // Algunos temas exponen el option activo en otro nodo helper
-          var helper = item.querySelector('[class*="js-color-variant-available-"][class*="js-color-variant-active"]');
-          if (helper) {
-            var idx = parseInt(helper.dataset.option, 10);
-            if (!isNaN(idx) && variantes[idx]) return variantes[idx];
-          }
           return variantes[0];
         }
 
@@ -306,7 +303,10 @@
         btn.href = 'https://wa.me/542364626266?text=' + encodeURIComponent(mensaje);
         btn.target = '_blank';
         btn.rel = 'noopener noreferrer';
-        btn.className = 'btn btn-primary btn-small btn-encargar btn-encargar-detalle';
+        // Imita layout de Agregar al carrito (btn-block + mb-4) para que
+        // ocupe el mismo espacio. mt-3 da separación contra el bloque de
+        // envío gratis en productos sin variantes.
+        btn.className = 'btn btn-primary btn-block mt-3 mb-4 btn-encargar btn-encargar-detalle';
         btn.textContent = 'Encargar';
         parent.appendChild(btn);
       }
