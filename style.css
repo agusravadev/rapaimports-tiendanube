@@ -972,7 +972,13 @@ body.producto-encargo #single-product a.btn.btn-encargar.btn-encargar-detalle {
 	justify-content: center !important;
 	gap: 10px !important;
 	width: 100% !important;
-	max-width: none !important;
+	max-width: 100% !important;
+	min-width: 0 !important;
+	box-sizing: border-box !important;
+	/* Anula flex-child sizing que puede achicarlo si el parent es flex */
+	flex: 0 0 100% !important;
+	align-self: stretch !important;
+	float: none !important;
 	background: #ea580c !important;
 	color: #ffffff !important;
 	font-weight: 700 !important;
@@ -1019,7 +1025,7 @@ body.producto-encargo #single-product .cuotas-encargo-row {
 body.producto-encargo #single-product .cuotas-encargo-row svg {
 	width: 18px !important;
 	height: 18px !important;
-	color: #6b7280 !important;
+	color: #0a0a0a !important;
 	flex-shrink: 0 !important;
 }
 
