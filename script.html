@@ -348,6 +348,88 @@
       aplicarEstado();
     }
 
+    // 3c. Cuotas reactivas en página de detalle — reemplaza el widget de pagos
+    //     original por un row custom "3 cuotas sin interés de $X" cuando la
+    //     variante activa es por encargo. Fuente: modal #info-payment-method-credit_card
+    //     (filas tr.js-payment-provider-installments-row con amount===3 + texto
+    //     "sin interés" en la primera celda). Si no encuentra match, no inserta
+    //     nada y deja el row del widget original oculto vía CSS.
+    function initCuotasEncargo() {
+      var single = document.querySelector('#single-product');
+      if (!single) return;
+
+      // Quitar row previo si existe (re-evaluación por cambio de variante)
+      var existing = single.querySelector('.js-cuotas-encargo-row');
+      if (existing) existing.remove();
+
+      // Si no es encargo → no insertar nada (el row queda removido arriba)
+      if (!document.body.classList.contains('producto-encargo')) return;
+
+      // Buscar 3 cuotas sin interés en el modal de pagos
+      var precio3sinInteres = null;
+      var rows = document.querySelectorAll(
+        '#info-payment-method-credit_card tr.js-payment-provider-installments-row'
+      );
+      for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        var amountEl = row.querySelector('.js-installment-amount');
+        if (!amountEl) continue;
+        if (parseInt(amountEl.textContent, 10) !== 3) continue;
+        var firstCell = row.querySelector('td');
+        if (!firstCell) continue;
+        if (!/sin\s+inter[eé]s/i.test(firstCell.textContent)) continue;
+        var priceEl = row.querySelector('.js-installment-price');
+        if (!priceEl) continue;
+        precio3sinInteres = priceEl.textContent.trim();
+        break;
+      }
+
+      // Fallback opcional: comparar total con precio base si no hubo match textual
+      if (!precio3sinInteres) {
+        var baseEl = single.querySelector('.js-price-display[data-product-price]');
+        if (baseEl) {
+          var baseCents = parseInt(baseEl.getAttribute('data-product-price'), 10);
+          for (var j = 0; j < rows.length; j++) {
+            var r = rows[j];
+            var aEl = r.querySelector('.js-installment-amount');
+            if (!aEl || parseInt(aEl.textContent, 10) !== 3) continue;
+            var totalEl = r.querySelector('.js-installment-total-price');
+            if (!totalEl) continue;
+            var totalCents = parseInt(
+              totalEl.textContent.replace(/[^\d]/g, ''), 10
+            );
+            if (!baseCents || !totalCents) continue;
+            // Tolerancia: 100 centavos
+            if (Math.abs(totalCents - baseCents) <= 100) {
+              var pEl = r.querySelector('.js-installment-price');
+              if (pEl) { precio3sinInteres = pEl.textContent.trim(); break; }
+            }
+          }
+        }
+      }
+
+      if (!precio3sinInteres) return;
+
+      // Anclaje: después del bloque transferencia
+      var anchor = single.querySelector('.payment-discount-price-product-container');
+      if (!anchor || !anchor.parentNode) return;
+
+      var newRow = document.createElement('div');
+      newRow.className = 'js-cuotas-encargo-row cuotas-encargo-row';
+      newRow.innerHTML =
+        '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">' +
+          '<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 10h20"/>' +
+        '</svg>' +
+        '<span>3 cuotas sin interés de <strong>' + precio3sinInteres + '</strong></span>';
+
+      // Insertar después del anchor
+      if (anchor.nextSibling) {
+        anchor.parentNode.insertBefore(newRow, anchor.nextSibling);
+      } else {
+        anchor.parentNode.appendChild(newRow);
+      }
+    }
+
     // 4. "AHORRAS $xxx" debajo del bloque transferencia en página de producto
     function initTransferSavingsProduct() {
       var single = document.querySelector('#single-product');
