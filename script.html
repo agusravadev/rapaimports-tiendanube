@@ -333,6 +333,8 @@
           document.body.classList.remove('producto-encargo');
           quitarBtnEncargar();
         }
+        // Recalcular row de "3 cuotas sin interés" después del toggle de clase
+        initCuotasEncargo();
       }
 
       // Listeners (idempotentes)
@@ -464,8 +466,10 @@
     revisarEnvioGratis();
     initTransferSavings();
     initTransferSavingsProduct();
+    initCuotasEncargo();
     setTimeout(marcarProductosEncargo, 1500);
     setTimeout(initEncargoDetalle, 1500);
+    setTimeout(initCuotasEncargo, 1500);
     initMarqueeAdbar();
     setTimeout(initMarqueeAdbar, 200);
     setTimeout(initBrandsMarquee, 1000);
