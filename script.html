@@ -400,10 +400,21 @@
           '<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 10h20"/>' +
         '</svg>' +
         '<span>3 cuotas de <strong>' + precio3cuotas + '</strong></span>' +
-        '<a href="#info-payment-method-credit_card" class="js-cuotas-encargo-vermas cuotas-encargo-vermas" ' +
-          'data-toggle="modal" data-target="#info-payment-method-credit_card">' +
+        '<a href="javascript:void(0)" class="js-cuotas-encargo-vermas cuotas-encargo-vermas">' +
           'Ver más detalles' +
         '</a>';
+
+      // Delegar el click de "Ver más detalles" al botón nativo de Tiendanube
+      // (#btn-installments es el que dispara el modal fullscreen de cuotas).
+      var vermas = newRow.querySelector('.js-cuotas-encargo-vermas');
+      if (vermas) {
+        vermas.addEventListener('click', function(e) {
+          e.preventDefault();
+          var nativo = document.getElementById('btn-installments') ||
+                       single.querySelector('.js-product-payments-container');
+          if (nativo) nativo.click();
+        });
+      }
 
       var shipping = single.querySelector('.js-product-form-free-shipping-message, .free-shipping-message');
       if (shipping && shipping.parentNode) {
