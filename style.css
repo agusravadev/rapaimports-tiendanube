@@ -890,3 +890,73 @@ a.btn.btn-encargar:hover {
 		width: 130px !important;
 	}
 }
+
+/* ============================================================
+   REDISEÑO BLOQUE COMPRA — PRODUCTO POR ENCARGO (2026-06-06)
+   Scope: body.producto-encargo #single-product
+   Spec:  docs/superpowers/specs/2026-06-06-rediseno-bloque-compra-encargo-design.md
+   ============================================================ */
+
+/* Bloque transferencia: fondo degradé, label adentro arriba, pill -25% suave */
+body.producto-encargo #single-product .payment-discount-price-product-container {
+	background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%) !important;
+	border: 1px solid #bbf7d0 !important;
+	border-radius: 12px !important;
+	padding: 8px 14px 12px !important;
+	margin-top: 14px !important;
+	margin-bottom: 12px !important;
+	overflow: visible !important;
+}
+
+/* Label "MEJOR PRECIO · TRANSFERENCIA" anclado al top adentro del recuadro */
+body.producto-encargo #single-product .payment-discount-price-product-container::before {
+	content: "Mejor precio · Transferencia" !important;
+	position: static !important;
+	display: block !important;
+	font-size: 10px !important;
+	font-weight: 800 !important;
+	letter-spacing: 0.14em !important;
+	text-transform: uppercase !important;
+	color: #15803d !important;
+	margin: 0 0 4px !important;
+	white-space: nowrap !important;
+	line-height: 1.2 !important;
+}
+
+/* Badge "-25%" como pill rounded rectangle (no esquina asimétrica) */
+body.producto-encargo #single-product .payment-discount-price-product-container::after {
+	content: "−25%" !important;
+	position: absolute !important;
+	top: 8px !important;
+	right: 14px !important;
+	background: #16a34a !important;
+	color: #ffffff !important;
+	font-size: 12px !important;
+	font-weight: 800 !important;
+	padding: 5px 10px !important;
+	border-radius: 6px !important;
+	letter-spacing: 0.02em !important;
+	line-height: 1.2 !important;
+}
+
+/* Precio de transferencia — más grande y peso fuerte */
+body.producto-encargo #single-product .js-payment-discount-price-product {
+	font-size: 24px !important;
+	font-weight: 800 !important;
+	color: #15803d !important;
+	line-height: 1.1 !important;
+	letter-spacing: -0.01em !important;
+	margin-right: 0 !important;
+}
+
+/* Ocultar el texto "con Transferencia" inline en encargo */
+body.producto-encargo #single-product .payment-discount-price-product-container > span:nth-child(2),
+body.producto-encargo #single-product .js-payment-discount-name-product {
+	display: none !important;
+}
+
+/* Ocultar la línea AHORRAS $xxx que inyecta initTransferSavingsProduct */
+body.producto-encargo #single-product .transfer-savings-label,
+body.producto-encargo #single-product .js-transfer-savings-label {
+	display: none !important;
+}
