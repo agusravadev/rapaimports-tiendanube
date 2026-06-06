@@ -3,6 +3,19 @@ body.producto-encargo #single-product [data-store="product-buy-button"], body.pr
 	display: none !important;
 }
 
+/* Ocultar el col-4 del selector de cantidad (el wrapper sigue en el DOM aunque
+   .js-quantity esté oculto) y expandir el col-8 a ancho completo para que
+   el botón Encargar ocupe todo el ancho de la fila. */
+body.producto-encargo #single-product .form-row.mb-2 > .col-4 {
+	display: none !important;
+}
+
+body.producto-encargo #single-product .form-row.mb-2 > .col-8 {
+	flex: 0 0 100% !important;
+	max-width: 100% !important;
+	padding-right: 0 !important;
+}
+
 body.producto-encargo #single-product .price-container::before {
 	content: "Producto por encargo";
 	display: inline-flex;
