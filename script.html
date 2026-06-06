@@ -352,10 +352,14 @@
 
     // 3c. Cuotas reactivas en página de detalle — reemplaza el widget de pagos
     //     original (que mostraba la cuota máxima, ej "24 cuotas de $X") por un
-    //     row custom "3 cuotas de $X" cuando la variante activa es por encargo.
-    //     Fuente: primera fila tr.js-payment-provider-installments-row del modal
-    //     #info-payment-method-credit_card con amount===3 (sin filtrar por interés).
-    //     Es la planilla por defecto que Tiendanube calcula para todo producto.
+    //     row custom "3 cuotas de $X · Ver más detalles" cuando la variante activa
+    //     es por encargo. Fuente: primera fila tr.js-payment-provider-installments-row
+    //     del modal #info-payment-method-credit_card con amount===3 (planilla por
+    //     defecto que Tiendanube calcula para todo producto). El link "Ver más
+    //     detalles" dispara el mismo modal nativo de Tiendanube vía data-toggle.
+    //     Anclaje: justo antes del bloque de envío gratis (o, si no existe, al
+    //     final del #single-product). NO se inserta dentro de .price-container
+    //     porque ese contenedor usa flexbox con order custom y rompe la posición.
     //     Si no encuentra ninguna fila de 3 cuotas, no inserta nada.
     function initCuotasEncargo() {
       var single = document.querySelector('#single-product');
@@ -386,22 +390,35 @@
 
       if (!precio3cuotas) return;
 
-      // Anclaje: después del bloque transferencia
-      var anchor = single.querySelector('.payment-discount-price-product-container');
-      if (!anchor || !anchor.parentNode) return;
-
+      // Anclaje preferido: el bloque de envío gratis. Insertamos ANTES.
+      // Fallback: el contenedor .price-container — insertamos como hermano
+      // posterior (fuera del flex container del precio).
       var newRow = document.createElement('div');
       newRow.className = 'js-cuotas-encargo-row cuotas-encargo-row';
       newRow.innerHTML =
         '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">' +
           '<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 10h20"/>' +
         '</svg>' +
-        '<span>3 cuotas de <strong>' + precio3cuotas + '</strong></span>';
+        '<span>3 cuotas de <strong>' + precio3cuotas + '</strong></span>' +
+        '<a href="#info-payment-method-credit_card" class="js-cuotas-encargo-vermas cuotas-encargo-vermas" ' +
+          'data-toggle="modal" data-target="#info-payment-method-credit_card">' +
+          'Ver más detalles' +
+        '</a>';
 
-      if (anchor.nextSibling) {
-        anchor.parentNode.insertBefore(newRow, anchor.nextSibling);
-      } else {
-        anchor.parentNode.appendChild(newRow);
+      var shipping = single.querySelector('.js-product-form-free-shipping-message, .free-shipping-message');
+      if (shipping && shipping.parentNode) {
+        shipping.parentNode.insertBefore(newRow, shipping);
+        return;
+      }
+
+      var priceContainer = single.querySelector('.price-container');
+      if (priceContainer && priceContainer.parentNode) {
+        if (priceContainer.nextSibling) {
+          priceContainer.parentNode.insertBefore(newRow, priceContainer.nextSibling);
+        } else {
+          priceContainer.parentNode.appendChild(newRow);
+        }
+        return;
       }
     }
 

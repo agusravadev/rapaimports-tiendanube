@@ -1028,6 +1028,29 @@ body.producto-encargo #single-product .cuotas-encargo-row strong {
 	font-weight: 700 !important;
 }
 
+/* El span con el texto "3 cuotas de $X" toma el espacio disponible para que
+   el link "Ver más detalles" quede pegado a la derecha del row. */
+body.producto-encargo #single-product .cuotas-encargo-row > span {
+	flex: 1 1 auto !important;
+}
+
+/* Link "Ver más detalles" — abre el modal nativo de Tiendanube vía data-toggle */
+body.producto-encargo #single-product .cuotas-encargo-vermas {
+	margin-left: auto !important;
+	color: #2563eb !important;
+	font-size: 12px !important;
+	font-weight: 600 !important;
+	text-decoration: none !important;
+	white-space: nowrap !important;
+	flex-shrink: 0 !important;
+	cursor: pointer !important;
+}
+
+body.producto-encargo #single-product .cuotas-encargo-vermas:hover {
+	color: #1d4ed8 !important;
+	text-decoration: underline !important;
+}
+
 /* Ocultar el widget de pagos original de Tiendanube en encargo
    (reemplazado por .cuotas-encargo-row inyectado por initCuotasEncargo) */
 body.producto-encargo #single-product .js-product-payments-container {
