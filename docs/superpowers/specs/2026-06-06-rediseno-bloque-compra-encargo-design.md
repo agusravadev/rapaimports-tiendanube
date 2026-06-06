@@ -98,30 +98,107 @@ Composición del bloque (top → bottom):
 </svg>
 ```
 
-## 6. Cuotas — display `3 cuotas de $X`
+## 6. Cuotas — display `3 cuotas sin interés de $X`
 
 ### Decisión tomada
-Mostrar **3 cuotas con el monto real de Tiendanube** (no dividir el precio por 3). Si Tiendanube no expone una opción de 3 cuotas para el producto, **ocultar el bloque cuotas** en encargo (no mostrar nada).
+Mostrar **3 cuotas sin interés** con el monto real expuesto por Tiendanube en el modal de medios de pago. Si Tiendanube **no ofrece una opción de 3 cuotas sin interés** para el producto, **ocultar el bloque cuotas** en encargo (no mostrar nada).
 
-### Fuente del dato (a confirmar en implementación)
-Investigar en este orden:
-1. `LS.product.payment_plans` → buscar plan con `installments === 3`.
-2. DOM del widget de pagos (`.js-product-payments-container` y descendientes) → parsear la oferta de 3 cuotas.
-3. Fallback: si nada disponible, ocultar el row.
+### Fuente del dato (confirmada)
+El modal de pagos `#info-payment-method-credit_card` (renderizado por Tiendanube en el DOM al cargar la página de producto) contiene una o más `<table class="js-payments-table">`, una por proveedor / promoción. Cada fila es:
 
-Esta decisión vive en una nueva función JS (`initCuotasEncargo()` o ampliación de `initEncargoDetalle()`) que:
-- Se ejecuta cuando `body.producto-encargo` se activa.
-- Reemplaza el contenido del bloque cuotas existente por el formato deseado.
-- Limpia el cambio cuando se desactiva `producto-encargo`.
+```html
+<tr class="js-payment-provider-installments-row" id="installment_Mercado_Pago_3">
+  <td>
+    <strong><span class="js-installment-amount">3</span></strong>
+    <span>cuotas</span> <span>de</span>
+    <strong><span class="js-installment-price">$36.947,89</span></strong>
+    sin interés    <!-- text node opcional, indica promoción sin interés -->
+  </td>
+  <td><small>CFT: 0,00% | TEA: 0,00%</small></td>
+  <td class="text-right">
+    <strong><span class="mr-1">Total </span></strong>
+    <span class="js-installment-total-price">$110.843,66</span>
+  </td>
+</tr>
+```
+
+### Algoritmo de selección (orden de preferencia)
+
+1. **Por marcador textual:** recorrer todos los `tr.js-payment-provider-installments-row`. Para cada uno:
+   - Leer `.js-installment-amount` → si `parseInt(text) === 3`, candidato.
+   - Verificar que el primer `<td>` del row contenga el texto literal `sin interés` (case-insensitive, trim). Si sí → es un row de 3 cuotas sin interés.
+   - Extraer el precio de `.js-installment-price` (texto crudo, ej. `$36.947,89`).
+   - **Tomar el primer match** y salir.
+
+2. **Fallback por comparación de total:** si el paso 1 no encuentra ningún row con texto `sin interés` pero sí encuentra rows con `amount === 3`, comparar el monto de `.js-installment-total-price` del row con el precio base del producto (`#single-product .js-price-display[data-product-price]`, normalizando ambos a centavos o número). Si total ≈ base (tolerancia ±$1) → también es sin interés.
+
+3. **Fallback final:** si ningún paso encuentra match → ocultar el row de cuotas (CSS `display:none` o no insertar el row).
+
+### Implementación
+
+Nueva función `initCuotasEncargo()` en `script.html` (sección 3c, después de `initEncargoDetalle`):
+
+```js
+function initCuotasEncargo() {
+  var single = document.querySelector('#single-product');
+  if (!single) return;
+  if (!document.body.classList.contains('producto-encargo')) {
+    // No es encargo → quitar row si existe
+    var existing = single.querySelector('.js-cuotas-encargo-row');
+    if (existing) existing.remove();
+    return;
+  }
+
+  // Idempotente: si ya existe, no duplicar
+  if (single.querySelector('.js-cuotas-encargo-row')) return;
+
+  // 1) Buscar 3 cuotas sin interés
+  var precio3sinInteres = null;
+  var rows = document.querySelectorAll('#info-payment-method-credit_card tr.js-payment-provider-installments-row');
+  for (var i = 0; i < rows.length; i++) {
+    var row = rows[i];
+    var amountEl = row.querySelector('.js-installment-amount');
+    if (!amountEl || parseInt(amountEl.textContent, 10) !== 3) continue;
+    var firstCell = row.querySelector('td');
+    var hasSinInteres = firstCell && /sin\s+inter[eé]s/i.test(firstCell.textContent);
+    if (hasSinInteres) {
+      var priceEl = row.querySelector('.js-installment-price');
+      if (priceEl) { precio3sinInteres = priceEl.textContent.trim(); break; }
+    }
+  }
+  // 2) (Opcional) fallback por comparación de total — omitir si paso 1 ya cubre
+
+  // 3) Si no hay match → no insertar nada
+  if (!precio3sinInteres) return;
+
+  // Insertar el row visual
+  var ctaBtn = single.querySelector('.btn-encargar-detalle');
+  if (!ctaBtn) return;
+  var row = document.createElement('div');
+  row.className = 'info-row js-cuotas-encargo-row';
+  row.innerHTML =
+    '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">' +
+      '<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 10h20"/>' +
+    '</svg>' +
+    '<span>3 cuotas sin interés de <strong>' + precio3sinInteres + '</strong></span>';
+  ctaBtn.parentNode.insertBefore(row, ctaBtn);
+}
+```
+
+- Se llama desde `initEncargoDetalle.aplicarEstado()` justo después del toggle de `body.producto-encargo`.
+- Se vuelve a llamar en el listener de cambio de variante (mismo timer `setTimeout(30)` que el resto).
+- Re-corre en el setTimeout 1500ms inicial (mismo patrón que `initEncargoDetalle`) por si el modal de pagos carga tardío.
 
 ### Visual del row
 - Mismo estilo `.info-row` actual (borde gris claro, border-radius 10px, padding 12px 14px, font-size 13px).
-- Ícono de tarjeta a la izquierda (SVG inline, sin librería).
-- Texto: `3 cuotas de <strong>$345.000,00</strong>` *(monto real)*.
-- Link a la derecha `Ver más detalles` que dispara el modal/dropdown nativo de cuotas de Tiendanube (mantener comportamiento existente del widget).
+- Ícono de tarjeta a la izquierda (SVG inline 18×18, sin librería).
+- Texto: `3 cuotas sin interés de <strong>$X.XXX,XX</strong>`.
+- Sin link "Ver más detalles" en MVP (el modal de pagos de Tiendanube sigue accesible vía el botón propio del tema si existe; no agregamos uno custom).
 
 ### Riesgo conocido
-La estructura interna del widget de cuotas de Tiendanube puede variar entre productos. La función debe ser defensiva: si no encuentra los selectores esperados, **no debe romper la página** — log silencioso y dejar el bloque cuotas original visible como fallback.
+- El modal `#info-payment-method-credit_card` puede no estar presente en el DOM si el tema cambia. La función debe verificar la existencia antes de iterar.
+- El texto `sin interés` es localización-dependiente. Si Tiendanube cambia el copy (ej. "sin recargo"), el detector falla. Para mitigar parcialmente, el regex acepta acentos opcionales (`inter[eé]s`).
+- En productos sin promociones sin interés a 3 cuotas, el bloque queda oculto (decisión explícita).
 
 ## 7. Envío gratis — sin cambios
 
@@ -177,7 +254,7 @@ Verificar en la tienda en vivo después de inyectar CSS + JS:
 - Scope estricto a `body.producto-encargo`.
 
 **Abierto / a resolver en implementación:**
-- Selector exacto del DOM o estructura de `LS.product.payment_plans` para extraer el monto de 3 cuotas. Se resuelve durante la fase de implementación con inspección real de la tienda.
+- Ninguno bloqueante. Fuente del dato de 3 cuotas sin interés ya confirmada (DOM del modal `#info-payment-method-credit_card`, filas `tr.js-payment-provider-installments-row` con `.js-installment-amount === 3` + texto `sin interés`).
 
 ## 12. Out of scope
 
