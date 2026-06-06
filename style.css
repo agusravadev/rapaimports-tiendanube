@@ -921,6 +921,7 @@ body.producto-encargo #single-product .payment-discount-price-product-container:
 	margin: 0 0 4px !important;
 	white-space: nowrap !important;
 	line-height: 1.2 !important;
+	flex-basis: 100% !important;
 }
 
 /* Badge "-25%" como pill rounded rectangle (no esquina asimétrica) */
