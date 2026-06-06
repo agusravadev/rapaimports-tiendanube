@@ -351,11 +351,12 @@
     }
 
     // 3c. Cuotas reactivas en página de detalle — reemplaza el widget de pagos
-    //     original por un row custom "3 cuotas sin interés de $X" cuando la
-    //     variante activa es por encargo. Fuente: modal #info-payment-method-credit_card
-    //     (filas tr.js-payment-provider-installments-row con amount===3 + texto
-    //     "sin interés" en la primera celda). Si no encuentra match, no inserta
-    //     nada y deja el row del widget original oculto vía CSS.
+    //     original (que mostraba la cuota máxima, ej "24 cuotas de $X") por un
+    //     row custom "3 cuotas de $X" cuando la variante activa es por encargo.
+    //     Fuente: primera fila tr.js-payment-provider-installments-row del modal
+    //     #info-payment-method-credit_card con amount===3 (sin filtrar por interés).
+    //     Es la planilla por defecto que Tiendanube calcula para todo producto.
+    //     Si no encuentra ninguna fila de 3 cuotas, no inserta nada.
     function initCuotasEncargo() {
       var single = document.querySelector('#single-product');
       if (!single) return;
@@ -367,8 +368,8 @@
       // Si no es encargo → no insertar nada (el row queda removido arriba)
       if (!document.body.classList.contains('producto-encargo')) return;
 
-      // Buscar 3 cuotas sin interés en el modal de pagos
-      var precio3sinInteres = null;
+      // Buscar la primera fila de 3 cuotas en el modal de pagos
+      var precio3cuotas = null;
       var rows = document.querySelectorAll(
         '#info-payment-method-credit_card tr.js-payment-provider-installments-row'
       );
@@ -377,40 +378,13 @@
         var amountEl = row.querySelector('.js-installment-amount');
         if (!amountEl) continue;
         if (parseInt(amountEl.textContent, 10) !== 3) continue;
-        var firstCell = row.querySelector('td');
-        if (!firstCell) continue;
-        if (!/sin\s+inter[eé]s/i.test(firstCell.textContent)) continue;
         var priceEl = row.querySelector('.js-installment-price');
         if (!priceEl) continue;
-        precio3sinInteres = priceEl.textContent.trim();
+        precio3cuotas = priceEl.textContent.trim();
         break;
       }
 
-      // Fallback opcional: comparar total con precio base si no hubo match textual
-      if (!precio3sinInteres) {
-        var baseEl = single.querySelector('.js-price-display[data-product-price]');
-        if (baseEl) {
-          var baseCents = parseInt(baseEl.getAttribute('data-product-price'), 10);
-          for (var j = 0; j < rows.length; j++) {
-            var r = rows[j];
-            var aEl = r.querySelector('.js-installment-amount');
-            if (!aEl || parseInt(aEl.textContent, 10) !== 3) continue;
-            var totalEl = r.querySelector('.js-installment-total-price');
-            if (!totalEl) continue;
-            var totalCents = parseInt(
-              totalEl.textContent.replace(/[^\d]/g, ''), 10
-            );
-            if (!baseCents || !totalCents) continue;
-            // Tolerancia: 100 centavos
-            if (Math.abs(totalCents - baseCents) <= 100) {
-              var pEl = r.querySelector('.js-installment-price');
-              if (pEl) { precio3sinInteres = pEl.textContent.trim(); break; }
-            }
-          }
-        }
-      }
-
-      if (!precio3sinInteres) return;
+      if (!precio3cuotas) return;
 
       // Anclaje: después del bloque transferencia
       var anchor = single.querySelector('.payment-discount-price-product-container');
@@ -422,9 +396,8 @@
         '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">' +
           '<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 10h20"/>' +
         '</svg>' +
-        '<span>3 cuotas sin interés de <strong>' + precio3sinInteres + '</strong></span>';
+        '<span>3 cuotas de <strong>' + precio3cuotas + '</strong></span>';
 
-      // Insertar después del anchor
       if (anchor.nextSibling) {
         anchor.parentNode.insertBefore(newRow, anchor.nextSibling);
       } else {
