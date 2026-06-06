@@ -3,17 +3,15 @@ body.producto-encargo #single-product [data-store="product-buy-button"], body.pr
 	display: none !important;
 }
 
-/* Ocultar el col-4 del selector de cantidad (el wrapper sigue en el DOM aunque
-   .js-quantity esté oculto) y expandir el col-8 a ancho completo para que
-   el botón Encargar ocupe todo el ancho de la fila. */
-body.producto-encargo #single-product .form-row.mb-2 > .col-4 {
+body.producto-encargo #single-product .form-row.mb-2>.col-4 {
 	display: none !important;
 }
 
-body.producto-encargo #single-product .form-row.mb-2 > .col-8 {
-	flex: 0 0 100% !important;
-	max-width: 100% !important;
-	padding-right: 0 !important;
+body.producto-encargo #single-product .form-row.mb-2>.col-8 {
+	flex: 0 0 70% !important;
+	max-width: 70% !important;
+	margin: 0 auto !important;
+	padding: 16px !important;
 }
 
 body.producto-encargo #single-product .price-container::before {
@@ -533,8 +531,7 @@ body.producto-encargo #single-product .price-container::after {
 	padding-right: 0 !important;
 }
 
-.item-product:not(.item-encargo) .js-item-buy-open,
-.item-product:not(.item-encargo) .js-addtocart:not(.js-addtocart-placeholder) {
+.item-product:not(.item-encargo) .js-item-buy-open, .item-product:not(.item-encargo) .js-addtocart:not(.js-addtocart-placeholder) {
 	display: block !important;
 	width: fit-content !important;
 	margin-left: auto !important;
@@ -555,7 +552,7 @@ a.btn.btn-encargar {
 	text-align: center !important;
 	padding: 8px 32px !important;
 	font-weight: 600 !important;
-	letter-spacing: 0.4px !important;
+	letter-spacing: .4px !important;
 	line-height: 1.4 !important;
 	display: block !important;
 	width: fit-content !important;
@@ -571,11 +568,11 @@ a.btn.btn-encargar:hover {
 	color: #fff !important;
 }
 
-@media (min-width: 768px) {
+@media (min-width:768px) {
 	.item-encargo a.btn.btn-encargar {
 		display: none !important;
 	}
-
+	
 	.item-encargo:hover a.btn.btn-encargar {
 		display: block !important;
 	}
@@ -598,13 +595,11 @@ a.btn.btn-encargar:hover {
 	margin-bottom: auto !important;
 }
 
-.js-swiper-adbar-prev,
-.js-swiper-adbar-next {
+.js-swiper-adbar-prev, .js-swiper-adbar-next {
 	display: none !important;
 }
 
-.js-swiper-adbar:not([data-marquee-init]) .swiper-slide:not(:first-child),
-.js-swiper-adbar:not([data-marquee-init]) .swiper-slide-duplicate {
+.js-swiper-adbar:not([data-marquee-init]) .swiper-slide:not(:first-child), .js-swiper-adbar:not([data-marquee-init]) .swiper-slide-duplicate {
 	display: none !important;
 }
 
@@ -619,12 +614,16 @@ a.btn.btn-encargar:hover {
 	display: inline-block !important;
 	white-space: nowrap !important;
 	animation: adbar-ticker 28s linear infinite !important;
-	will-change: transform !important;
 }
 
 @keyframes adbar-ticker {
-	0%   { transform: translateX(0); }
-	100% { transform: translateX(-50%); }
+	0% {
+		transform: translateX(0);
+	}
+	
+	100% {
+		transform: translateX(-50%);
+	}
 }
 
 .js-promotional-banner-button-2 {
@@ -632,19 +631,12 @@ a.btn.btn-encargar:hover {
 	margin-bottom: 0 !important;
 }
 
-/* ── Banners de categoría: en PC ocultar los clones del loop infinito ── */
-@media (min-width: 768px) {
+@media (min-width:768px) {
 	.banner-clone {
 		display: none !important;
 	}
 }
 
-/* ── Transición fade entre páginas (View Transitions API nativa) ── */
-@view-transition {
-	navigation: auto;
-}
-
-/* ── Título "Lo más buscado..." sobre los banners de categoría ── */
 .banners-carousel-title {
 	font-family: "Montserrat", Sans-serif;
 	color: #000;
@@ -656,47 +648,35 @@ a.btn.btn-encargar:hover {
 	text-align: center;
 }
 
-@media (min-width: 768px) {
+@media (min-width:768px) {
 	.banners-carousel-title {
 		margin: 48px 0 24px;
 	}
 }
 
-/* ── Banners de categoría: carrusel horizontal en mobile ── */
-@media (max-width: 767px) {
+@media (max-width:767px) {
 	.banners-carousel-wrapper {
 		position: relative !important;
 	}
-
-	.banners-carousel-wrapper > .row {
+	
+	.banners-carousel-wrapper>.row {
 		display: flex !important;
 		flex-wrap: nowrap !important;
 		overflow-x: auto !important;
 		overflow-y: hidden !important;
-		scroll-snap-type: x mandatory !important;
-		scroll-behavior: smooth !important;
-		-webkit-overflow-scrolling: touch !important;
-		scrollbar-width: none !important;
 		margin-left: 0 !important;
 		margin-right: 0 !important;
 		padding-bottom: 8px !important;
 	}
-
-	.banners-carousel-wrapper > .row::-webkit-scrollbar {
-		display: none !important;
-	}
-
-	.banners-carousel-wrapper > .row > .js-promotional-banner-container {
+	
+	.banners-carousel-wrapper>.row>.js-promotional-banner-container {
 		flex: 0 0 100% !important;
 		max-width: 100% !important;
-		scroll-snap-align: center !important;
-		scroll-snap-stop: always !important;
 		padding-left: 0 !important;
 		padding-right: 0 !important;
 		position: relative !important;
 	}
-
-	/* Flechas de navegación */
+	
 	.banners-carousel-arrow {
 		position: absolute !important;
 		top: 50% !important;
@@ -704,56 +684,47 @@ a.btn.btn-encargar:hover {
 		height: 42px !important;
 		border: none !important;
 		border-radius: 50% !important;
-		background-color: rgba(0, 0, 0, 0.55) !important;
+		background-color: rgba(0, 0, 0, .55) !important;
 		background-repeat: no-repeat !important;
 		background-position: center !important;
 		background-size: 22px 22px !important;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, .25) !important;
 		cursor: pointer !important;
 		z-index: 5 !important;
 		padding: 0 !important;
-		transition: background-color 0.2s ease, opacity 0.2s ease !important;
+		transition: background-color .2s ease, opacity .2s ease !important;
 		animation: banner-arrow-breathe 2.6s ease-in-out infinite !important;
 	}
-
-	.banners-carousel-arrow:hover,
-	.banners-carousel-arrow:active {
-		background-color: rgba(0, 0, 0, 0.75) !important;
+	
+	.banners-carousel-arrow:hover, .banners-carousel-arrow:active {
+		background-color: rgba(0, 0, 0, .75) !important;
 	}
-
+	
 	.banners-carousel-prev {
 		left: 12px !important;
-		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 6 9 12 15 18'/%3E%3C/svg%3E") !important;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23ffffff\' stroke-width=\'2.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'15 6 9 12 15 18\'/%3E%3C/svg%3E") !important;
 		animation-delay: 1.3s !important;
 	}
-
+	
 	.banners-carousel-next {
 		right: 12px !important;
-		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 6 15 12 9 18'/%3E%3C/svg%3E") !important;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23ffffff\' stroke-width=\'2.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'9 6 15 12 9 18\'/%3E%3C/svg%3E") !important;
 	}
 }
 
 @keyframes banner-arrow-breathe {
 	0%, 100% {
 		transform: translateY(-50%) scale(1);
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-		opacity: 0.9;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, .25);
+		opacity: .9;
 	}
+	
 	50% {
 		transform: translateY(-50%) scale(1.08);
-		box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+		box-shadow: 0 4px 14px rgba(0, 0, 0, .35);
 		opacity: 1;
 	}
 }
-
-@media (prefers-reduced-motion: reduce) {
-	.banners-carousel-arrow {
-		animation: none !important;
-		transform: translateY(-50%) !important;
-	}
-}
-
-/* ── Precio con transferencia bancaria — cards del listado ── */
 
 .item-product .payment-discount-price-product-container {
 	position: relative !important;
@@ -773,12 +744,10 @@ a.btn.btn-encargar:hover {
 	box-sizing: border-box !important;
 }
 
-/* Ocultar el "con" literal — clase asignada por JS */
 .item-product .transfer-con-hidden {
 	display: none !important;
 }
 
-/* Badge — notch sólido pequeño desde adentro del borde superior */
 .item-product .transfer-badge {
 	position: absolute !important;
 	top: 0 !important;
@@ -794,26 +763,23 @@ a.btn.btn-encargar:hover {
 	letter-spacing: .3px !important;
 }
 
-/* Precio — número grande, centrado */
 .item-product .js-payment-discount-price-product {
 	order: 1 !important;
 	display: block !important;
 	font-size: 24px !important;
 	font-weight: 800 !important;
 	color: #15803d !important;
-	letter-spacing: -0.8px !important;
+	letter-spacing: -.8px !important;
 	line-height: 1 !important;
 	text-align: center !important;
 }
 
-/* Fila del método — abajo del precio */
 .item-product .transfer-top-row {
 	order: 2 !important;
 	width: 100% !important;
 	text-align: center !important;
 }
 
-/* Texto del método de pago */
 .item-product .js-payment-discount-name-product {
 	display: block !important;
 	text-align: center !important;
@@ -823,43 +789,38 @@ a.btn.btn-encargar:hover {
 	white-space: nowrap !important;
 }
 
-@media (max-width: 480px) {
+@media (max-width:480px) {
 	.item-product .payment-discount-price-product-container {
 		padding: 24px 12px 10px !important;
 		gap: 3px !important;
 		border-radius: 10px !important;
 	}
-
+	
 	.item-product .transfer-badge {
 		font-size: 9px !important;
 		padding: 3px 12px !important;
 		border-radius: 0 0 8px 8px !important;
 	}
-
+	
 	.item-product .js-payment-discount-price-product {
 		font-size: 20px !important;
-		letter-spacing: -0.5px !important;
+		letter-spacing: -.5px !important;
 	}
-
+	
 	.item-product .js-payment-discount-name-product {
 		font-size: 10px !important;
 	}
 }
 
-/* =============================================
-   SECCIÓN DE MARCAS — FONDO NEGRO + RAF MARQUEE
-   ============================================= */
 .section-brands-home {
 	background-color: #000 !important;
 	overflow: hidden !important;
-	padding: 20 0 !important;
-    margin-top: -24px !important;
+	margin-top: -24px !important;
 }
 
 .section-brands-home {
 	position: relative !important;
 }
-
 
 .section-brands-home::after {
 	display: none !important;
@@ -879,7 +840,6 @@ a.btn.btn-encargar:hover {
 	align-items: center;
 	width: -webkit-max-content;
 	width: max-content;
-	will-change: transform;
 }
 
 .brands-marquee-item {
@@ -891,26 +851,19 @@ a.btn.btn-encargar:hover {
 	width: 160px !important;
 	height: auto !important;
 	display: block !important;
-	-webkit-user-drag: none;
 	pointer-events: none;
 }
 
-@media (max-width: 768px) {
+@media (max-width:768px) {
 	.brands-marquee-item {
 		margin: 0 8px !important;
 	}
+	
 	.brands-marquee-item .brand-image {
 		width: 130px !important;
 	}
 }
 
-/* ============================================================
-   REDISEÑO BLOQUE COMPRA — PRODUCTO POR ENCARGO (2026-06-06)
-   Scope: body.producto-encargo #single-product
-   Spec:  docs/superpowers/specs/2026-06-06-rediseno-bloque-compra-encargo-design.md
-   ============================================================ */
-
-/* Bloque transferencia: fondo degradé, label adentro arriba, pill -25% suave */
 body.producto-encargo #single-product .payment-discount-price-product-container {
 	background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%) !important;
 	border: 1px solid #bbf7d0 !important;
@@ -921,14 +874,13 @@ body.producto-encargo #single-product .payment-discount-price-product-container 
 	overflow: visible !important;
 }
 
-/* Label "MEJOR PRECIO · TRANSFERENCIA" anclado al top adentro del recuadro */
 body.producto-encargo #single-product .payment-discount-price-product-container::before {
 	content: "Mejor precio · Transferencia" !important;
 	position: static !important;
 	display: block !important;
 	font-size: 10px !important;
 	font-weight: 800 !important;
-	letter-spacing: 0.14em !important;
+	letter-spacing: .14em !important;
 	text-transform: uppercase !important;
 	color: #15803d !important;
 	margin: 0 0 4px !important;
@@ -937,48 +889,38 @@ body.producto-encargo #single-product .payment-discount-price-product-container:
 	flex-basis: 100% !important;
 }
 
-/* Badge "-25%" como pill rounded rectangle (no esquina asimétrica) */
 body.producto-encargo #single-product .payment-discount-price-product-container::after {
 	content: "−25%" !important;
 	position: absolute !important;
 	top: 8px !important;
 	right: 14px !important;
 	background: #16a34a !important;
-	color: #ffffff !important;
+	color: #fff !important;
 	font-size: 12px !important;
 	font-weight: 800 !important;
 	padding: 5px 10px !important;
 	border-radius: 6px !important;
-	letter-spacing: 0.02em !important;
+	letter-spacing: .02em !important;
 	line-height: 1.2 !important;
 }
 
-/* Precio de transferencia — más grande y peso fuerte */
 body.producto-encargo #single-product .js-payment-discount-price-product {
 	font-size: 24px !important;
 	font-weight: 800 !important;
 	color: #15803d !important;
 	line-height: 1.1 !important;
-	letter-spacing: -0.01em !important;
+	letter-spacing: -.01em !important;
 	margin-right: 0 !important;
 }
 
-/* Ocultar el texto "con Transferencia" inline en encargo */
-body.producto-encargo #single-product .payment-discount-price-product-container > span:nth-child(2),
-body.producto-encargo #single-product .js-payment-discount-name-product {
+body.producto-encargo #single-product .payment-discount-price-product-container>span:nth-child(2), body.producto-encargo #single-product .js-payment-discount-name-product {
 	display: none !important;
 }
 
-/* Ocultar la línea AHORRAS $xxx que inyecta initTransferSavingsProduct */
-body.producto-encargo #single-product .transfer-savings-label,
-body.producto-encargo #single-product .js-transfer-savings-label {
+body.producto-encargo #single-product .transfer-savings-label, body.producto-encargo #single-product .js-transfer-savings-label {
 	display: none !important;
 }
 
-/* CTA pill naranja con sombra suave (reemplaza btn-primary rectangular en encargo).
-   Selector reforzado a.btn.btn-encargar.btn-encargar-detalle para ganarle por
-   especificidad y orden de cascada a la regla global a.btn.btn-encargar de la
-   línea 538 (que aplica al botón del listado y al de detalle también). */
 body.producto-encargo #single-product a.btn.btn-encargar.btn-encargar-detalle {
 	display: flex !important;
 	align-items: center !important;
@@ -988,22 +930,20 @@ body.producto-encargo #single-product a.btn.btn-encargar.btn-encargar-detalle {
 	max-width: 100% !important;
 	min-width: 0 !important;
 	box-sizing: border-box !important;
-	/* Anula flex-child sizing que puede achicarlo si el parent es flex */
 	flex: 0 0 100% !important;
 	align-self: stretch !important;
 	float: none !important;
 	background: #ea580c !important;
-	color: #ffffff !important;
+	color: #fff !important;
 	font-weight: 700 !important;
 	font-size: 15px !important;
 	padding: 16px !important;
 	border: 0 !important;
 	border-radius: 999px !important;
-	letter-spacing: 0.06em !important;
-	box-shadow: 0 8px 24px rgba(234, 88, 12, 0.28) !important;
+	letter-spacing: .06em !important;
+	box-shadow: 0 8px 24px rgba(234, 88, 12, .28) !important;
 	text-transform: none !important;
 	text-decoration: none !important;
-	/* Anula los márgenes/posición de a.btn.btn-encargar (línea 538) */
 	margin-left: 0 !important;
 	margin-right: 0 !important;
 	margin-top: 14px !important;
@@ -1012,7 +952,7 @@ body.producto-encargo #single-product a.btn.btn-encargar.btn-encargar-detalle {
 
 body.producto-encargo #single-product a.btn.btn-encargar.btn-encargar-detalle:hover {
 	background: #c2410c !important;
-	box-shadow: 0 10px 28px rgba(234, 88, 12, 0.35) !important;
+	box-shadow: 0 10px 28px rgba(234, 88, 12, .35) !important;
 }
 
 body.producto-encargo #single-product .btn-encargar-detalle svg {
@@ -1021,7 +961,6 @@ body.producto-encargo #single-product .btn-encargar-detalle svg {
 	flex-shrink: 0 !important;
 }
 
-/* Row custom "3 cuotas sin interés" — estilo info-row coherente con el resto */
 body.producto-encargo #single-product .cuotas-encargo-row {
 	display: flex !important;
 	gap: 10px !important;
@@ -1047,13 +986,10 @@ body.producto-encargo #single-product .cuotas-encargo-row strong {
 	font-weight: 700 !important;
 }
 
-/* El span con el texto "3 cuotas de $X" toma el espacio disponible para que
-   el link "Ver más detalles" quede pegado a la derecha del row. */
-body.producto-encargo #single-product .cuotas-encargo-row > span {
+body.producto-encargo #single-product .cuotas-encargo-row>span {
 	flex: 1 1 auto !important;
 }
 
-/* Link "Ver más detalles" — abre el modal nativo de Tiendanube vía data-toggle */
 body.producto-encargo #single-product .cuotas-encargo-vermas {
 	margin-left: auto !important;
 	color: #2563eb !important;
@@ -1070,8 +1006,6 @@ body.producto-encargo #single-product .cuotas-encargo-vermas:hover {
 	text-decoration: underline !important;
 }
 
-/* Ocultar el widget de pagos original de Tiendanube en encargo
-   (reemplazado por .cuotas-encargo-row inyectado por initCuotasEncargo) */
 body.producto-encargo #single-product .js-product-payments-container {
 	display: none !important;
 }
