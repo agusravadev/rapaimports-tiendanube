@@ -962,13 +962,17 @@ body.producto-encargo #single-product .js-transfer-savings-label {
 	display: none !important;
 }
 
-/* CTA pill naranja con sombra suave (reemplaza btn-primary rectangular en encargo) */
-body.producto-encargo #single-product .btn-encargar-detalle {
+/* CTA pill naranja con sombra suave (reemplaza btn-primary rectangular en encargo).
+   Selector reforzado a.btn.btn-encargar.btn-encargar-detalle para ganarle por
+   especificidad y orden de cascada a la regla global a.btn.btn-encargar de la
+   línea 538 (que aplica al botón del listado y al de detalle también). */
+body.producto-encargo #single-product a.btn.btn-encargar.btn-encargar-detalle {
 	display: flex !important;
 	align-items: center !important;
 	justify-content: center !important;
 	gap: 10px !important;
 	width: 100% !important;
+	max-width: none !important;
 	background: #ea580c !important;
 	color: #ffffff !important;
 	font-weight: 700 !important;
@@ -980,9 +984,14 @@ body.producto-encargo #single-product .btn-encargar-detalle {
 	box-shadow: 0 8px 24px rgba(234, 88, 12, 0.28) !important;
 	text-transform: none !important;
 	text-decoration: none !important;
+	/* Anula los márgenes/posición de a.btn.btn-encargar (línea 538) */
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+	margin-top: 14px !important;
+	margin-bottom: 0 !important;
 }
 
-body.producto-encargo #single-product .btn-encargar-detalle:hover {
+body.producto-encargo #single-product a.btn.btn-encargar.btn-encargar-detalle:hover {
 	background: #c2410c !important;
 	box-shadow: 0 10px 28px rgba(234, 88, 12, 0.35) !important;
 }
