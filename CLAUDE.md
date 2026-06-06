@@ -67,6 +67,7 @@ El sistema usa `stock = 9999` como señal de que esa variante es por encargo (si
 **CSS (visualización, `style.css`):**
 - `body.producto-encargo` en la página de producto oculta botones de compra, cantidad y descuento (`display: none !important`), y muestra el badge naranja "Producto por encargo" + texto "15 a 20 días hábiles" vía `::before`/`::after` en `.price-container`.
 - `.item-encargo` en las cards del listado muestra un ícono de avión naranja (badge circular) en la esquina superior derecha de la imagen.
+- En la página de producto, cuando `body.producto-encargo` está activo el bloque transferencia se rediseña (light gradient, label `MEJOR PRECIO · TRANSFERENCIA` adentro arriba, pill `−25%` rounded rectangle, sin texto "AHORRAS" ni "con Transferencia"). El widget original de cuotas (`.js-product-payments-container`) se oculta y se reemplaza por un row custom `.cuotas-encargo-row` que la función `initCuotasEncargo()` inyecta con el monto real de "3 cuotas sin interés" leído del modal `#info-payment-method-credit_card`. El CTA `.btn-encargar-detalle` se estiliza como pill naranja con ícono SVG de WhatsApp y texto "Encargar ahora".
 
 ### Botones de WhatsApp
 
