@@ -92,7 +92,7 @@
         if (hit) return true;
       }
     } catch (_) {}
-    var bc = document.querySelector('.breadcrumb, nav.breadcrumb, .js-breadcrumb');
+    var bc = document.querySelector('.breadcrumbs, .breadcrumb, nav.breadcrumb, .js-breadcrumb');
     if (bc) {
       var texto = (bc.textContent || '').toLowerCase();
       if (/\bvolantes\b/.test(texto)) return true;
