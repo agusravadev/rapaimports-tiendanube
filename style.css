@@ -1154,7 +1154,7 @@ body.es-volante #single-product .btn.btn-cotizar-volante {
 	align-items: center !important;
 	justify-content: center !important;
 	gap: 10px !important;
-	width: 100% !important;
+	width: fit-content !important;
 	max-width: 100% !important;
 	min-width: 0 !important;
 	box-sizing: border-box !important;
@@ -1169,7 +1169,7 @@ body.es-volante #single-product .btn.btn-cotizar-volante {
 	box-shadow: 0 8px 24px rgba(0, 0, 0, .22) !important;
 	text-transform: none !important;
 	text-decoration: none !important;
-	margin: 14px 0 0 0 !important;
+	margin: 14px auto 0 auto !important;
 	cursor: pointer !important;
 	font-family: inherit !important;
 }
@@ -1183,4 +1183,34 @@ body.es-volante #single-product .btn.btn-cotizar-volante.is-cotizado {
 	opacity: 0.6 !important;
 	pointer-events: none !important;
 	box-shadow: none !important;
+}
+
+/* En volantes, el boton Encargar deja de ocupar el 100% y se centra
+   con padding 16px (override sobre las reglas de body.producto-encargo). */
+body.es-volante #single-product a.btn.btn-encargar.btn-encargar-detalle {
+	width: fit-content !important;
+	max-width: 100% !important;
+	flex: 0 0 auto !important;
+	align-self: center !important;
+	padding: 16px !important;
+	margin: 14px auto 0 auto !important;
+}
+
+/* Mensaje condicional debajo de un eje (ej: "Consultar colores por
+   WhatsApp" cuando se selecciona Fibra Forjada). Oculto por default. */
+body.es-volante #single-product .volante-personalizacion__mensaje {
+	display: none;
+	margin: 10px 0 0 0;
+	padding: 10px 12px;
+	background: #fff7ed;
+	border-left: 3px solid #ea580c;
+	border-radius: 6px;
+	font-size: 13px;
+	color: #7c2d12;
+	font-weight: 500;
+	line-height: 1.35;
+}
+
+body.es-volante #single-product .volante-personalizacion__mensaje.is-visible {
+	display: block;
 }

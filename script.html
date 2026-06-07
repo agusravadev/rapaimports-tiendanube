@@ -1,4 +1,3 @@
-
 <script>
   // Transición fade entre páginas:
   //  - View Transitions nativa para atrás/adelante.
@@ -584,17 +583,17 @@
         id: 'grip',
         label: 'Grip',
         opciones: [
-          { id: 'micro',     label: 'Cuero microperforado', extra: 0,    porDefecto: true, img: '' },
-          { id: 'liso',      label: 'Cuero liso',           extra: 0,                       img: '' },
-          { id: 'alcantara', label: 'Alcantara',            extra: 60.5,                    img: '' }
+          { id: 'micro',     label: 'Cuero microperforado', extra: 0,    porDefecto: true, img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/77f1b90a-ad6c-457d-9dc0-477eb668bdc2-c97f90733ab3647b7e17808157158092-1024-1024.webp' },
+          { id: 'liso',      label: 'Cuero liso',           extra: 0,                       img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/5b0f43eb-512d-4346-85c2-0f4f355043dd-8e5c7aeb377a035d9617808157784415-1024-1024.webp' },
+          { id: 'alcantara', label: 'Alcantara',            extra: 60.5,                    img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/3fdaa0c7-431c-4dc0-b831-ac704257bdaf-52f24460f8d96e0b4f17808159033367-1024-1024.webp' }
         ]
       },
       {
         id: 'display',
         label: 'Display LED',
         opciones: [
-          { id: 'sin', label: 'Sin display LED', extra: 0,   porDefecto: true, img: '' },
-          { id: 'con', label: 'Con display LED', extra: 145,                   img: '' }
+          { id: 'sin', label: 'Sin display LED', extra: 0,   porDefecto: true, img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/630954ee-5c2b-4e3c-9cb2-6b3c838f7ec5-45274f028344b7e02d17808166387362-1024-1024.png' },
+          { id: 'con', label: 'Con display LED', extra: 145,                   img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/fec54b15-161b-42b0-a851-39978be0e9ad-c60442f3478e96137517808164553811-1024-1024.png' }
         ]
       },
       {
@@ -610,8 +609,9 @@
         id: 'carbono',
         label: 'Fibra de carbono forjada',
         opciones: [
-          { id: 'negra',   label: 'Negra brillante', extra: 0,    porDefecto: true, img: '' },
-          { id: 'forjada', label: 'Forjada',         extra: 60.5,                   img: '' }
+          { id: 'negra',   label: 'Negra brillante', extra: 0,    porDefecto: true, img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/cb17049c-e2e0-4f2d-891d-bf69ccb4236b-63028c08e9efdebcdf17808168894442.png' },
+          { id: 'forjada', label: 'Forjada',         extra: 60.5,                   img: '',
+            mensaje: 'Consultar colores por WhatsApp' }
         ]
       }
     ];
@@ -664,6 +664,7 @@
           card.setAttribute('data-opcion', op.id);
           card.setAttribute('data-extra', String(op.extra));
           card.setAttribute('data-label', op.label);
+          card.setAttribute('data-mensaje', op.mensaje || '');
           card.setAttribute('aria-label', eje.label + ': ' + op.label);
 
           var img = document.createElement('div');
@@ -682,6 +683,18 @@
         });
 
         ejeWrap.appendChild(opciones);
+
+        // Mensaje condicional debajo del eje (ej: "Consultar colores por
+        // WhatsApp" cuando se selecciona Forjada). Se renderiza siempre y
+        // se muestra/oculta vía clase .is-visible según la opción activa.
+        var mensajeEl = document.createElement('p');
+        mensajeEl.className = 'volante-personalizacion__mensaje';
+        if (defaultOpcion.mensaje) {
+          mensajeEl.textContent = defaultOpcion.mensaje;
+          mensajeEl.classList.add('is-visible');
+        }
+        ejeWrap.appendChild(mensajeEl);
+
         section.appendChild(ejeWrap);
       });
 
@@ -710,6 +723,17 @@
           var ejeName = ejeWrap.getAttribute('data-eje-label') || '';
           var opcionName = card.getAttribute('data-label') || '';
           ejeLabelEl.textContent = ejeName + ': ' + opcionName;
+        }
+        var mensajeEl = ejeWrap.querySelector('.volante-personalizacion__mensaje');
+        if (mensajeEl) {
+          var mensaje = card.getAttribute('data-mensaje') || '';
+          if (mensaje) {
+            mensajeEl.textContent = mensaje;
+            mensajeEl.classList.add('is-visible');
+          } else {
+            mensajeEl.textContent = '';
+            mensajeEl.classList.remove('is-visible');
+          }
         }
         section.dispatchEvent(new CustomEvent('volante:cambio', { bubbles: false }));
       });
