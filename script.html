@@ -495,6 +495,54 @@
 
     // === Volantes: personalización con cálculo de precio ===
 
+    // Lee el precio principal del detalle (en ARS según Tiendanube, pero
+    // numéricamente representa USD por convención de carga del admin).
+    function leerPrecioBaseVolante() {
+      var single = document.querySelector('#single-product');
+      if (!single) return null;
+      var span = single.querySelector('.js-price-display[data-product-price]');
+      if (!span) return null;
+      var raw = parseInt(span.getAttribute('data-product-price'), 10);
+      if (!raw) return null;
+      // data-product-price viene en centavos (ej: 32000 = $320)
+      return raw / 100;
+    }
+
+    function formatearMontoVolante(n) {
+      // Decimal: sin decimales si es entero, un decimal si tiene fracción.
+      var entero = Math.floor(n);
+      var fraccion = Math.round((n - entero) * 10) / 10;
+      var opts = (fraccion === 0)
+        ? { maximumFractionDigits: 0, minimumFractionDigits: 0 }
+        : { maximumFractionDigits: 1, minimumFractionDigits: 1 };
+      return n.toLocaleString('es-AR', opts);
+    }
+
+    function calcularTotalVolante(section) {
+      var base = leerPrecioBaseVolante();
+      if (base == null) return null;
+      var extras = 0;
+      section.querySelectorAll('.volante-card.is-active').forEach(function(c) {
+        extras += parseFloat(c.getAttribute('data-extra') || '0') || 0;
+      });
+      return base + extras;
+    }
+
+    function escribirPrecioMostrado(monto) {
+      var single = document.querySelector('#single-product');
+      if (!single) return;
+      var span = single.querySelector('.js-price-display[data-product-price]');
+      if (!span) return;
+      if (monto == null) {
+        // Restaurar: re-renderizar desde data-product-price (precio base).
+        var raw = parseInt(span.getAttribute('data-product-price'), 10);
+        if (!raw) return;
+        span.textContent = '$' + formatearMontoVolante(raw / 100);
+        return;
+      }
+      span.textContent = '$' + formatearMontoVolante(monto);
+    }
+
     var PERSONALIZACIONES_VOLANTE = [
       {
         id: 'grip',
@@ -613,6 +661,28 @@
         });
         card.classList.add('is-active');
         section.dispatchEvent(new CustomEvent('volante:cambio', { bubbles: false }));
+      });
+
+      // Click en Cotizar: calcula y muestra el total. Pasa a estado "cotizado".
+      btnCotizar.addEventListener('click', function() {
+        if (btnCotizar.classList.contains('is-cotizado')) return;
+        var total = calcularTotalVolante(section);
+        if (total == null) {
+          console.warn('[volantes] no se pudo leer el precio base, abortar cotización');
+          return;
+        }
+        escribirPrecioMostrado(total);
+        btnCotizar.classList.add('is-cotizado');
+        btnCotizar.textContent = 'Cotizado ✓';
+      });
+
+      // Cambio en cualquier card: si ya estaba cotizado, vuelve al precio base
+      // y re-habilita Cotizar.
+      section.addEventListener('volante:cambio', function() {
+        if (!btnCotizar.classList.contains('is-cotizado')) return;
+        escribirPrecioMostrado(null); // restaura base
+        btnCotizar.classList.remove('is-cotizado');
+        btnCotizar.textContent = 'Cotizar volante';
       });
 
       if (insertarDespuesDe && insertarDespuesDe.parentNode) {

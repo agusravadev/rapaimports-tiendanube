@@ -1137,3 +1137,41 @@ body.es-volante #single-product .volante-card.is-active .volante-card__label {
 		font-size: 12px;
 	}
 }
+
+/* === Volantes: botón Cotizar (misma pill que .btn-encargar-detalle, negra) === */
+
+body.es-volante #single-product .btn.btn-cotizar-volante {
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	gap: 10px !important;
+	width: 100% !important;
+	max-width: 100% !important;
+	min-width: 0 !important;
+	box-sizing: border-box !important;
+	background: #111 !important;
+	color: #fff !important;
+	font-weight: 700 !important;
+	font-size: 15px !important;
+	padding: 16px !important;
+	border: 0 !important;
+	border-radius: 999px !important;
+	letter-spacing: .06em !important;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, .22) !important;
+	text-transform: none !important;
+	text-decoration: none !important;
+	margin: 14px 0 0 0 !important;
+	cursor: pointer !important;
+	font-family: inherit !important;
+}
+
+body.es-volante #single-product .btn.btn-cotizar-volante:hover {
+	background: #000 !important;
+	box-shadow: 0 10px 28px rgba(0, 0, 0, .28) !important;
+}
+
+body.es-volante #single-product .btn.btn-cotizar-volante.is-cotizado {
+	opacity: 0.6 !important;
+	pointer-events: none !important;
+	box-shadow: none !important;
+}
