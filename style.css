@@ -1025,16 +1025,18 @@ body.producto-encargo #single-product .btn-encargar-detalle svg {
 
 /* === Volantes (categoría) === */
 
-/* Etiqueta " USD" al lado del precio (principal y comparativo).
-   Se usa pseudoelemento para no ensuciar el DOM ni perderlo en
-   re-renderizados de Tiendanube. */
-body.es-volante #single-product .price-container > span:nth-child(1)::after,
-body.es-volante #single-product .price-container > span:nth-child(2)::after {
-	content: " USD";
+/* Etiqueta " USD" al lado del precio principal.
+   Se apunta solo al span del precio principal (con data-product-price);
+   el span de compare price queda vacío en muchos productos y agregar
+   ::after ahí duplicaría la etiqueta. */
+body.es-volante #single-product .js-price-display[data-product-price]::after {
+	content: "USD";
+	font-family: "Montserrat", sans-serif;
 	font-weight: 600;
-	font-size: .7em;
+	font-size: 24px;
 	color: inherit;
 	letter-spacing: .03em;
+	margin-left: 6px;
 }
 
 /* Ocultar widgets de precio que no aplican a volantes en USD */

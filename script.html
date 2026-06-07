@@ -643,10 +643,13 @@
         var ejeWrap = document.createElement('div');
         ejeWrap.className = 'volante-personalizacion__eje';
         ejeWrap.setAttribute('data-eje', eje.id);
+        ejeWrap.setAttribute('data-eje-label', eje.label.toUpperCase());
+
+        var defaultOpcion = eje.opciones.find(function(o) { return o.porDefecto; }) || eje.opciones[0];
 
         var ejeLabel = document.createElement('h4');
         ejeLabel.className = 'volante-personalizacion__eje-label';
-        ejeLabel.textContent = eje.label;
+        ejeLabel.textContent = eje.label.toUpperCase() + ': ' + defaultOpcion.label;
         ejeWrap.appendChild(ejeLabel);
 
         var opciones = document.createElement('div');
@@ -659,15 +662,11 @@
           card.setAttribute('data-opcion', op.id);
           card.setAttribute('data-extra', String(op.extra));
           card.setAttribute('data-label', op.label);
+          card.setAttribute('aria-label', eje.label + ': ' + op.label);
 
           var img = document.createElement('div');
           img.className = 'volante-card__img';
           card.appendChild(img);
-
-          var labelEl = document.createElement('span');
-          labelEl.className = 'volante-card__label';
-          labelEl.textContent = op.label;
-          card.appendChild(labelEl);
 
           opciones.appendChild(card);
         });
@@ -683,6 +682,8 @@
       section.appendChild(btnCotizar);
 
       // Delegación de click en cards: una opción activa por eje.
+      // Al cambiar la opción, actualiza el header del eje con el formato
+      // "EJE: Opción elegida".
       section.addEventListener('click', function(ev) {
         var card = ev.target.closest('.volante-card');
         if (!card) return;
@@ -694,6 +695,12 @@
           c.classList.remove('is-active');
         });
         card.classList.add('is-active');
+        var ejeLabelEl = ejeWrap.querySelector('.volante-personalizacion__eje-label');
+        if (ejeLabelEl) {
+          var ejeName = ejeWrap.getAttribute('data-eje-label') || '';
+          var opcionName = card.getAttribute('data-label') || '';
+          ejeLabelEl.textContent = ejeName + ': ' + opcionName;
+        }
         section.dispatchEvent(new CustomEvent('volante:cambio', { bubbles: false }));
       });
 
@@ -723,6 +730,14 @@
         insertarDespuesDe.parentNode.insertBefore(section, insertarDespuesDe.nextSibling);
       } else if (insertarAntesDe && insertarAntesDe.parentNode) {
         insertarAntesDe.parentNode.insertBefore(section, insertarAntesDe);
+      }
+
+      // Si el botón "Encargar ahora" ya fue inyectado por initEncargoDetalle
+      // antes de que existiera el bloque de personalización, lo movemos para
+      // que quede inmediatamente debajo de "Cotizar volante".
+      var encargarExistente = single.querySelector('.btn-encargar-detalle');
+      if (encargarExistente && btnCotizar.parentNode) {
+        btnCotizar.parentNode.insertBefore(encargarExistente, btnCotizar.nextSibling);
       }
     }
 
