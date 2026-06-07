@@ -577,39 +577,41 @@
       span.textContent = '$' + formatearMontoVolante(monto);
     }
 
+    // Para asignar imagen a una opción, completá su campo `img` con la URL.
+    // Si `img` queda como '', se muestra el placeholder gris a rayas.
     var PERSONALIZACIONES_VOLANTE = [
       {
         id: 'grip',
         label: 'Grip',
         opciones: [
-          { id: 'micro',     label: 'Cuero microperforado', extra: 0,    porDefecto: true },
-          { id: 'liso',      label: 'Cuero liso',           extra: 0 },
-          { id: 'alcantara', label: 'Alcantara',            extra: 60.5 }
+          { id: 'micro',     label: 'Cuero microperforado', extra: 0,    porDefecto: true, img: '' },
+          { id: 'liso',      label: 'Cuero liso',           extra: 0,                       img: '' },
+          { id: 'alcantara', label: 'Alcantara',            extra: 60.5,                    img: '' }
         ]
       },
       {
         id: 'display',
         label: 'Display LED',
         opciones: [
-          { id: 'sin', label: 'Sin display LED', extra: 0,   porDefecto: true },
-          { id: 'con', label: 'Con display LED', extra: 145 }
+          { id: 'sin', label: 'Sin display LED', extra: 0,   porDefecto: true, img: '' },
+          { id: 'con', label: 'Con display LED', extra: 145,                   img: '' }
         ]
       },
       {
         id: 'airbag',
         label: 'Cobertor de air-bag',
         opciones: [
-          { id: 'original',  label: 'Original',    extra: 0,    porDefecto: true },
-          { id: 'liso',      label: 'Cuero liso',  extra: 60.5 },
-          { id: 'alcantara', label: 'Alcantara',   extra: 60.5 }
+          { id: 'original',  label: 'Original',    extra: 0,    porDefecto: true, img: '' },
+          { id: 'liso',      label: 'Cuero liso',  extra: 60.5,                   img: '' },
+          { id: 'alcantara', label: 'Alcantara',   extra: 60.5,                   img: '' }
         ]
       },
       {
         id: 'carbono',
         label: 'Fibra de carbono forjada',
         opciones: [
-          { id: 'negra',   label: 'Negra brillante', extra: 0,    porDefecto: true },
-          { id: 'forjada', label: 'Forjada',         extra: 60.5 }
+          { id: 'negra',   label: 'Negra brillante', extra: 0,    porDefecto: true, img: '' },
+          { id: 'forjada', label: 'Forjada',         extra: 60.5,                   img: '' }
         ]
       }
     ];
@@ -666,6 +668,14 @@
 
           var img = document.createElement('div');
           img.className = 'volante-card__img';
+          if (op.img) {
+            img.classList.add('has-image');
+            var imgEl = document.createElement('img');
+            imgEl.src = op.img;
+            imgEl.alt = op.label;
+            imgEl.loading = 'lazy';
+            img.appendChild(imgEl);
+          }
           card.appendChild(img);
 
           opciones.appendChild(card);
