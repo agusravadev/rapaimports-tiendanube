@@ -1067,8 +1067,8 @@ body.es-volante #single-product .volante-personalizacion__eje {
 
 body.es-volante #single-product .volante-personalizacion__eje-label {
 	font-size: 13px;
-	font-weight: 600;
-	color: #4b5563;
+	font-weight: 700;
+	color: #111;
 	text-transform: uppercase;
 	letter-spacing: 0.04em;
 	margin: 0 0 8px 0;
@@ -1076,8 +1076,8 @@ body.es-volante #single-product .volante-personalizacion__eje-label {
 
 body.es-volante #single-product .volante-personalizacion__opciones {
 	display: grid;
-	grid-template-columns: repeat(2, 1fr);
-	gap: 10px;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 8px;
 }
 
 @media (min-width: 768px) {
