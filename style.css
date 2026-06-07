@@ -943,59 +943,62 @@ body.producto-encargo #single-product .btn-encargar-detalle svg {
 	right: 6px;
 	width: 26px;
 	height: 26px;
-	border: 0;
-	background: transparent;
-	padding: 0;
+	border: 0 !important;
+	background: transparent !important;
+	padding: 0 !important;
 	cursor: pointer;
-	display: grid;
-	place-items: center;
 	outline: none;
 	color: inherit;
 	font: inherit;
 	margin: 0;
 	-webkit-appearance: none;
 	appearance: none;
+	box-shadow: none !important;
+	border-radius: 50%;
 }
 
-.promo-popup__progress {
-	width: 26px;
-	height: 26px;
+.promo-popup__close::before,
+.promo-popup__close::after {
+	content: '';
 	position: absolute;
-	inset: 0;
-	transform: rotate(-90deg);
-	fill: none !important;
-	overflow: visible;
-}
-
-/* circumference = 2 * PI * r(16) ≈ 100.53 */
-.promo-popup__progress circle {
-	fill: none !important;
-	stroke: #e30613 !important;
-	stroke-width: 2;
-	stroke-dasharray: 100.53;
-	stroke-dashoffset: 0;
-	animation: promoPopupCountdown 5s linear forwards;
-}
-
-.promo-popup__x {
-	width: 14px;
-	height: 14px;
-	position: relative;
+	top: 50%;
+	left: 50%;
+	width: 11px;
+	height: 2px;
+	background: #111 !important;
+	border-radius: 2px;
 	z-index: 2;
 	pointer-events: none;
-	fill: none !important;
-	overflow: visible;
 }
 
-.promo-popup__x line {
-	stroke: #111 !important;
-	stroke-width: 3;
-	stroke-linecap: round;
-	fill: none !important;
+.promo-popup__close::before {
+	transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.promo-popup__close::after {
+	transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.promo-popup__ring {
+	position: absolute;
+	inset: 0;
+	border-radius: 50%;
+	background: conic-gradient(#e30613 var(--promo-progress, 100%), transparent 0) !important;
+	-webkit-mask: radial-gradient(closest-side, transparent 9px, #000 10px, #000 12px, transparent 13px);
+	mask: radial-gradient(closest-side, transparent 9px, #000 10px, #000 12px, transparent 13px);
+	pointer-events: none;
+	animation: promoPopupCountdown 5s linear forwards;
+	z-index: 1;
+}
+
+@property --promo-progress {
+	syntax: '<percentage>';
+	initial-value: 100%;
+	inherits: false;
 }
 
 @keyframes promoPopupCountdown {
-	to { stroke-dashoffset: 100.53; }
+	to { --promo-progress: 0%; }
 }
 
 @media (max-width: 520px) {

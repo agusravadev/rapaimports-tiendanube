@@ -907,31 +907,10 @@
       btn.className = 'promo-popup__close';
       btn.setAttribute('aria-label', 'Cerrar');
 
-      var svgNS = 'http://www.w3.org/2000/svg';
-      var svg = document.createElementNS(svgNS, 'svg');
-      svg.setAttribute('class', 'promo-popup__progress');
-      svg.setAttribute('viewBox', '0 0 36 36');
-      svg.setAttribute('aria-hidden', 'true');
-      var circle = document.createElementNS(svgNS, 'circle');
-      circle.setAttribute('cx', '18');
-      circle.setAttribute('cy', '18');
-      circle.setAttribute('r', '16');
-      svg.appendChild(circle);
-      btn.appendChild(svg);
-
-      var xSvg = document.createElementNS(svgNS, 'svg');
-      xSvg.setAttribute('class', 'promo-popup__x');
-      xSvg.setAttribute('viewBox', '0 0 36 36');
-      xSvg.setAttribute('aria-hidden', 'true');
-      var l1 = document.createElementNS(svgNS, 'line');
-      l1.setAttribute('x1', '12'); l1.setAttribute('y1', '12');
-      l1.setAttribute('x2', '24'); l1.setAttribute('y2', '24');
-      var l2 = document.createElementNS(svgNS, 'line');
-      l2.setAttribute('x1', '24'); l2.setAttribute('y1', '12');
-      l2.setAttribute('x2', '12'); l2.setAttribute('y2', '24');
-      xSvg.appendChild(l1);
-      xSvg.appendChild(l2);
-      btn.appendChild(xSvg);
+      var ring = document.createElement('span');
+      ring.className = 'promo-popup__ring';
+      ring.setAttribute('aria-hidden', 'true');
+      btn.appendChild(ring);
 
       aside.appendChild(btn);
       return aside;
