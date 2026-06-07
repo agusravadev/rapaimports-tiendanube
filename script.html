@@ -826,6 +826,7 @@
   (function initPopupPromocional() {
     var STORAGE_KEY = 'rapa_promo_popup_shown';
     var DELAY_MS = 10000;
+    // AUTODISMISS_MS y la animación promoPopupCountdown en style.css deben coincidir.
     var AUTODISMISS_MS = 5000;
     var EXCLUDED_PATHS = /\/(checkout|cart|carrito|account|admin|api)(\/|$|\?)/i;
     var NOMBRES = [
@@ -857,6 +858,8 @@
       var url = linkEl.href;
       var img = imgEl.currentSrc || imgEl.src;
       if (!nombre || !url || !img) return null;
+      if (!/^https?:\/\//i.test(url)) return null;
+      if (!/^(https?:)?\/\//i.test(img) && img.charAt(0) !== '/') return null;
       return { nombre: nombre, url: url, img: img };
     }
 
@@ -928,6 +931,7 @@
 
     function mostrar() {
       if (yaMostrada()) return;
+      if (EXCLUDED_PATHS.test(location.pathname)) return;
       var producto = elegirProducto();
       if (!producto) return;
       var persona = generarPersona();
