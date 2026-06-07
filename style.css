@@ -1022,3 +1022,24 @@ body.producto-encargo #single-product .btn-encargar-detalle svg {
 		transform: none;
 	}
 }
+
+/* === Volantes (categoría) === */
+
+/* Etiqueta " USD" al lado del precio (principal y comparativo).
+   Se usa pseudoelemento para no ensuciar el DOM ni perderlo en
+   re-renderizados de Tiendanube. */
+body.es-volante #single-product .price-container > span:nth-child(1)::after,
+body.es-volante #single-product .price-container > span:nth-child(2)::after {
+	content: " USD";
+	font-weight: 600;
+	font-size: .7em;
+	color: inherit;
+	letter-spacing: .03em;
+}
+
+/* Ocultar widgets de precio que no aplican a volantes en USD */
+body.es-volante #single-product .payment-discount-price-product-container,
+body.es-volante #single-product .js-product-payments-container,
+body.es-volante #single-product .cuotas-encargo-row {
+	display: none !important;
+}
