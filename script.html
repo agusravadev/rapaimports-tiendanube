@@ -821,4 +821,149 @@
   } else {
     initTiendaNubePersonalizado();
   }
+
+  // === Popup promocional (social proof) ===
+  (function initPopupPromocional() {
+    var STORAGE_KEY = 'rapa_promo_popup_shown';
+    var DELAY_MS = 10000;
+    var AUTODISMISS_MS = 5000;
+    var EXCLUDED_PATHS = /\/(checkout|cart|carrito|account|admin|api)(\/|$|\?)/i;
+    var NOMBRES = [
+      'Juan', 'Martín', 'Lucas', 'Mateo', 'Agustín', 'Tomás', 'Nicolás',
+      'Joaquín', 'Federico', 'Bruno', 'Diego', 'Santiago', 'Franco',
+      'Gonzalo', 'Maxi', 'Sofía', 'Camila', 'Valentina', 'Martina',
+      'Lucía', 'Julieta', 'Florencia', 'Agustina', 'Micaela', 'Carolina',
+      'Ailén', 'Brenda', 'Daniela', 'Romina', 'Antonella'
+    ];
+
+    function yaMostrada() {
+      try { return sessionStorage.getItem(STORAGE_KEY) === '1'; }
+      catch (_) { return false; }
+    }
+
+    function marcarMostrada() {
+      try { sessionStorage.setItem(STORAGE_KEY, '1'); } catch (_) {}
+    }
+
+    function elegirProducto() {
+      var cards = document.querySelectorAll('.item-product');
+      if (!cards.length) return null;
+      var card = cards[Math.floor(Math.random() * cards.length)];
+      var nombreEl = card.querySelector('.js-item-name');
+      var linkEl = card.querySelector('a.btn-secondary');
+      var imgEl = card.querySelector('.js-product-item-image-container-private img');
+      if (!nombreEl || !linkEl || !imgEl) return null;
+      var nombre = (nombreEl.innerText || nombreEl.textContent || '').trim();
+      var url = linkEl.href;
+      var img = imgEl.currentSrc || imgEl.src;
+      if (!nombre || !url || !img) return null;
+      return { nombre: nombre, url: url, img: img };
+    }
+
+    function generarPersona() {
+      var nombre = NOMBRES[Math.floor(Math.random() * NOMBRES.length)];
+      var inicial = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+      return nombre + ' ' + inicial + '.';
+    }
+
+    function construirTarjeta(producto, persona) {
+      var aside = document.createElement('aside');
+      aside.className = 'promo-popup';
+      aside.setAttribute('role', 'status');
+      aside.setAttribute('aria-live', 'polite');
+
+      var link = document.createElement('a');
+      link.className = 'promo-popup__link';
+      link.href = producto.url;
+
+      var img = document.createElement('img');
+      img.className = 'promo-popup__img';
+      img.src = producto.img;
+      img.alt = '';
+      img.loading = 'lazy';
+
+      var text = document.createElement('div');
+      text.className = 'promo-popup__text';
+
+      var person = document.createElement('span');
+      person.className = 'promo-popup__person';
+      person.textContent = persona + ' compró';
+
+      var prod = document.createElement('span');
+      prod.className = 'promo-popup__product';
+      prod.textContent = producto.nombre;
+
+      text.appendChild(person);
+      text.appendChild(prod);
+      link.appendChild(img);
+      link.appendChild(text);
+      aside.appendChild(link);
+
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'promo-popup__close';
+      btn.setAttribute('aria-label', 'Cerrar');
+
+      var svgNS = 'http://www.w3.org/2000/svg';
+      var svg = document.createElementNS(svgNS, 'svg');
+      svg.setAttribute('class', 'promo-popup__progress');
+      svg.setAttribute('viewBox', '0 0 36 36');
+      svg.setAttribute('aria-hidden', 'true');
+      var circle = document.createElementNS(svgNS, 'circle');
+      circle.setAttribute('cx', '18');
+      circle.setAttribute('cy', '18');
+      circle.setAttribute('r', '16');
+      svg.appendChild(circle);
+      btn.appendChild(svg);
+
+      var x = document.createElement('span');
+      x.className = 'promo-popup__x';
+      x.setAttribute('aria-hidden', 'true');
+      x.textContent = '×';
+      btn.appendChild(x);
+
+      aside.appendChild(btn);
+      return aside;
+    }
+
+    function mostrar() {
+      if (yaMostrada()) return;
+      var producto = elegirProducto();
+      if (!producto) return;
+      var persona = generarPersona();
+      var el = construirTarjeta(producto, persona);
+      document.body.appendChild(el);
+      marcarMostrada();
+
+      requestAnimationFrame(function() {
+        el.classList.add('is-visible');
+      });
+
+      var autoTimer = setTimeout(cerrar, AUTODISMISS_MS);
+
+      function cerrar() {
+        clearTimeout(autoTimer);
+        if (!el.parentNode) return;
+        el.classList.add('is-leaving');
+        setTimeout(function() {
+          if (el.parentNode) el.parentNode.removeChild(el);
+        }, 300);
+      }
+
+      el.querySelector('.promo-popup__close').addEventListener('click', cerrar);
+    }
+
+    function arrancar() {
+      if (yaMostrada()) return;
+      if (EXCLUDED_PATHS.test(location.pathname)) return;
+      setTimeout(mostrar, DELAY_MS);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', arrancar);
+    } else {
+      arrancar();
+    }
+  })();
+
 </script>
