@@ -939,10 +939,10 @@ body.producto-encargo #single-product .btn-encargar-detalle svg {
 
 .promo-popup__close {
 	position: absolute;
-	top: 6px;
-	right: 6px;
-	width: 26px;
-	height: 26px;
+	top: 5px;
+	right: 5px;
+	width: 28px;
+	height: 28px;
 	border: 0 !important;
 	background: transparent !important;
 	padding: 0 !important;
@@ -963,9 +963,9 @@ body.producto-encargo #single-product .btn-encargar-detalle svg {
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	width: 11px;
-	height: 2px;
-	background: #111 !important;
+	width: 10px;
+	height: 1.5px;
+	background: #9ca3af !important;
 	border-radius: 2px;
 	z-index: 2;
 	pointer-events: none;
@@ -983,9 +983,12 @@ body.producto-encargo #single-product .btn-encargar-detalle svg {
 	position: absolute;
 	inset: 0;
 	border-radius: 50%;
-	background: conic-gradient(#e30613 var(--promo-progress, 100%), transparent 0) !important;
-	-webkit-mask: radial-gradient(closest-side, transparent 9px, #000 10px, #000 12px, transparent 13px);
-	mask: radial-gradient(closest-side, transparent 9px, #000 10px, #000 12px, transparent 13px);
+	background: conic-gradient(
+		#e30613 var(--promo-progress, 100%),
+		#e5e7eb var(--promo-progress, 100%) 100%
+	) !important;
+	-webkit-mask: radial-gradient(closest-side, transparent 0 10px, #000 11px, #000 13.5px, transparent 14px);
+	mask: radial-gradient(closest-side, transparent 0 10px, #000 11px, #000 13.5px, transparent 14px);
 	pointer-events: none;
 	animation: promoPopupCountdown 5s linear forwards;
 	z-index: 1;
