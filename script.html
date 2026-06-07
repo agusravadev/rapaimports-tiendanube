@@ -600,6 +600,21 @@
       btnCotizar.textContent = 'Cotizar volante';
       section.appendChild(btnCotizar);
 
+      // Delegación de click en cards: una opción activa por eje.
+      section.addEventListener('click', function(ev) {
+        var card = ev.target.closest('.volante-card');
+        if (!card) return;
+        ev.preventDefault();
+        var ejeWrap = card.closest('.volante-personalizacion__eje');
+        if (!ejeWrap) return;
+        if (card.classList.contains('is-active')) return; // sin cambio
+        ejeWrap.querySelectorAll('.volante-card.is-active').forEach(function(c) {
+          c.classList.remove('is-active');
+        });
+        card.classList.add('is-active');
+        section.dispatchEvent(new CustomEvent('volante:cambio', { bubbles: false }));
+      });
+
       if (insertarDespuesDe && insertarDespuesDe.parentNode) {
         insertarDespuesDe.parentNode.insertBefore(section, insertarDespuesDe.nextSibling);
       } else if (insertarAntesDe && insertarAntesDe.parentNode) {
