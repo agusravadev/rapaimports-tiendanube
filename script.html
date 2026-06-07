@@ -832,9 +832,9 @@
     var NOMBRES = [
       'Juan', 'Martín', 'Lucas', 'Mateo', 'Agustín', 'Tomás', 'Nicolás',
       'Joaquín', 'Federico', 'Bruno', 'Diego', 'Santiago', 'Franco',
-      'Gonzalo', 'Maxi', 'Sofía', 'Camila', 'Valentina', 'Martina',
-      'Lucía', 'Julieta', 'Florencia', 'Agustina', 'Micaela', 'Carolina',
-      'Ailén', 'Brenda', 'Daniela', 'Romina', 'Antonella'
+      'Gonzalo', 'Matías', 'Ezequiel', 'Ignacio', 'Sebastián', 'Pablo',
+      'Andrés', 'Cristian', 'Leandro', 'Emanuel', 'Javier', 'Marcos',
+      'Hernán', 'Rodrigo', 'Gastón', 'Nahuel', 'Facundo'
     ];
 
     function yaMostrada() {
@@ -919,11 +919,19 @@
       svg.appendChild(circle);
       btn.appendChild(svg);
 
-      var x = document.createElement('span');
-      x.className = 'promo-popup__x';
-      x.setAttribute('aria-hidden', 'true');
-      x.textContent = '×';
-      btn.appendChild(x);
+      var xSvg = document.createElementNS(svgNS, 'svg');
+      xSvg.setAttribute('class', 'promo-popup__x');
+      xSvg.setAttribute('viewBox', '0 0 36 36');
+      xSvg.setAttribute('aria-hidden', 'true');
+      var l1 = document.createElementNS(svgNS, 'line');
+      l1.setAttribute('x1', '12'); l1.setAttribute('y1', '12');
+      l1.setAttribute('x2', '24'); l1.setAttribute('y2', '24');
+      var l2 = document.createElementNS(svgNS, 'line');
+      l2.setAttribute('x1', '24'); l2.setAttribute('y1', '12');
+      l2.setAttribute('x2', '12'); l2.setAttribute('y2', '24');
+      xSvg.appendChild(l1);
+      xSvg.appendChild(l2);
+      btn.appendChild(xSvg);
 
       aside.appendChild(btn);
       return aside;

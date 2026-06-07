@@ -963,12 +963,14 @@ body.producto-encargo #single-product .btn-encargar-detalle svg {
 	position: absolute;
 	inset: 0;
 	transform: rotate(-90deg);
+	fill: none !important;
+	overflow: visible;
 }
 
 /* circumference = 2 * PI * r(16) ≈ 100.53 */
 .promo-popup__progress circle {
-	fill: none;
-	stroke: #e30613;
+	fill: none !important;
+	stroke: #e30613 !important;
 	stroke-width: 2;
 	stroke-dasharray: 100.53;
 	stroke-dashoffset: 0;
@@ -976,12 +978,20 @@ body.producto-encargo #single-product .btn-encargar-detalle svg {
 }
 
 .promo-popup__x {
-	font-size: 20px;
-	line-height: 1;
-	color: #111;
+	width: 14px;
+	height: 14px;
 	position: relative;
-	z-index: 1;
-	font-weight: 400;
+	z-index: 2;
+	pointer-events: none;
+	fill: none !important;
+	overflow: visible;
+}
+
+.promo-popup__x line {
+	stroke: #111 !important;
+	stroke-width: 3;
+	stroke-linecap: round;
+	fill: none !important;
 }
 
 @keyframes promoPopupCountdown {
