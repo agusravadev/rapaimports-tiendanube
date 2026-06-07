@@ -86,20 +86,22 @@
     try {
       if (typeof LS !== 'undefined' && LS.product && Array.isArray(LS.product.categories)) {
         var hit = LS.product.categories.some(function(c) {
-          var nombre = (c && (c.name || c.title || c)) || '';
-          return String(nombre).toLowerCase().indexOf('volante') !== -1;
+          var nombre = (c && (c.name || c.title)) || '';
+          return String(nombre).trim().toLowerCase() === 'volantes';
         });
         if (hit) return true;
       }
     } catch (_) {}
     var bc = document.querySelector('.breadcrumb, nav.breadcrumb, .js-breadcrumb');
     if (bc) {
-      var texto = (bc.innerText || bc.textContent || '').toLowerCase();
-      if (texto.indexOf('volante') !== -1) return true;
+      var texto = (bc.textContent || '').toLowerCase();
+      if (/\bvolantes\b/.test(texto)) return true;
     }
     return false;
   }
 
+  // Idempotente: cambiar body.classList no dispara el MutationObserver
+  // (solo escucha childList/subtree, no attributes), así que es seguro.
   function aplicarClaseVolante() {
     if (!document.querySelector('#single-product')) return;
     var es = esCategoriaVolante();
@@ -108,9 +110,7 @@
     else if (!es && ya) document.body.classList.remove('es-volante');
   }
 
-  (function() {
-    aplicarClaseVolante();
-  })();
+  aplicarClaseVolante();
 
   function initTiendaNubePersonalizado() {
     // 1. Lógica de WhatsApp en descripciones (botones de consulta)
