@@ -846,21 +846,57 @@
       try { sessionStorage.setItem(STORAGE_KEY, '1'); } catch (_) {}
     }
 
-    function elegirProducto() {
-      var cards = document.querySelectorAll('.item-product');
-      if (!cards.length) return null;
-      var card = cards[Math.floor(Math.random() * cards.length)];
+    function esUrlValida(u) {
+      if (!u) return false;
+      if (/^data:/i.test(u)) return false;
+      if (u.indexOf('blank') !== -1) return false;
+      return /^https?:\/\//i.test(u) || u.indexOf('//') === 0 || u.charAt(0) === '/';
+    }
+
+    function leerImgSrc(imgEl) {
+      var candidatos = [
+        imgEl.currentSrc,
+        imgEl.getAttribute('data-src'),
+        imgEl.getAttribute('data-original'),
+        imgEl.getAttribute('data-image'),
+        imgEl.src
+      ];
+      for (var i = 0; i < candidatos.length; i++) {
+        if (esUrlValida(candidatos[i])) return candidatos[i];
+      }
+      var srcset = imgEl.getAttribute('srcset') || imgEl.getAttribute('data-srcset');
+      if (srcset) {
+        var partes = srcset.split(',');
+        for (var j = 0; j < partes.length; j++) {
+          var u = partes[j].trim().split(/\s+/)[0];
+          if (esUrlValida(u)) return u;
+        }
+      }
+      return null;
+    }
+
+    function extraerProducto(card) {
       var nombreEl = card.querySelector('.js-item-name');
       var linkEl = card.querySelector('a.btn-secondary');
       var imgEl = card.querySelector('.js-product-item-image-container-private img');
       if (!nombreEl || !linkEl || !imgEl) return null;
       var nombre = (nombreEl.innerText || nombreEl.textContent || '').trim();
       var url = linkEl.href;
-      var img = imgEl.currentSrc || imgEl.src;
+      var img = leerImgSrc(imgEl);
       if (!nombre || !url || !img) return null;
       if (!/^https?:\/\//i.test(url)) return null;
-      if (!/^(https?:)?\/\//i.test(img) && img.charAt(0) !== '/') return null;
       return { nombre: nombre, url: url, img: img };
+    }
+
+    function elegirProducto() {
+      var cards = Array.prototype.slice.call(document.querySelectorAll('.item-product'));
+      if (!cards.length) return null;
+      cards.sort(function() { return Math.random() - 0.5; });
+      for (var i = 0; i < cards.length; i++) {
+        var producto = extraerProducto(cards[i]);
+        if (producto) return producto;
+      }
+      return null;
     }
 
     function generarPersona() {
