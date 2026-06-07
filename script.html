@@ -78,6 +78,40 @@
     }
   })();
 
+  // Detección temprana de categoría "Volantes" (sin parpadeo).
+  // Se intenta primero por LS.product.categories (más rápido y robusto si está
+  // disponible) y como fallback por el breadcrumb del DOM. Si ninguna fuente
+  // está lista al cargar, el MutationObserver de más abajo reintenta.
+  function esCategoriaVolante() {
+    try {
+      if (typeof LS !== 'undefined' && LS.product && Array.isArray(LS.product.categories)) {
+        var hit = LS.product.categories.some(function(c) {
+          var nombre = (c && (c.name || c.title || c)) || '';
+          return String(nombre).toLowerCase().indexOf('volante') !== -1;
+        });
+        if (hit) return true;
+      }
+    } catch (_) {}
+    var bc = document.querySelector('.breadcrumb, nav.breadcrumb, .js-breadcrumb');
+    if (bc) {
+      var texto = (bc.innerText || bc.textContent || '').toLowerCase();
+      if (texto.indexOf('volante') !== -1) return true;
+    }
+    return false;
+  }
+
+  function aplicarClaseVolante() {
+    if (!document.querySelector('#single-product')) return;
+    var es = esCategoriaVolante();
+    var ya = document.body.classList.contains('es-volante');
+    if (es && !ya) document.body.classList.add('es-volante');
+    else if (!es && ya) document.body.classList.remove('es-volante');
+  }
+
+  (function() {
+    aplicarClaseVolante();
+  })();
+
   function initTiendaNubePersonalizado() {
     // 1. Lógica de WhatsApp en descripciones (botones de consulta)
     //    El botón "Encargar" ya no vive en la descripción: se inyecta
@@ -461,6 +495,8 @@
 
     marcarProductosEncargo();
     initEncargoDetalle();
+    aplicarClaseVolante();
+    setTimeout(aplicarClaseVolante, 1500);
     revisarEnvioGratis();
     initTransferSavings();
     initTransferSavingsProduct();
@@ -800,8 +836,11 @@
     initBannersCategoriaCarousel();
 
     var _bannersCarouselTimer = null;
+    var _volanteTimer = null;
     var observador = new MutationObserver(function() {
       revisarEnvioGratis();
+      clearTimeout(_volanteTimer);
+      _volanteTimer = setTimeout(aplicarClaseVolante, 100);
       clearTimeout(_encargoTimer);
       _encargoTimer = setTimeout(marcarProductosEncargo, 300);
       clearTimeout(_encargoDetalleTimer);
