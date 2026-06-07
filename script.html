@@ -493,6 +493,120 @@
       container.appendChild(label);
     }
 
+    // === Volantes: personalización con cálculo de precio ===
+
+    var PERSONALIZACIONES_VOLANTE = [
+      {
+        id: 'grip',
+        label: 'Grip',
+        opciones: [
+          { id: 'micro',     label: 'Cuero microperforado', extra: 0,    porDefecto: true },
+          { id: 'liso',      label: 'Cuero liso',           extra: 0 },
+          { id: 'alcantara', label: 'Alcantara',            extra: 60.5 }
+        ]
+      },
+      {
+        id: 'display',
+        label: 'Display LED',
+        opciones: [
+          { id: 'sin', label: 'Sin display LED', extra: 0,   porDefecto: true },
+          { id: 'con', label: 'Con display LED', extra: 145 }
+        ]
+      },
+      {
+        id: 'airbag',
+        label: 'Cobertor de air-bag',
+        opciones: [
+          { id: 'original',  label: 'Original',    extra: 0,    porDefecto: true },
+          { id: 'liso',      label: 'Cuero liso',  extra: 60.5 },
+          { id: 'alcantara', label: 'Alcantara',   extra: 60.5 }
+        ]
+      },
+      {
+        id: 'carbono',
+        label: 'Fibra de carbono forjada',
+        opciones: [
+          { id: 'negra',   label: 'Negra brillante', extra: 0,    porDefecto: true },
+          { id: 'forjada', label: 'Forjada',         extra: 60.5 }
+        ]
+      }
+    ];
+
+    function inyectarBloqueVolante() {
+      if (!document.body.classList.contains('es-volante')) return;
+      var single = document.querySelector('#single-product');
+      if (!single) return;
+      if (single.querySelector('.volante-personalizacion')) return; // idempotente
+
+      // Posición: después del último envío gratis visible; fallback antes
+      // del botón de compra.
+      var anchor = single.querySelector('.js-product-form-free-shipping-message') ||
+                   single.querySelector('.free-shipping-message');
+      var insertarDespuesDe = anchor || null;
+      var insertarAntesDe = null;
+      if (!anchor) {
+        insertarAntesDe = single.querySelector('[data-store="product-buy-button"]');
+        if (!insertarAntesDe) return; // sin anchor seguro, esperamos al próximo tick
+      }
+
+      var section = document.createElement('section');
+      section.className = 'volante-personalizacion';
+
+      var title = document.createElement('h3');
+      title.className = 'volante-personalizacion__title';
+      title.textContent = 'Personalizá tu volante';
+      section.appendChild(title);
+
+      PERSONALIZACIONES_VOLANTE.forEach(function(eje) {
+        var ejeWrap = document.createElement('div');
+        ejeWrap.className = 'volante-personalizacion__eje';
+        ejeWrap.setAttribute('data-eje', eje.id);
+
+        var ejeLabel = document.createElement('h4');
+        ejeLabel.className = 'volante-personalizacion__eje-label';
+        ejeLabel.textContent = eje.label;
+        ejeWrap.appendChild(ejeLabel);
+
+        var opciones = document.createElement('div');
+        opciones.className = 'volante-personalizacion__opciones';
+
+        eje.opciones.forEach(function(op) {
+          var card = document.createElement('button');
+          card.type = 'button';
+          card.className = 'volante-card' + (op.porDefecto ? ' is-active' : '');
+          card.setAttribute('data-opcion', op.id);
+          card.setAttribute('data-extra', String(op.extra));
+          card.setAttribute('data-label', op.label);
+
+          var img = document.createElement('div');
+          img.className = 'volante-card__img';
+          card.appendChild(img);
+
+          var labelEl = document.createElement('span');
+          labelEl.className = 'volante-card__label';
+          labelEl.textContent = op.label;
+          card.appendChild(labelEl);
+
+          opciones.appendChild(card);
+        });
+
+        ejeWrap.appendChild(opciones);
+        section.appendChild(ejeWrap);
+      });
+
+      var btnCotizar = document.createElement('button');
+      btnCotizar.type = 'button';
+      btnCotizar.className = 'btn btn-cotizar-volante';
+      btnCotizar.textContent = 'Cotizar volante';
+      section.appendChild(btnCotizar);
+
+      if (insertarDespuesDe && insertarDespuesDe.parentNode) {
+        insertarDespuesDe.parentNode.insertBefore(section, insertarDespuesDe.nextSibling);
+      } else if (insertarAntesDe && insertarAntesDe.parentNode) {
+        insertarAntesDe.parentNode.insertBefore(section, insertarAntesDe);
+      }
+    }
+
     marcarProductosEncargo();
     initEncargoDetalle();
     aplicarClaseVolante();
@@ -504,6 +618,8 @@
     setTimeout(marcarProductosEncargo, 1500);
     setTimeout(initEncargoDetalle, 1500);
     setTimeout(initCuotasEncargo, 1500);
+    inyectarBloqueVolante();
+    setTimeout(inyectarBloqueVolante, 1500);
     initMarqueeAdbar();
     setTimeout(initMarqueeAdbar, 200);
     setTimeout(initBrandsMarquee, 1000);
@@ -664,6 +780,7 @@
     var _encargoDetalleTimer = null;
     var _transferTimer = null;
     var _savingsTimer = null;
+    var _volanteInyectTimer = null;
 
     // Carrusel de banners de categoría (mobile, infinito)
     function initBannersCategoriaCarousel() {
@@ -841,6 +958,8 @@
       revisarEnvioGratis();
       clearTimeout(_volanteTimer);
       _volanteTimer = setTimeout(aplicarClaseVolante, 100);
+      clearTimeout(_volanteInyectTimer);
+      _volanteInyectTimer = setTimeout(inyectarBloqueVolante, 200);
       clearTimeout(_encargoTimer);
       _encargoTimer = setTimeout(marcarProductosEncargo, 300);
       clearTimeout(_encargoDetalleTimer);
