@@ -624,7 +624,7 @@
         id: 'airbag',
         label: 'Cobertor de air-bag',
         opciones: [
-          { id: 'original',  label: 'Original',    extra: 0,    porDefecto: true, img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/80fc0e72-6e8f-426d-af05-16e266e14dcd-d1a704ee0fbde3302817813265399708-1024-1024.png' },
+          { id: 'original',  label: 'Original',    extra: 0,    porDefecto: true, img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/chatgpt-image-jun-14-2026-12_45_11-am-8ecabe16c0efe34b4617814087203084-1024-1024.webp' },
           { id: 'liso',      label: 'Cuero liso',  extra: 60.5,                   img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/46977cae-1601-41dd-b2ba-108cee83b640-11a3a01e9292f0df5a17813261928089.png' },
           { id: 'alcantara', label: 'Alcantara',   extra: 60.5,                   img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/a98c1118-0dea-440f-8f7e-7a09e022955d-da3f11c70f43f27e6e17813240786341-1024-1024.webp' }
         ]
@@ -633,7 +633,7 @@
         id: 'carbono',
         label: 'Fibra de carbono forjada',
         opciones: [
-          { id: 'negra',   label: 'Negra brillante', extra: 0,    porDefecto: true, img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/5b3bff65-d7e4-4ab7-bf6f-9b12270063e2-2e70ae9114863806e017808175757161-1024-1024.webp' },
+          { id: 'negra',   label: 'Negra brillante', extra: 0,    porDefecto: true, img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/b448d684-486e-49d4-8a52-e8b1df5e2737-43934581685e23692917814094362190-1024-1024.webp' },
           { id: 'forjada', label: 'Forjada',         extra: 60.5,                   img: '',
             mensaje: 'Consultar colores por WhatsApp' }
         ]
