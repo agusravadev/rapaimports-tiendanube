@@ -244,7 +244,7 @@
           if (esVolanteCard) {
             btn.href = url.split('#')[0] + '#personalizacion';
             btn.className = 'btn btn-primary btn-small btn-encargar btn-personalizar';
-            btn.textContent = 'Personalizar y encargar';
+            btn.textContent = 'Personalizar';
           } else {
             btn.href = waUrl;
             btn.target = '_blank';

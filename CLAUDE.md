@@ -7,13 +7,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Tienda online **Rapa Imports** en Tiendanube (plataforma SaaS de e-commerce). El código de este repositorio se inyecta manualmente en el panel de administración de Tiendanube:
 
 - [`style.css`](style.css) → panel Tiendanube → **Diseño → Editar CSS**
-- [`script.html`](script.html) → panel Tiendanube → **Configuración → Códigos de seguimiento → Footer**
+- [`script.js`](script.js) → se sirve vía jsDelivr y se carga desde el footer de Tiendanube (**Configuración → Códigos de seguimiento → Footer**).
+- [`script.html`](script.html) → versión legacy del mismo script embebida en `<script>…</script>`. **Quedó como referencia/respaldo**: los cambios de JS se hacen sobre `script.js` (el archivo que efectivamente se sirve en producción).
 
 No hay build system, tests, ni servidor local. Los cambios se verifican en la tienda en vivo.
 
 ## Reglas de trabajo
 
 - **Nunca modificar código sin permiso explícito del usuario.**
+- **Todas las modificaciones de JavaScript se hacen sobre [`script.js`](script.js)**, no sobre `script.html`. `script.html` quedó como referencia/legacy.
 - Cuando se trabaje en una sección, indicar qué otros archivos o partes requieren cambios para que funcione correctamente.
 
 ## Flujo de trabajo: armar descripción HTML de un producto
@@ -36,7 +38,7 @@ Cuando el usuario pida crear o completar la descripción HTML de un producto, se
 |---|---|---|
 | Sección Beneficios/Características | Incluida | Opcional (ver comentario en template) |
 
-> El botón "Encargar" ya no vive en la descripción. Se inyecta automáticamente desde `script.html` en la zona de compra (junto al botón Agregar al carrito) cuando la variante seleccionada es 9999. Los dos templates solo se diferencian por la sección de beneficios.
+> El botón "Encargar" ya no vive en la descripción. Se inyecta automáticamente desde `script.js` en la zona de compra (junto al botón Agregar al carrito) cuando la variante seleccionada es 9999. Los dos templates solo se diferencian por la sección de beneficios.
 
 ### Placeholders comunes a ambos templates
 
@@ -58,7 +60,7 @@ Cuando el usuario pida crear o completar la descripción HTML de un producto, se
 
 El sistema usa `stock = 9999` como señal de que esa variante es por encargo (sin inventario físico). La señal vive **a nivel de variante**, no de producto: un producto puede tener variantes mixtas (ej: rojo con stock 9 + blanco con stock 9999) y la UI reacciona a la variante seleccionada en tiempo real.
 
-**Script (detección reactiva, `script.html`):**
+**Script (detección reactiva, `script.js`):**
 - Detección temprana sin parpadeo: si `LS.variants` está disponible y la variante por defecto del detalle es 9999, agrega `body.producto-encargo` antes del primer paint. El meta `tiendanube:stock` no se usa: informa la suma de stocks (ej: 10008 = 9999 + 9), no la variante seleccionada.
 - `marcarProductosEncargo()` (listado): si alguna variante del card es 9999, instala listener en los swatches `.js-color-variant.item-colors-bullet[data-option]` (activo: `js-color-variant-active`) y togglea `item-encargo` + botón `.btn-encargar` según el stock de la variante actual.
 - `initEncargoDetalle()` (página de producto): lee `LS.variants` (global de Tiendanube), identifica la variante por `.js-insta-variant.selected[data-option]`, togglea `body.producto-encargo` e inyecta/quita un botón `.btn-encargar-detalle` en el contenedor de `Agregar al carrito`. Escucha clicks en swatches y `change` en el `<select>` oculto `.js-variation-option`.

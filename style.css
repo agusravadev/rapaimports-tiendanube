@@ -523,6 +523,23 @@ a.btn.btn-encargar:hover {
 	color: #fff !important;
 }
 
+a.btn.btn-encargar.btn-personalizar {
+	background: #111 !important;
+	border-color: #111 !important;
+	color: #fff !important;
+	padding: 10px 32px !important;
+	margin-left: auto !important;
+	margin-right: auto !important;
+	margin-top: -12px !important;
+	margin-bottom: 24px !important;
+}
+
+a.btn.btn-encargar.btn-personalizar:hover {
+	background: #000 !important;
+	border-color: #000 !important;
+	color: #fff !important;
+}
+
 @media (min-width:768px) {
 	.item-encargo a.btn.btn-encargar {
 		display: none !important;
@@ -1077,6 +1094,7 @@ body.es-volante #single-product .cuotas-encargo-row {
 body.es-volante #single-product .volante-personalizacion {
 	margin: 18px 0 14px 0;
 	padding: 0;
+	scroll-margin-top: 80px;
 }
 
 body.es-volante #single-product .volante-personalizacion__title {
