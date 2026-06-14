@@ -797,7 +797,9 @@
       // nosotros una vez insertada.
       if (window.location.hash === '#personalizacion') {
         setTimeout(function() {
-          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          var offset = 160;
+          var top = section.getBoundingClientRect().top + window.pageYOffset - offset;
+          window.scrollTo({ top: top, behavior: 'smooth' });
         }, 50);
       }
 
