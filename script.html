@@ -239,12 +239,20 @@
           var colDiv = insertionPoint.parentNode;
           var rowDiv = colDiv && colDiv.parentNode;
 
+          var esVolanteCard = item.classList.contains('item-volante');
+
           var btn = document.createElement('a');
-          btn.href = waUrl;
-          btn.target = '_blank';
-          btn.rel = 'noopener noreferrer';
-          btn.className = 'btn btn-primary btn-small btn-encargar';
-          btn.textContent = 'Encargar';
+          if (esVolanteCard) {
+            btn.href = url.split('#')[0] + '#personalizacion';
+            btn.className = 'btn btn-primary btn-small btn-encargar btn-personalizar';
+            btn.textContent = 'Personalizar y encargar';
+          } else {
+            btn.href = waUrl;
+            btn.target = '_blank';
+            btn.rel = 'noopener noreferrer';
+            btn.className = 'btn btn-primary btn-small btn-encargar';
+            btn.textContent = 'Encargar';
+          }
 
           if (rowDiv && rowDiv !== item && rowDiv.parentNode) {
             rowDiv.parentNode.insertBefore(btn, rowDiv);
@@ -295,6 +303,23 @@
         }
 
         aplicarEstado();
+      });
+    }
+
+    // 3a-bis. Marcar cards de productos de la categoría "Volantes" en
+    //         listados. Detección por slug de URL (el listado no expone
+    //         la categoría en el HTML de la card). Idempotente.
+    function marcarProductosVolanteListado() {
+      if (document.querySelector('#single-product')) return;
+      var rx = /\/productos\/[^/?#]*volante/i;
+      document.querySelectorAll('.item-product').forEach(function(item) {
+        if (item.dataset.volanteMarcado === '1') return;
+        var link = item.querySelector('a.js-product-item-image-link-private, a.item-link');
+        var href = link ? link.getAttribute('href') || '' : '';
+        if (rx.test(href)) {
+          item.classList.add('item-volante');
+          item.dataset.volanteMarcado = '1';
+        }
       });
     }
 
@@ -635,6 +660,7 @@
 
       var section = document.createElement('section');
       section.className = 'volante-personalizacion';
+      section.id = 'personalizacion';
 
       var title = document.createElement('h3');
       title.className = 'volante-personalizacion__title';
@@ -766,6 +792,16 @@
         insertarAntesDe.parentNode.insertBefore(section, insertarAntesDe);
       }
 
+      // Scroll diferido a la sección si la URL trae #personalizacion.
+      // El navegador intenta el scroll nativo antes de que esta sección
+      // exista (la inyectamos vía JS post-load), así que lo forzamos
+      // nosotros una vez insertada.
+      if (window.location.hash === '#personalizacion') {
+        setTimeout(function() {
+          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 50);
+      }
+
       // Si el botón "Encargar ahora" ya fue inyectado por initEncargoDetalle
       // antes de que existiera el bloque de personalización, lo movemos para
       // que quede inmediatamente debajo de "Cotizar volante".
@@ -775,6 +811,7 @@
       }
     }
 
+    marcarProductosVolanteListado();
     marcarProductosEncargo();
     initEncargoDetalle();
     aplicarClaseVolante();
@@ -783,6 +820,7 @@
     initTransferSavings();
     initTransferSavingsProduct();
     initCuotasEncargo();
+    setTimeout(marcarProductosVolanteListado, 1500);
     setTimeout(marcarProductosEncargo, 1500);
     setTimeout(initEncargoDetalle, 1500);
     setTimeout(initCuotasEncargo, 1500);
@@ -1122,12 +1160,15 @@
 
     var _bannersCarouselTimer = null;
     var _volanteTimer = null;
+    var _volanteListadoTimer = null;
     var observador = new MutationObserver(function() {
       revisarEnvioGratis();
       clearTimeout(_volanteTimer);
       _volanteTimer = setTimeout(aplicarClaseVolante, 100);
       clearTimeout(_volanteInyectTimer);
       _volanteInyectTimer = setTimeout(inyectarBloqueVolante, 200);
+      clearTimeout(_volanteListadoTimer);
+      _volanteListadoTimer = setTimeout(marcarProductosVolanteListado, 250);
       clearTimeout(_encargoTimer);
       _encargoTimer = setTimeout(marcarProductosEncargo, 300);
       clearTimeout(_encargoDetalleTimer);

@@ -1046,6 +1046,32 @@ body.es-volante #single-product .cuotas-encargo-row {
 	display: none !important;
 }
 
+/* === Volantes en LISTADO (cards) ===
+   Las cards reciben la clase .item-volante desde script.html
+   (detección por slug de URL en marcarProductosVolanteListado). */
+
+/* Ocultar bloque de transferencia (precio con 25% OFF) en cards de volantes */
+.item-product.item-volante .js-payment-discount-price-product-container,
+.item-product.item-volante .payment-discount-price-product-container {
+	display: none !important;
+}
+
+/* Etiqueta " USD" proporcional al precio principal de la card */
+.item-product.item-volante .js-price-display[data-product-price] {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3em;
+}
+
+.item-product.item-volante .js-price-display[data-product-price]::after {
+	content: "USD";
+	font-weight: 600;
+	font-size: 0.78em;
+	line-height: 1;
+	color: inherit;
+	letter-spacing: .02em;
+}
+
 /* === Volantes: bloque de personalización === */
 
 body.es-volante #single-product .volante-personalizacion {
@@ -1102,11 +1128,13 @@ body.es-volante #single-product .volante-card {
 	padding: 8px !important;
 	margin: 0 !important;
 	cursor: pointer !important;
-	transition: border-color .15s ease, box-shadow .15s ease;
+	transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
 	font-family: inherit !important;
 	line-height: 1 !important;
 	text-align: center;
 	box-sizing: border-box !important;
+	transform: scale(0.855);
+	transform-origin: center center;
 }
 
 body.es-volante #single-product .volante-card:hover {
