@@ -1,0 +1,1361 @@
+  // Transición fade entre páginas:
+  //  - View Transitions nativa para atrás/adelante.
+  //  - Prefetch al hover/touchstart para que la página destino ya esté
+  //    en caché al hacer click → la View Transition alcanza a ejecutarse
+  //    también en navegación adelante (igual que al volver).
+  (function() {
+    try {
+      var s = document.createElement('style');
+      s.textContent = [
+        '@view-transition { navigation: auto; }',
+        '::view-transition-old(root), ::view-transition-new(root) {',
+        '  animation-duration: 450ms;',
+        '  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);',
+        '}'
+      ].join('\n');
+      document.head.appendChild(s);
+    } catch(e) {}
+
+    var prefetched = new Set();
+
+    function isInternalCandidate(link) {
+      if (!link || !link.href) return false;
+      if (link.target && link.target !== '' && link.target !== '_self') return false;
+      if (link.hasAttribute('download')) return false;
+
+      var href = link.getAttribute('href') || '';
+      if (!href || href.charAt(0) === '#') return false;
+      if (/^(mailto:|tel:|javascript:|whatsapp:)/i.test(href)) return false;
+
+      var url;
+      try { url = new URL(link.href, location.href); } catch(_) { return false; }
+      if (url.origin !== location.origin) return false;
+      if (url.pathname === location.pathname && url.search === location.search) return false;
+
+      // No prefetchear carrito/checkout/cuenta para no disparar acciones server-side
+      if (/\/(checkout|cart|carrito|account|admin|api)(\/|$|\?)/i.test(url.pathname)) return false;
+
+      return url.href;
+    }
+
+    function prefetch(href) {
+      if (prefetched.has(href)) return;
+      prefetched.add(href);
+      try {
+        var l = document.createElement('link');
+        l.rel = 'prefetch';
+        l.href = href;
+        l.as = 'document';
+        document.head.appendChild(l);
+      } catch(e) {}
+    }
+
+    function handleIntent(e) {
+      var link = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+      if (!link) return;
+      var href = isInternalCandidate(link);
+      if (href) prefetch(href);
+    }
+
+    // Mobile: el toque inicial nos da ~50-150ms de cabeza antes del click final
+    document.addEventListener('touchstart', handleIntent, { capture: true, passive: true });
+    // PC: el hover nos da varios cientos de ms antes del click
+    document.addEventListener('mouseover', handleIntent, { capture: true, passive: true });
+  })();
+
+  // Detección temprana sin parpadeo: si LS.variants ya está disponible y la
+  // variante por defecto del detalle es 9999, marcamos body antes del primer
+  // paint. El meta tiendanube:stock no sirve para productos con variantes
+  // mixtas porque informa la suma de stocks, no la variante seleccionada.
+  (function() {
+    if (!document.querySelector('#single-product')) return;
+    if (typeof LS === 'undefined' || !LS.variants || !LS.variants.length) return;
+    var defecto = LS.variants[0];
+    if (defecto && Number(defecto.stock) === 9999) {
+      document.body.classList.add('producto-encargo');
+    }
+  })();
+
+  // Detección temprana de categoría "Volantes" (sin parpadeo).
+  // Se intenta primero por LS.product.categories (más rápido y robusto si está
+  // disponible) y como fallback por el breadcrumb del DOM. Si ninguna fuente
+  // está lista al cargar, el MutationObserver de más abajo reintenta.
+  function esCategoriaVolante() {
+    try {
+      if (typeof LS !== 'undefined' && LS.product && Array.isArray(LS.product.categories)) {
+        var hit = LS.product.categories.some(function(c) {
+          var nombre = (c && (c.name || c.title)) || '';
+          return String(nombre).trim().toLowerCase() === 'volantes';
+        });
+        if (hit) return true;
+      }
+    } catch (_) {}
+    var bc = document.querySelector('.breadcrumbs, .breadcrumb, nav.breadcrumb, .js-breadcrumb');
+    if (bc) {
+      var texto = (bc.textContent || '').toLowerCase();
+      if (/\bvolantes\b/.test(texto)) return true;
+    }
+    return false;
+  }
+
+  // Idempotente: cambiar body.classList no dispara el MutationObserver
+  // (solo escucha childList/subtree, no attributes), así que es seguro.
+  function aplicarClaseVolante() {
+    if (!document.querySelector('#single-product')) return;
+    var es = esCategoriaVolante();
+    var ya = document.body.classList.contains('es-volante');
+    if (es && !ya) document.body.classList.add('es-volante');
+    else if (!es && ya) document.body.classList.remove('es-volante');
+  }
+
+  aplicarClaseVolante();
+
+  function initTiendaNubePersonalizado() {
+    // 1. Lógica de WhatsApp en descripciones (botones de consulta)
+    //    El botón "Encargar" ya no vive en la descripción: se inyecta
+    //    dinámicamente desde marcarProductosEncargo / initEncargoDetalle
+    //    según la variante seleccionada. Acá solo manejamos los botones
+    //    de consulta (.wa-btn y links wa.me en .product-description).
+    var nombre = (document.querySelector('meta[property="og:title"]') || {}).content || document.title || 'este producto';
+    var url = (document.querySelector('link[rel="canonical"]') || {}).href || (document.querySelector('meta[property="og:url"]') || {}).content || window.location.href;
+
+    var mensajeConsultar = 'Hola Rapa Imports! Tengo una consulta sobre el producto *' + nombre + '* que vi en: ' + url;
+    var hrefConsulta = 'https://wa.me/542364626266?text=' + encodeURIComponent(mensajeConsultar);
+
+    document.querySelectorAll('.wa-btn, #single-product .product-description a[href*="wa.me"]').forEach(function(btn) {
+      btn.href = hrefConsulta;
+    });
+
+    // Botón flotante de WhatsApp (fixed bottom): mensaje por defecto genérico
+    var mensajeFixed = 'Hola Rapa Imports, queria hacerte una consulta...';
+    document.querySelectorAll('.js-btn-fixed-bottom.btn-whatsapp, a.btn-whatsapp[href^="https://wa.me/"]:not(.wa-btn)').forEach(function(btn) {
+      if (btn.closest('#single-product .product-description')) return;
+      btn.href = 'https://wa.me/542364626266?text=' + encodeURIComponent(mensajeFixed);
+    });
+
+    // 2. Lógica para "incluso en este producto" en página de producto
+    function revisarEnvioGratis() {
+      var contenedores = document.querySelectorAll('.free-shipping-message, .js-product-form-free-shipping-message');
+      contenedores.forEach(function(contenedor) {
+        var textoVisible = contenedor.innerText.toLowerCase();
+        var agregado = contenedor.querySelector('.js-incluso-en-este-producto');
+        if (textoVisible.includes('gratis') && !textoVisible.includes('superando') && !textoVisible.includes('más de')) {
+          if (!agregado) {
+            var spanNuevo = document.createElement('span');
+            spanNuevo.className = 'js-incluso-en-este-producto';
+            spanNuevo.style.fontWeight = '400';
+            spanNuevo.style.color = 'inherit';
+            spanNuevo.innerText =' incluido en este producto';
+            var textoFuerte = contenedor.querySelector('.text-accent');
+            if (textoFuerte) {
+              textoFuerte.insertAdjacentElement('afterend', spanNuevo);
+            }
+          }
+        } else {
+          if (agregado) { agregado.remove(); }
+        }
+      });
+    }
+
+    // 2b. Precio con transferencia — inyectar badge en cards del listado
+    function initTransferSavings() {
+      document.querySelectorAll('.item-product .js-payment-discount-price-product-container').forEach(function(container) {
+        if (container.querySelector('.transfer-badge')) return; // ya procesado
+
+        var precioSpan = container.querySelector('.js-payment-discount-price-product');
+        var metodoSpan = container.querySelector('.js-payment-discount-name-product');
+        if (!precioSpan || !metodoSpan) return;
+
+        // Ocultar el span "con" literal
+        container.querySelectorAll(':scope > span').forEach(function(span) {
+          if (span.textContent.trim() === 'con') {
+            span.classList.add('transfer-con-hidden');
+          }
+        });
+
+        // Fila superior: solo método (badge va absoluto en esquina)
+        var topRow = document.createElement('div');
+        topRow.className = 'transfer-top-row';
+        topRow.appendChild(metodoSpan);
+        container.insertBefore(topRow, precioSpan);
+
+        // Badge absoluto — esquina superior derecha del contenedor
+        var badge = document.createElement('span');
+        badge.className = 'transfer-badge';
+        badge.textContent = '25% OFF';
+        container.appendChild(badge);
+      });
+    }
+
+    // 3. Badge "por encargo" reactivo en cards del listado
+    //    La señal "encargo" depende de la variante seleccionada en el swatch,
+    //    no del producto. Si ninguna variante es 9999, no se toca la card.
+    //    Si alguna lo es, se instala un listener en los swatches y se evalúa
+    //    el estado cada vez que cambia la selección.
+    function marcarProductosEncargo() {
+      if (document.querySelector('#single-product')) return;
+
+      document.querySelectorAll('.item-product').forEach(function(item) {
+        var container = item.querySelector('.js-quickshop-container[data-variants]');
+        if (!container) return;
+
+        var variantes;
+        try {
+          variantes = JSON.parse(container.getAttribute('data-variants'));
+        } catch (e) { return; }
+        if (!variantes || !variantes.length) return;
+
+        var anyEncargo = variantes.some(function(v) { return Number(v.stock) === 9999; });
+        if (!anyEncargo) return;
+
+        function variantePorOption(option) {
+          if (option != null) {
+            var match = variantes.find(function(v) { return String(v.option0) === String(option); });
+            if (match) return match;
+          }
+          return variantes[0];
+        }
+
+        function getVarianteActiva() {
+          // El bullet activo se marca con .selected al hacer click.
+          // En carga inicial nada está .selected → defaulteamos a la
+          // primera variante (que es la que Tiendanube muestra como default).
+          var activo = item.querySelector('.js-color-variant.item-colors-bullet.selected');
+          if (activo && activo.dataset.option) return variantePorOption(activo.dataset.option);
+          return variantes[0];
+        }
+
+        function construirBtnEncargar() {
+          var linkEl = item.querySelector('a.btn-secondary');
+          var url = linkEl ? linkEl.href : window.location.href;
+          var nameEl = item.querySelector('.js-item-name');
+          var nombre = nameEl ? nameEl.innerText.trim() : 'este producto';
+          var mensaje = 'Hola Rapa Imports! Quiero encargar el producto *' + nombre + '* que vi en: ' + url + ' ¿Me podés dar más info?';
+          var waUrl = 'https://wa.me/542364626266?text=' + encodeURIComponent(mensaje);
+
+          var insertionPoint = item.querySelector('.js-item-buy-open') || item.querySelector('a.btn-secondary');
+          if (!insertionPoint) return;
+          var colDiv = insertionPoint.parentNode;
+          var rowDiv = colDiv && colDiv.parentNode;
+
+          var esVolanteCard = item.classList.contains('item-volante');
+
+          var btn = document.createElement('a');
+          if (esVolanteCard) {
+            btn.href = url.split('#')[0] + '#personalizacion';
+            btn.className = 'btn btn-primary btn-small btn-encargar btn-personalizar';
+            btn.textContent = 'Personalizar y encargar';
+          } else {
+            btn.href = waUrl;
+            btn.target = '_blank';
+            btn.rel = 'noopener noreferrer';
+            btn.className = 'btn btn-primary btn-small btn-encargar';
+            btn.textContent = 'Encargar';
+          }
+
+          if (rowDiv && rowDiv !== item && rowDiv.parentNode) {
+            rowDiv.parentNode.insertBefore(btn, rowDiv);
+            rowDiv.style.setProperty('display', 'none', 'important');
+            btn.dataset.rowHidden = '1';
+          } else {
+            colDiv.insertBefore(btn, insertionPoint);
+          }
+        }
+
+        function quitarBtnEncargar() {
+          var btn = item.querySelector('.btn-encargar');
+          if (!btn) return;
+          if (btn.dataset.rowHidden === '1') {
+            var sibling = btn.nextElementSibling;
+            if (sibling) sibling.style.removeProperty('display');
+          }
+          btn.remove();
+        }
+
+        function aplicarEstado() {
+          var v = getVarianteActiva();
+          if (!v) return;
+          var esEncargo = Number(v.stock) === 9999;
+          // Guard: si nada cambió, salir
+          if (item.dataset.encargoEstado === (esEncargo ? '1' : '0')) return;
+          item.dataset.encargoEstado = esEncargo ? '1' : '0';
+
+          if (esEncargo) {
+            item.classList.add('item-encargo');
+            if (!item.querySelector('.btn-encargar')) construirBtnEncargar();
+          } else {
+            item.classList.remove('item-encargo');
+            quitarBtnEncargar();
+          }
+        }
+
+        // Listener de swatches (idempotente)
+        if (!item.dataset.encargoListener) {
+          item.dataset.encargoListener = '1';
+          item.querySelectorAll('.js-color-variant.item-colors-bullet[data-option]').forEach(function(sw) {
+            sw.addEventListener('click', function() {
+              // Tiendanube actualiza la clase active de forma síncrona,
+              // pero damos un microtask por las dudas.
+              setTimeout(aplicarEstado, 30);
+            });
+          });
+        }
+
+        aplicarEstado();
+      });
+    }
+
+    // 3a-bis. Marcar cards de productos de la categoría "Volantes" en
+    //         listados. Detección por slug de URL (el listado no expone
+    //         la categoría en el HTML de la card). Idempotente.
+    function marcarProductosVolanteListado() {
+      if (document.querySelector('#single-product')) return;
+      var rx = /\/productos\/[^/?#]*volante/i;
+      document.querySelectorAll('.item-product').forEach(function(item) {
+        if (item.dataset.volanteMarcado === '1') return;
+        var link = item.querySelector('a.js-product-item-image-link-private, a.item-link');
+        var href = link ? link.getAttribute('href') || '' : '';
+        if (rx.test(href)) {
+          item.classList.add('item-volante');
+          item.dataset.volanteMarcado = '1';
+        }
+      });
+    }
+
+    // 3b. Encargo reactivo en página de detalle (#single-product)
+    //     Inyecta/quita un botón "Encargar" en la zona de compra y togglea
+    //     body.producto-encargo según la variante seleccionada.
+    function initEncargoDetalle() {
+      var single = document.querySelector('#single-product');
+      if (!single) return;
+      if (typeof LS === 'undefined' || !LS.variants || !LS.variants.length) return;
+
+      function variantePorOption(option) {
+        if (option != null) {
+          var match = LS.variants.find(function(v) { return String(v.option0) === String(option); });
+          if (match) return match;
+        }
+        return LS.variants[0];
+      }
+
+      function getVarianteActiva() {
+        var activo = single.querySelector('.js-insta-variant.selected');
+        if (activo && activo.dataset.option) return variantePorOption(activo.dataset.option);
+        return LS.variants[0];
+      }
+
+      function ensureBtnEncargar() {
+        if (single.querySelector('.btn-encargar-detalle')) return;
+        var buyBtn = single.querySelector('[data-store="product-buy-button"], .js-addtocart:not(.js-addtocart-placeholder)');
+        if (!buyBtn) return;
+        var parent = buyBtn.parentElement;
+        if (!parent) return;
+
+        var nombre = (document.querySelector('meta[property="og:title"]') || {}).content || document.title || 'este producto';
+        var url = (document.querySelector('link[rel="canonical"]') || {}).href || (document.querySelector('meta[property="og:url"]') || {}).content || window.location.href;
+        var mensaje = 'Hola Rapa Imports! Quiero encargar el producto *' + nombre + '* que vi en: ' + url + ' ¿Me podés dar más info?';
+
+        var btn = document.createElement('a');
+        btn.href = 'https://wa.me/542364626266?text=' + encodeURIComponent(mensaje);
+        btn.target = '_blank';
+        btn.rel = 'noopener noreferrer';
+        // Imita layout de Agregar al carrito (btn-block + mb-4) para que
+        // ocupe el mismo espacio. mt-3 da separación contra el bloque de
+        // envío gratis en productos sin variantes.
+        btn.className = 'btn btn-primary btn-block mt-3 mb-4 btn-encargar btn-encargar-detalle';
+        btn.innerHTML =
+          '<svg viewBox="0 0 448 512" width="18" height="18" fill="currentColor" aria-hidden="true">' +
+            '<path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>' +
+          '</svg>' +
+          '<span>Encargar ahora</span>';
+        // En volantes, el botón Encargar va inmediatamente debajo de
+        // "Cotizar volante" (al final del bloque de personalización).
+        var esVolante = document.body.classList.contains('es-volante');
+        var cotizar = esVolante ? single.querySelector('.btn-cotizar-volante') : null;
+        if (cotizar && cotizar.parentNode) {
+          cotizar.parentNode.insertBefore(btn, cotizar.nextSibling);
+        } else {
+          parent.appendChild(btn);
+        }
+
+        // En volantes, regenerar el href en cada click para reflejar la
+        // selección actual + el total calculado en vivo.
+        if (esVolante) {
+          btn.addEventListener('click', function() {
+            var section = single.querySelector('.volante-personalizacion');
+            if (!section) return;
+            var seleccion = [];
+            section.querySelectorAll('.volante-personalizacion__eje').forEach(function(eje) {
+              var ejeLabel = (eje.querySelector('.volante-personalizacion__eje-label') || {}).textContent || '';
+              var activa = eje.querySelector('.volante-card.is-active');
+              var opcionLabel = activa ? (activa.getAttribute('data-label') || activa.textContent || '').trim() : '';
+              if (ejeLabel && opcionLabel) {
+                seleccion.push('- ' + ejeLabel + ': ' + opcionLabel);
+              }
+            });
+            var total = calcularTotalVolante(section);
+            var totalLine = (total != null) ? ('Total = $' + formatearMontoVolante(total) + ' USD') : '';
+
+            var msg = 'Hola Rapa Imports! Quiero encargar el producto *' + nombre + '* que vi en: ' + url + '\n\n' +
+                      'Personalizaciones elegidas:\n' + seleccion.join('\n') + '\n\n' +
+                      (totalLine ? (totalLine + '\n\n') : '') +
+                      '¿Me podés dar más info?';
+            btn.href = 'https://wa.me/542364626266?text=' + encodeURIComponent(msg);
+          }, true); // captura: corre antes de que el navegador siga el link
+        }
+      }
+
+      function quitarBtnEncargar() {
+        var btn = single.querySelector('.btn-encargar-detalle');
+        if (btn) btn.remove();
+      }
+
+      function aplicarEstado() {
+        var v = getVarianteActiva();
+        if (!v) return;
+        var esEncargo = Number(v.stock) === 9999;
+        if (single.dataset.encargoEstado === (esEncargo ? '1' : '0')) return;
+        single.dataset.encargoEstado = esEncargo ? '1' : '0';
+
+        if (esEncargo) {
+          document.body.classList.add('producto-encargo');
+          ensureBtnEncargar();
+        } else {
+          document.body.classList.remove('producto-encargo');
+          quitarBtnEncargar();
+        }
+        // Recalcular row de "3 cuotas sin interés" después del toggle de clase
+        initCuotasEncargo();
+      }
+
+      // Listeners (idempotentes)
+      if (!single.dataset.encargoListener) {
+        single.dataset.encargoListener = '1';
+        single.querySelectorAll('.js-insta-variant').forEach(function(sw) {
+          sw.addEventListener('click', function() { setTimeout(aplicarEstado, 30); });
+        });
+        var sel = single.querySelector('.js-variation-option');
+        if (sel) sel.addEventListener('change', function() { setTimeout(aplicarEstado, 30); });
+      }
+
+      aplicarEstado();
+    }
+
+    // 3c. Cuotas reactivas en página de detalle — reemplaza el widget de pagos
+    //     original (que mostraba la cuota máxima, ej "24 cuotas de $X") por un
+    //     row custom "3 cuotas de $X · Ver más detalles" cuando la variante activa
+    //     es por encargo. Fuente: primera fila tr.js-payment-provider-installments-row
+    //     del modal #info-payment-method-credit_card con amount===3 (planilla por
+    //     defecto que Tiendanube calcula para todo producto). El link "Ver más
+    //     detalles" dispara el mismo modal nativo de Tiendanube vía data-toggle.
+    //     Anclaje: justo antes del bloque de envío gratis (o, si no existe, al
+    //     final del #single-product). NO se inserta dentro de .price-container
+    //     porque ese contenedor usa flexbox con order custom y rompe la posición.
+    //     Si no encuentra ninguna fila de 3 cuotas, no inserta nada.
+    function initCuotasEncargo() {
+      var single = document.querySelector('#single-product');
+      if (!single) return;
+
+      // Quitar row previo si existe (re-evaluación por cambio de variante)
+      var existing = single.querySelector('.js-cuotas-encargo-row');
+      if (existing) existing.remove();
+
+      // Buscar la primera fila de 3 cuotas en el modal de pagos
+      var precio3cuotas = null;
+      var rows = document.querySelectorAll(
+        '#info-payment-method-credit_card tr.js-payment-provider-installments-row'
+      );
+      for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        var amountEl = row.querySelector('.js-installment-amount');
+        if (!amountEl) continue;
+        if (parseInt(amountEl.textContent, 10) !== 3) continue;
+        var priceEl = row.querySelector('.js-installment-price');
+        if (!priceEl) continue;
+        precio3cuotas = priceEl.textContent.trim();
+        break;
+      }
+
+      if (!precio3cuotas) return;
+
+      // Anclaje preferido: el bloque de envío gratis. Insertamos ANTES.
+      // Fallback: el contenedor .price-container — insertamos como hermano
+      // posterior (fuera del flex container del precio).
+      var newRow = document.createElement('div');
+      newRow.className = 'js-cuotas-encargo-row cuotas-encargo-row';
+      newRow.innerHTML =
+        '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">' +
+          '<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 10h20"/>' +
+        '</svg>' +
+        '<span><strong>3</strong> cuotas de <strong>' + precio3cuotas + '</strong></span>' +
+        '<a href="javascript:void(0)" class="js-cuotas-encargo-vermas cuotas-encargo-vermas">' +
+          'Ver más detalles' +
+        '</a>';
+
+      // Delegar el click de "Ver más detalles" al botón nativo de Tiendanube
+      // (#btn-installments es el que dispara el modal fullscreen de cuotas).
+      var vermas = newRow.querySelector('.js-cuotas-encargo-vermas');
+      if (vermas) {
+        vermas.addEventListener('click', function(e) {
+          e.preventDefault();
+          var nativo = document.getElementById('btn-installments') ||
+                       single.querySelector('.js-product-payments-container');
+          if (nativo) nativo.click();
+        });
+      }
+
+      var shipping = single.querySelector('.js-product-form-free-shipping-message, .free-shipping-message');
+      if (shipping && shipping.parentNode) {
+        shipping.parentNode.insertBefore(newRow, shipping);
+        return;
+      }
+
+      var priceContainer = single.querySelector('.price-container');
+      if (priceContainer && priceContainer.parentNode) {
+        if (priceContainer.nextSibling) {
+          priceContainer.parentNode.insertBefore(newRow, priceContainer.nextSibling);
+        } else {
+          priceContainer.parentNode.appendChild(newRow);
+        }
+        return;
+      }
+    }
+
+    // 4. "AHORRAS $xxx" debajo del bloque transferencia en página de producto
+    function initTransferSavingsProduct() {
+      var single = document.querySelector('#single-product');
+      if (!single) return;
+
+      // Remover label anterior si existe (para re-ejecución por cambio de variante)
+      var old = single.querySelector('.js-transfer-savings-label');
+      if (old) old.remove();
+
+      var container = single.querySelector('.payment-discount-price-product-container');
+      if (!container) return;
+
+      var precioTransSpan = container.querySelector('.js-payment-discount-price-product[data-priceraw-without-shipping]');
+      var precioRegSpan   = single.querySelector('.js-price-display[data-product-price]');
+      if (!precioTransSpan || !precioRegSpan) return;
+
+      var transRaw = parseInt(precioTransSpan.getAttribute('data-priceraw-without-shipping'), 10);
+      var regRaw   = parseInt(precioRegSpan.getAttribute('data-product-price'), 10);
+      if (!transRaw || !regRaw || transRaw >= regRaw) return;
+
+      var ahorro = Math.round((regRaw - transRaw) / 100);
+      var ahorroFmt = ahorro.toLocaleString('es-AR');
+
+      var label = document.createElement('p');
+      label.className = 'js-transfer-savings-label transfer-savings-label';
+      label.innerHTML = 'AHORRAS <strong>$' + ahorroFmt + '</strong>';
+      container.appendChild(label);
+    }
+
+    // === Volantes: personalización con cálculo de precio ===
+
+    // Lee el precio principal del detalle (en ARS según Tiendanube, pero
+    // numéricamente representa USD por convención de carga del admin).
+    function leerPrecioBaseVolante() {
+      var single = document.querySelector('#single-product');
+      if (!single) return null;
+      var span = single.querySelector('.js-price-display[data-product-price]');
+      if (!span) return null;
+      var raw = parseInt(span.getAttribute('data-product-price'), 10);
+      if (!raw) return null;
+      // data-product-price viene en centavos (ej: 32000 = $320)
+      return raw / 100;
+    }
+
+    function formatearMontoVolante(n) {
+      // Decimal: sin decimales si es entero, un decimal si tiene fracción.
+      var entero = Math.floor(n);
+      var fraccion = Math.round((n - entero) * 10) / 10;
+      var opts = (fraccion === 0)
+        ? { maximumFractionDigits: 0, minimumFractionDigits: 0 }
+        : { maximumFractionDigits: 1, minimumFractionDigits: 1 };
+      return n.toLocaleString('es-AR', opts);
+    }
+
+    function calcularTotalVolante(section) {
+      var base = leerPrecioBaseVolante();
+      if (base == null) return null;
+      var extras = 0;
+      section.querySelectorAll('.volante-card.is-active').forEach(function(c) {
+        extras += parseFloat(c.getAttribute('data-extra') || '0') || 0;
+      });
+      return base + extras;
+    }
+
+    function escribirPrecioMostrado(monto) {
+      var single = document.querySelector('#single-product');
+      if (!single) return;
+      var span = single.querySelector('.js-price-display[data-product-price]');
+      if (!span) return;
+      if (monto == null) {
+        // Restaurar: re-renderizar desde data-product-price (precio base).
+        var raw = parseInt(span.getAttribute('data-product-price'), 10);
+        if (!raw) return;
+        span.textContent = '$' + formatearMontoVolante(raw / 100);
+        return;
+      }
+      span.textContent = '$' + formatearMontoVolante(monto);
+    }
+
+    // Para asignar imagen a una opción, completá su campo `img` con la URL.
+    // Si `img` queda como '', se muestra el placeholder gris a rayas.
+    var PERSONALIZACIONES_VOLANTE = [
+      {
+        id: 'grip',
+        label: 'Grip',
+        opciones: [
+          { id: 'micro',     label: 'Cuero microperforado', extra: 0,    porDefecto: true, img: 'https://dcdn-us.mitiendanube.com/tmp/stores/007/678/416/products/6cee7853-a7fe-44d7-b13c-9644c178b0f8-f50e6a88cb88c774fc17813204646935.png' },
+          { id: 'liso',      label: 'Cuero liso',           extra: 0,                       img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/chatgpt-image-jun-13-2026-12_31_41-am-a410351347c1416ccd17813215330909-1024-1024.png' },
+          { id: 'alcantara', label: 'Alcantara',            extra: 60.5,                    img: 'https://dcdn-us.mitiendanube.com/tmp/stores/007/678/416/products/65d9b6f8-6c64-43dd-9ae4-28836082b31c-e00a0238141e77a16f17813212780847.png' }
+        ]
+      },
+      {
+        id: 'display',
+        label: 'Display LED',
+        opciones: [
+          { id: 'sin', label: 'Sin display LED', extra: 0,   porDefecto: true, img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/321e5119-ae28-43bc-8377-60fed26282d3-e3a0e102c1e5b9924517813235669571-1024-1024.webp' },
+          { id: 'con', label: 'Con display LED', extra: 145,                   img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/7ae6a990-7863-4d37-8b54-542cf7d01096-0fea72fab5f5b9efc517813228406613-1024-1024.webp' }
+        ]
+      },
+      {
+        id: 'airbag',
+        label: 'Cobertor de air-bag',
+        opciones: [
+          { id: 'original',  label: 'Original',    extra: 0,    porDefecto: true, img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/80fc0e72-6e8f-426d-af05-16e266e14dcd-d1a704ee0fbde3302817813265399708-1024-1024.png' },
+          { id: 'liso',      label: 'Cuero liso',  extra: 60.5,                   img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/46977cae-1601-41dd-b2ba-108cee83b640-11a3a01e9292f0df5a17813261928089.png' },
+          { id: 'alcantara', label: 'Alcantara',   extra: 60.5,                   img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/a98c1118-0dea-440f-8f7e-7a09e022955d-da3f11c70f43f27e6e17813240786341-1024-1024.webp' }
+        ]
+      },
+      {
+        id: 'carbono',
+        label: 'Fibra de carbono forjada',
+        opciones: [
+          { id: 'negra',   label: 'Negra brillante', extra: 0,    porDefecto: true, img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/5b3bff65-d7e4-4ab7-bf6f-9b12270063e2-2e70ae9114863806e017808175757161-1024-1024.webp' },
+          { id: 'forjada', label: 'Forjada',         extra: 60.5,                   img: '',
+            mensaje: 'Consultar colores por WhatsApp' }
+        ]
+      }
+    ];
+
+    function inyectarBloqueVolante() {
+      if (!document.body.classList.contains('es-volante')) return;
+      var single = document.querySelector('#single-product');
+      if (!single) return;
+      if (single.querySelector('.volante-personalizacion')) return; // idempotente
+
+      // Posición: después del último envío gratis visible; fallback antes
+      // del botón de compra.
+      var anchor = single.querySelector('.js-product-form-free-shipping-message') ||
+                   single.querySelector('.free-shipping-message');
+      var insertarDespuesDe = anchor || null;
+      var insertarAntesDe = null;
+      if (!anchor) {
+        insertarAntesDe = single.querySelector('[data-store="product-buy-button"]');
+        if (!insertarAntesDe) return; // sin anchor seguro, esperamos al próximo tick
+      }
+
+      var section = document.createElement('section');
+      section.className = 'volante-personalizacion';
+      section.id = 'personalizacion';
+
+      var title = document.createElement('h3');
+      title.className = 'volante-personalizacion__title';
+      title.textContent = 'Personalizá tu volante';
+      section.appendChild(title);
+
+      PERSONALIZACIONES_VOLANTE.forEach(function(eje) {
+        var ejeWrap = document.createElement('div');
+        ejeWrap.className = 'volante-personalizacion__eje';
+        ejeWrap.setAttribute('data-eje', eje.id);
+        ejeWrap.setAttribute('data-eje-label', eje.label.toUpperCase());
+
+        var defaultOpcion = eje.opciones.find(function(o) { return o.porDefecto; }) || eje.opciones[0];
+
+        var ejeLabel = document.createElement('h4');
+        ejeLabel.className = 'volante-personalizacion__eje-label';
+        ejeLabel.textContent = eje.label.toUpperCase() + ': ' + defaultOpcion.label;
+        ejeWrap.appendChild(ejeLabel);
+
+        var opciones = document.createElement('div');
+        opciones.className = 'volante-personalizacion__opciones';
+
+        eje.opciones.forEach(function(op) {
+          var card = document.createElement('button');
+          card.type = 'button';
+          card.className = 'volante-card' + (op.porDefecto ? ' is-active' : '');
+          card.setAttribute('data-opcion', op.id);
+          card.setAttribute('data-extra', String(op.extra));
+          card.setAttribute('data-label', op.label);
+          card.setAttribute('data-mensaje', op.mensaje || '');
+          card.setAttribute('aria-label', eje.label + ': ' + op.label);
+
+          var img = document.createElement('div');
+          img.className = 'volante-card__img';
+          if (op.img) {
+            img.classList.add('has-image');
+            var imgEl = document.createElement('img');
+            imgEl.src = op.img;
+            imgEl.alt = op.label;
+            imgEl.loading = 'lazy';
+            img.appendChild(imgEl);
+          }
+          card.appendChild(img);
+
+          opciones.appendChild(card);
+        });
+
+        ejeWrap.appendChild(opciones);
+
+        // Mensaje condicional debajo del eje (ej: "Consultar colores por
+        // WhatsApp" cuando se selecciona Forjada). Se renderiza siempre y
+        // se muestra/oculta vía clase .is-visible según la opción activa.
+        var mensajeEl = document.createElement('p');
+        mensajeEl.className = 'volante-personalizacion__mensaje';
+        if (defaultOpcion.mensaje) {
+          mensajeEl.textContent = defaultOpcion.mensaje;
+          mensajeEl.classList.add('is-visible');
+        }
+        ejeWrap.appendChild(mensajeEl);
+
+        section.appendChild(ejeWrap);
+      });
+
+      var btnCotizar = document.createElement('button');
+      btnCotizar.type = 'button';
+      btnCotizar.className = 'btn btn-cotizar-volante';
+      btnCotizar.textContent = 'Cotizar volante';
+      section.appendChild(btnCotizar);
+
+      // Delegación de click en cards: una opción activa por eje.
+      // Al cambiar la opción, actualiza el header del eje con el formato
+      // "EJE: Opción elegida".
+      section.addEventListener('click', function(ev) {
+        var card = ev.target.closest('.volante-card');
+        if (!card) return;
+        ev.preventDefault();
+        var ejeWrap = card.closest('.volante-personalizacion__eje');
+        if (!ejeWrap) return;
+        if (card.classList.contains('is-active')) return; // sin cambio
+        ejeWrap.querySelectorAll('.volante-card.is-active').forEach(function(c) {
+          c.classList.remove('is-active');
+        });
+        card.classList.add('is-active');
+        var ejeLabelEl = ejeWrap.querySelector('.volante-personalizacion__eje-label');
+        if (ejeLabelEl) {
+          var ejeName = ejeWrap.getAttribute('data-eje-label') || '';
+          var opcionName = card.getAttribute('data-label') || '';
+          ejeLabelEl.textContent = ejeName + ': ' + opcionName;
+        }
+        var mensajeEl = ejeWrap.querySelector('.volante-personalizacion__mensaje');
+        if (mensajeEl) {
+          var mensaje = card.getAttribute('data-mensaje') || '';
+          if (mensaje) {
+            mensajeEl.textContent = mensaje;
+            mensajeEl.classList.add('is-visible');
+          } else {
+            mensajeEl.textContent = '';
+            mensajeEl.classList.remove('is-visible');
+          }
+        }
+        section.dispatchEvent(new CustomEvent('volante:cambio', { bubbles: false }));
+      });
+
+      // Click en Cotizar: calcula y muestra el total. Pasa a estado "cotizado".
+      btnCotizar.addEventListener('click', function() {
+        if (btnCotizar.classList.contains('is-cotizado')) return;
+        var total = calcularTotalVolante(section);
+        if (total == null) {
+          console.warn('[volantes] no se pudo leer el precio base, abortar cotización');
+          return;
+        }
+        escribirPrecioMostrado(total);
+        btnCotizar.classList.add('is-cotizado');
+        btnCotizar.textContent = 'Cotizado ✓';
+      });
+
+      // Cambio en cualquier card: si ya estaba cotizado, vuelve al precio base
+      // y re-habilita Cotizar.
+      section.addEventListener('volante:cambio', function() {
+        if (!btnCotizar.classList.contains('is-cotizado')) return;
+        escribirPrecioMostrado(null); // restaura base
+        btnCotizar.classList.remove('is-cotizado');
+        btnCotizar.textContent = 'Cotizar volante';
+      });
+
+      if (insertarDespuesDe && insertarDespuesDe.parentNode) {
+        insertarDespuesDe.parentNode.insertBefore(section, insertarDespuesDe.nextSibling);
+      } else if (insertarAntesDe && insertarAntesDe.parentNode) {
+        insertarAntesDe.parentNode.insertBefore(section, insertarAntesDe);
+      }
+
+      // Scroll diferido a la sección si la URL trae #personalizacion.
+      // El navegador intenta el scroll nativo antes de que esta sección
+      // exista (la inyectamos vía JS post-load), así que lo forzamos
+      // nosotros una vez insertada.
+      if (window.location.hash === '#personalizacion') {
+        setTimeout(function() {
+          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 50);
+      }
+
+      // Si el botón "Encargar ahora" ya fue inyectado por initEncargoDetalle
+      // antes de que existiera el bloque de personalización, lo movemos para
+      // que quede inmediatamente debajo de "Cotizar volante".
+      var encargarExistente = single.querySelector('.btn-encargar-detalle');
+      if (encargarExistente && btnCotizar.parentNode) {
+        btnCotizar.parentNode.insertBefore(encargarExistente, btnCotizar.nextSibling);
+      }
+    }
+
+    marcarProductosVolanteListado();
+    marcarProductosEncargo();
+    initEncargoDetalle();
+    aplicarClaseVolante();
+    setTimeout(aplicarClaseVolante, 1500);
+    revisarEnvioGratis();
+    initTransferSavings();
+    initTransferSavingsProduct();
+    initCuotasEncargo();
+    setTimeout(marcarProductosVolanteListado, 1500);
+    setTimeout(marcarProductosEncargo, 1500);
+    setTimeout(initEncargoDetalle, 1500);
+    setTimeout(initCuotasEncargo, 1500);
+    inyectarBloqueVolante();
+    setTimeout(inyectarBloqueVolante, 1500);
+    initMarqueeAdbar();
+    setTimeout(initMarqueeAdbar, 200);
+    setTimeout(initBrandsMarquee, 1000);
+
+    function initMarqueeAdbar() {
+      var adbar = document.querySelector('.js-swiper-adbar');
+      if (!adbar || adbar.dataset.marqueeInit) return;
+      adbar.dataset.marqueeInit = '1';
+
+      var slides = adbar.querySelectorAll('.swiper-slide:not(.swiper-slide-duplicate)');
+      if (!slides.length) return;
+
+      var textos = Array.from(slides).map(function(s) { return s.innerText.trim(); });
+      var sep = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+      var texto = textos.join(sep);
+      var textoDoble = texto + sep + texto;
+
+      var wrapper = document.createElement('div');
+      wrapper.className = 'adbar-marquee-custom';
+
+      var inner = document.createElement('span');
+      inner.className = 'adbar-marquee-inner';
+      inner.innerHTML = textoDoble;
+      wrapper.appendChild(inner);
+
+      var container = adbar.parentNode;
+      adbar.style.setProperty('display', 'none', 'important');
+      var prev = container.querySelector('.js-swiper-adbar-prev');
+      var next = container.querySelector('.js-swiper-adbar-next');
+      if (prev) prev.style.setProperty('display', 'none', 'important');
+      if (next) next.style.setProperty('display', 'none', 'important');
+
+      container.insertBefore(wrapper, adbar);
+    }
+
+    function initBrandsMarquee() {
+      var brandsEl = document.querySelector('.js-swiper-brands');
+      if (!brandsEl || brandsEl.dataset.marqueeInit) return;
+      brandsEl.dataset.marqueeInit = '1';
+
+      var existing = brandsEl.swiper;
+      if (existing) existing.destroy(false, true);
+
+      var slides = brandsEl.querySelectorAll('.swiper-slide:not(.swiper-slide-duplicate)');
+      if (!slides.length) return;
+
+      var items = Array.from(slides).map(function(s) {
+        var img = s.querySelector('img');
+        var link = s.querySelector('a');
+        if (!img) return '';
+        var imgClone = img.cloneNode(false);
+        imgClone.src = img.getAttribute('data-src') || img.src;
+        imgClone.alt = img.alt;
+        imgClone.removeAttribute('data-src');
+        imgClone.className = 'brand-image';
+        var div = document.createElement('div');
+        div.className = 'brands-marquee-item';
+        if (link) {
+          var a = document.createElement('a');
+          a.href = link.href;
+          a.appendChild(imgClone);
+          div.appendChild(a);
+        } else {
+          div.appendChild(imgClone);
+        }
+        return div.outerHTML;
+      }).filter(Boolean);
+
+      var inner = document.createElement('div');
+      inner.className = 'brands-marquee-inner';
+      inner.innerHTML = items.join('') + items.join('');
+
+      var wrapper = document.createElement('div');
+      wrapper.className = 'brands-marquee-custom';
+      wrapper.appendChild(inner);
+
+      var container = brandsEl.parentNode;
+      brandsEl.style.setProperty('display', 'none', 'important');
+
+      var section = brandsEl.closest('[data-store="home-brands"]') || brandsEl.closest('section') || container;
+      var prevBtn = section.querySelector('.js-swiper-brands-prev');
+      var nextBtn = section.querySelector('.js-swiper-brands-next');
+      if (prevBtn) prevBtn.style.setProperty('display', 'none', 'important');
+      if (nextBtn) nextBtn.style.setProperty('display', 'none', 'important');
+
+      container.insertBefore(wrapper, brandsEl);
+
+      // rAF-driven scroll con soporte de drag/touch
+      var SPEED = 55; // px por segundo
+      var pos = 0;
+      var isDragging = false;
+      var userInteracted = false;
+      var resumeTimer = null;
+      var lastX = 0;
+      var lastTime = null;
+
+      function onDragEnd() {
+        isDragging = false;
+        userInteracted = true;
+        wrapper.style.cursor = '';
+        clearTimeout(resumeTimer);
+        resumeTimer = setTimeout(function() {
+          userInteracted = false;
+        }, 5000);
+      }
+
+      function tick(ts) {
+        if (!lastTime) lastTime = ts;
+        var dt = Math.min(ts - lastTime, 50) / 1000;
+        lastTime = ts;
+
+        var half = inner.scrollWidth / 2;
+        if (half > 0) {
+          if (!isDragging && !userInteracted) pos -= SPEED * dt;
+          // módulo para normalización inmediata sin importar cuánto se acumuló
+          pos = pos % half;
+          if (pos > 0) pos -= half;
+          inner.style.transform = 'translateX(' + pos + 'px)';
+        }
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+
+      wrapper.addEventListener('touchstart', function(e) {
+        isDragging = true;
+        userInteracted = false;
+        clearTimeout(resumeTimer);
+        lastX = e.touches[0].clientX;
+      }, { passive: true });
+      wrapper.addEventListener('touchmove', function(e) {
+        if (!isDragging) return;
+        pos += e.touches[0].clientX - lastX;
+        lastX = e.touches[0].clientX;
+      }, { passive: true });
+      wrapper.addEventListener('touchend',   function() { onDragEnd(); });
+      wrapper.addEventListener('touchcancel',function() { onDragEnd(); });
+
+      wrapper.addEventListener('mousedown', function(e) {
+        isDragging = true;
+        userInteracted = false;
+        clearTimeout(resumeTimer);
+        lastX = e.clientX;
+        wrapper.style.cursor = 'grabbing';
+        e.preventDefault();
+      });
+      document.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        pos += e.clientX - lastX;
+        lastX = e.clientX;
+      });
+      document.addEventListener('mouseup', function() {
+        if (!isDragging) return;
+        onDragEnd();
+      });
+    }
+
+    var _encargoTimer = null;
+    var _encargoDetalleTimer = null;
+    var _transferTimer = null;
+    var _savingsTimer = null;
+    var _volanteInyectTimer = null;
+
+    // Carrusel de banners de categoría (mobile, infinito)
+    function initBannersCategoriaCarousel() {
+      var rows = document.querySelectorAll('.row');
+      rows.forEach(function(row) {
+        if (!row.querySelector('.js-promotional-banner-container')) return;
+        if (row.parentNode && row.parentNode.classList.contains('banners-carousel-wrapper')) return;
+
+        var wrapper = document.createElement('div');
+        wrapper.className = 'banners-carousel-wrapper';
+        row.parentNode.insertBefore(wrapper, row);
+
+        var titulo = document.createElement('h2');
+        titulo.className = 'banners-carousel-title h6 text-primary h1-md';
+        titulo.textContent = 'Lo más buscado...';
+        wrapper.appendChild(titulo);
+
+        wrapper.appendChild(row);
+
+        // Reordenar físicamente: Volantes (2) → Tableros (1) → Accesorios (3)
+        var b1 = row.querySelector('.js-promotional-banner-container-1');
+        var b2 = row.querySelector('.js-promotional-banner-container-2');
+        var b3 = row.querySelector('.js-promotional-banner-container-3');
+        if (b1 && b2 && b3) {
+          row.appendChild(b2);
+          row.appendChild(b1);
+          row.appendChild(b3);
+        }
+
+        // Clones para loop infinito
+        var reales = Array.prototype.slice.call(row.querySelectorAll('.js-promotional-banner-container'));
+        var n = reales.length;
+        if (n > 1) {
+          var cloneOfFirst = reales[0].cloneNode(true);
+          cloneOfFirst.classList.add('banner-clone');
+          cloneOfFirst.setAttribute('aria-hidden', 'true');
+          var cloneOfLast = reales[n - 1].cloneNode(true);
+          cloneOfLast.classList.add('banner-clone');
+          cloneOfLast.setAttribute('aria-hidden', 'true');
+          row.insertBefore(cloneOfLast, reales[0]);
+          row.appendChild(cloneOfFirst);
+        }
+
+        // Flechas
+        var prev = document.createElement('button');
+        prev.type = 'button';
+        prev.className = 'banners-carousel-arrow banners-carousel-prev';
+        prev.setAttribute('aria-label', 'Anterior');
+        var next = document.createElement('button');
+        next.type = 'button';
+        next.className = 'banners-carousel-arrow banners-carousel-next';
+        next.setAttribute('aria-label', 'Siguiente');
+        wrapper.appendChild(prev);
+        wrapper.appendChild(next);
+
+        function getStep() {
+          var first = row.querySelector('.js-promotional-banner-container');
+          return first ? first.getBoundingClientRect().width : 0;
+        }
+
+        function totalSlides() {
+          return row.querySelectorAll('.js-promotional-banner-container').length;
+        }
+
+        function jumpNoAnim(left) {
+          var prevBehavior = row.style.scrollBehavior;
+          row.style.scrollBehavior = 'auto';
+          row.scrollLeft = left;
+          requestAnimationFrame(function() {
+            row.style.scrollBehavior = prevBehavior || '';
+          });
+        }
+
+        function setInitialPosition() {
+          var step = getStep();
+          if (!step) return;
+          jumpNoAnim(n > 1 ? step : 0);
+        }
+
+        // Si quedamos en una clon, saltamos silenciosamente al slide real
+        function checkLoop() {
+          if (n <= 1) return;
+          var step = getStep();
+          if (!step) return;
+          var total = totalSlides();
+          var idx = Math.round(row.scrollLeft / step);
+          if (idx <= 0) {
+            jumpNoAnim(n * step);
+          } else if (idx >= total - 1) {
+            jumpNoAnim(step);
+          }
+        }
+
+        function snapToNearest(thenCheckLoop) {
+          var step = getStep();
+          if (!step) return;
+          var idx = Math.round(row.scrollLeft / step);
+          var target = idx * step;
+          if (Math.abs(row.scrollLeft - target) > 1) {
+            row.scrollTo({ left: target, behavior: 'smooth' });
+          }
+          if (thenCheckLoop) setTimeout(checkLoop, 380);
+        }
+
+        function scrollByOne(dir) {
+          wrapper.setAttribute('data-user-interacted', '1');
+          var step = getStep();
+          if (!step) return;
+          var currentIdx = Math.round(row.scrollLeft / step);
+          var targetIdx = currentIdx + dir;
+          row.scrollTo({ left: targetIdx * step, behavior: 'smooth' });
+          setTimeout(checkLoop, 420);
+        }
+
+        prev.addEventListener('click', function() { scrollByOne(-1); });
+        next.addEventListener('click', function() { scrollByOne(1); });
+
+        var _snapTimer = null;
+        var _touchStartX = 0;
+        var _touchStartScroll = 0;
+        var _touchActive = false;
+
+        row.addEventListener('scroll', function() {
+          if (_touchActive) return;
+          clearTimeout(_snapTimer);
+          _snapTimer = setTimeout(function() { snapToNearest(true); }, 140);
+        }, { passive: true });
+
+        row.addEventListener('touchstart', function(e) {
+          if (!e.touches.length) return;
+          _touchActive = true;
+          _touchStartX = e.touches[0].clientX;
+          _touchStartScroll = row.scrollLeft;
+          clearTimeout(_snapTimer);
+        }, { passive: true });
+
+        row.addEventListener('touchend', function(e) {
+          _touchActive = false;
+          wrapper.setAttribute('data-user-interacted', '1');
+          var step = getStep();
+          if (!step) return;
+          var endX = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientX : _touchStartX;
+          var deltaX = _touchStartX - endX;
+          var startIdx = Math.round(_touchStartScroll / step);
+          var threshold = Math.min(35, step * 0.08);
+          var targetIdx;
+          if (Math.abs(deltaX) > threshold) {
+            targetIdx = startIdx + (deltaX > 0 ? 1 : -1);
+          } else {
+            targetIdx = Math.round(row.scrollLeft / step);
+          }
+          row.scrollTo({ left: targetIdx * step, behavior: 'smooth' });
+          setTimeout(checkLoop, 450);
+        }, { passive: true });
+
+        row.addEventListener('touchcancel', function() {
+          _touchActive = false;
+        }, { passive: true });
+
+        window.addEventListener('resize', function() {
+          var step = getStep();
+          if (!step) return;
+          var idx = Math.round(row.scrollLeft / step);
+          jumpNoAnim(idx * step);
+        });
+
+        setTimeout(setInitialPosition, 50);
+      });
+    }
+    initBannersCategoriaCarousel();
+
+    var _bannersCarouselTimer = null;
+    var _volanteTimer = null;
+    var _volanteListadoTimer = null;
+    var observador = new MutationObserver(function() {
+      revisarEnvioGratis();
+      clearTimeout(_volanteTimer);
+      _volanteTimer = setTimeout(aplicarClaseVolante, 100);
+      clearTimeout(_volanteInyectTimer);
+      _volanteInyectTimer = setTimeout(inyectarBloqueVolante, 200);
+      clearTimeout(_volanteListadoTimer);
+      _volanteListadoTimer = setTimeout(marcarProductosVolanteListado, 250);
+      clearTimeout(_encargoTimer);
+      _encargoTimer = setTimeout(marcarProductosEncargo, 300);
+      clearTimeout(_encargoDetalleTimer);
+      _encargoDetalleTimer = setTimeout(initEncargoDetalle, 300);
+      clearTimeout(_transferTimer);
+      _transferTimer = setTimeout(initTransferSavings, 300);
+      clearTimeout(_savingsTimer);
+      _savingsTimer = setTimeout(initTransferSavingsProduct, 300);
+      clearTimeout(_bannersCarouselTimer);
+      _bannersCarouselTimer = setTimeout(initBannersCategoriaCarousel, 300);
+    });
+    observador.observe(document.body, { childList: true, subtree: true });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTiendaNubePersonalizado);
+  } else {
+    initTiendaNubePersonalizado();
+  }
+
+  // === Popup promocional (social proof) ===
+  (function initPopupPromocional() {
+    var STORAGE_KEY = 'rapa_promo_popup_shown';
+    var DELAY_MS = 10000;
+    // AUTODISMISS_MS y la animación promoPopupCountdown en style.css deben coincidir.
+    var AUTODISMISS_MS = 5000;
+    var EXCLUDED_PATHS = /\/(checkout|cart|carrito|account|admin|api)(\/|$|\?)/i;
+    var NOMBRES = [
+      'Juan', 'Martín', 'Lucas', 'Mateo', 'Agustín', 'Tomás', 'Nicolás',
+      'Joaquín', 'Federico', 'Bruno', 'Diego', 'Santiago', 'Franco',
+      'Gonzalo', 'Matías', 'Ezequiel', 'Ignacio', 'Sebastián', 'Pablo',
+      'Andrés', 'Cristian', 'Leandro', 'Emanuel', 'Javier', 'Marcos',
+      'Hernán', 'Rodrigo', 'Gastón', 'Nahuel', 'Facundo'
+    ];
+
+    function yaMostrada() {
+      try { return sessionStorage.getItem(STORAGE_KEY) === '1'; }
+      catch (_) { return false; }
+    }
+
+    function marcarMostrada() {
+      try { sessionStorage.setItem(STORAGE_KEY, '1'); } catch (_) {}
+    }
+
+    function esUrlValida(u) {
+      if (!u) return false;
+      if (/^data:/i.test(u)) return false;
+      if (u.indexOf('blank') !== -1) return false;
+      return /^https?:\/\//i.test(u) || u.indexOf('//') === 0 || u.charAt(0) === '/';
+    }
+
+    function leerImgSrc(imgEl) {
+      var candidatos = [
+        imgEl.currentSrc,
+        imgEl.getAttribute('data-src'),
+        imgEl.getAttribute('data-original'),
+        imgEl.getAttribute('data-image'),
+        imgEl.src
+      ];
+      for (var i = 0; i < candidatos.length; i++) {
+        if (esUrlValida(candidatos[i])) return candidatos[i];
+      }
+      var srcset = imgEl.getAttribute('srcset') || imgEl.getAttribute('data-srcset');
+      if (srcset) {
+        var partes = srcset.split(',');
+        for (var j = 0; j < partes.length; j++) {
+          var u = partes[j].trim().split(/\s+/)[0];
+          if (esUrlValida(u)) return u;
+        }
+      }
+      return null;
+    }
+
+    function extraerProducto(card) {
+      var nombreEl = card.querySelector('.js-item-name');
+      var linkEl = card.querySelector('a.btn-secondary');
+      var imgEl = card.querySelector('.js-product-item-image-container-private img');
+      if (!nombreEl || !linkEl || !imgEl) return null;
+      var nombre = (nombreEl.innerText || nombreEl.textContent || '').trim();
+      var url = linkEl.href;
+      var img = leerImgSrc(imgEl);
+      if (!nombre || !url || !img) return null;
+      if (!/^https?:\/\//i.test(url)) return null;
+      return { nombre: nombre, url: url, img: img };
+    }
+
+    function elegirProducto() {
+      var cards = Array.prototype.slice.call(document.querySelectorAll('.item-product'));
+      if (!cards.length) return null;
+      cards.sort(function() { return Math.random() - 0.5; });
+      for (var i = 0; i < cards.length; i++) {
+        var producto = extraerProducto(cards[i]);
+        if (producto) return producto;
+      }
+      return null;
+    }
+
+    function generarPersona() {
+      var nombre = NOMBRES[Math.floor(Math.random() * NOMBRES.length)];
+      var inicial = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+      return nombre + ' ' + inicial + '.';
+    }
+
+    function construirTarjeta(producto, persona) {
+      var aside = document.createElement('aside');
+      aside.className = 'promo-popup';
+      aside.setAttribute('role', 'status');
+      aside.setAttribute('aria-live', 'polite');
+
+      var link = document.createElement('a');
+      link.className = 'promo-popup__link';
+      link.href = producto.url;
+
+      var img = document.createElement('img');
+      img.className = 'promo-popup__img';
+      img.src = producto.img;
+      img.alt = '';
+      img.loading = 'lazy';
+
+      var text = document.createElement('div');
+      text.className = 'promo-popup__text';
+
+      var person = document.createElement('span');
+      person.className = 'promo-popup__person';
+      person.textContent = persona + ' compró';
+
+      var prod = document.createElement('span');
+      prod.className = 'promo-popup__product';
+      prod.textContent = producto.nombre;
+
+      text.appendChild(person);
+      text.appendChild(prod);
+      link.appendChild(img);
+      link.appendChild(text);
+      aside.appendChild(link);
+
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'promo-popup__close';
+      btn.setAttribute('aria-label', 'Cerrar');
+
+      var ring = document.createElement('span');
+      ring.className = 'promo-popup__ring';
+      ring.setAttribute('aria-hidden', 'true');
+      btn.appendChild(ring);
+
+      aside.appendChild(btn);
+      return aside;
+    }
+
+    function mostrar() {
+      if (yaMostrada()) return;
+      if (EXCLUDED_PATHS.test(location.pathname)) return;
+      var producto = elegirProducto();
+      if (!producto) return;
+      var persona = generarPersona();
+      var el = construirTarjeta(producto, persona);
+      document.body.appendChild(el);
+      marcarMostrada();
+
+      requestAnimationFrame(function() {
+        el.classList.add('is-visible');
+      });
+
+      var autoTimer = setTimeout(cerrar, AUTODISMISS_MS);
+
+      function cerrar() {
+        clearTimeout(autoTimer);
+        if (!el.parentNode) return;
+        el.classList.add('is-leaving');
+        setTimeout(function() {
+          if (el.parentNode) el.parentNode.removeChild(el);
+        }, 300);
+      }
+
+      el.querySelector('.promo-popup__close').addEventListener('click', cerrar);
+    }
+
+    function arrancar() {
+      if (yaMostrada()) return;
+      if (EXCLUDED_PATHS.test(location.pathname)) return;
+      setTimeout(mostrar, DELAY_MS);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', arrancar);
+    } else {
+      arrancar();
+    }
+  })();
+
