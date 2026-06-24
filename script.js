@@ -607,9 +607,9 @@
         id: 'grip',
         label: 'Grip',
         opciones: [
-          { id: 'micro',     label: 'Cuero microperforado', extra: 0,    porDefecto: true, img: 'https://dcdn-us.mitiendanube.com/tmp/stores/007/678/416/products/6cee7853-a7fe-44d7-b13c-9644c178b0f8-f50e6a88cb88c774fc17813204646935.png' },
+          { id: 'micro',     label: 'Cuero microperforado', extra: 0,    porDefecto: true, img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/6cee7853-a7fe-44d7-b13c-9644c178b0f8-f50e6a88cb88c774fc17813204646935-1024-1024.webp' },
           { id: 'liso',      label: 'Cuero liso',           extra: 0,                       img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/chatgpt-image-jun-13-2026-12_31_41-am-a410351347c1416ccd17813215330909-1024-1024.png' },
-          { id: 'alcantara', label: 'Alcantara',            extra: 60.5,                    img: 'https://dcdn-us.mitiendanube.com/tmp/stores/007/678/416/products/65d9b6f8-6c64-43dd-9ae4-28836082b31c-e00a0238141e77a16f17813212780847.png' }
+          { id: 'alcantara', label: 'Alcantara',            extra: 60.5,                    img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/65d9b6f8-6c64-43dd-9ae4-28836082b31c-e00a0238141e77a16f17813212780847-1024-1024.webp' }
         ]
       },
       {
