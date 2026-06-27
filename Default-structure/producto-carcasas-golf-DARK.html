@@ -1,0 +1,110 @@
+<!-- ===========================================================
+     RAPA IMPORTS · Descripción de producto con pestañas
+     Versión: FONDO OSCURO (DARK)
+     Producto: Carcasas de Espejos Retrovisores (VW Golf)
+     Pegar tal cual en Tiendanube → Descripción del producto.
+     =========================================================== -->
+
+<!-- Script WhatsApp (arma el link wa.me desde los meta de la página) -->
+<script>
+  var WA_NUMERO  = "5492364626266";
+  var WA_SALUDO  = "Hola Rapa Imports, vengo desde la tienda online y tenía una consulta sobre este producto";
+  function buildWALink() {
+    var nombre = (document.querySelector('meta[property="og:title"]')  || {}).content
+              || document.title || "este producto";
+    var url    = (document.querySelector('link[rel="canonical"]')      || {}).href
+              || (document.querySelector('meta[property="og:url"]')    || {}).content
+              || window.location.href;
+    var texto  = WA_SALUDO + ": " + nombre + " - " + url;
+    var href   = "https://wa.me/" + WA_NUMERO + "?text=" + encodeURIComponent(texto);
+    document.querySelectorAll(".wa-btn").forEach(function (btn) { btn.href = href; });
+  }
+  document.addEventListener("DOMContentLoaded", buildWALink);
+</script>
+
+<div class="rapa-tabs-wrap" style="max-width:860px;margin:0 auto;font-family:Arial,Helvetica,sans-serif;background:#0b0b0b;color:#f5f5f5;border-radius:14px;overflow:hidden;border:1px solid #1e1e1e;width:100%;box-sizing:border-box;">
+
+  <!-- ================= HEADER (siempre visible) ================= -->
+  <div class="rapa-header" style="background:linear-gradient(180deg,#161616 0%,#0b0b0b 100%);padding:30px 22px 24px;text-align:center;box-sizing:border-box;">
+    <div class="rapa-bar" style="width:44px;height:3px;background:#d91a1a;margin:0 auto 16px;border-radius:2px;"></div>
+    <div class="rapa-eyebrow" style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#ff5252;font-weight:bold;margin-bottom:12px;line-height:1.4;">Accesorios Tuning de primera línea</div>
+    <div class="rapa-title" style="font-size:26px;font-weight:800;color:#ffffff;text-transform:uppercase;letter-spacing:-0.8px;line-height:1.05;word-break:break-word;">Carcasas de Espejos Retrovisores</div>
+  </div>
+
+  <!-- ================= STATS BAR (siempre visible) ================= -->
+  <div class="rapa-stats" style="display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #1f1f1f;background:#0d0d0d;">
+    <div class="rapa-stat" style="padding:14px 12px;border-right:1px solid #1f1f1f;text-align:center;box-sizing:border-box;">
+      <div style="font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:#6a6a6a;font-weight:bold;margin-bottom:5px;">Material</div>
+      <div style="font-size:12px;color:#f0f0f0;font-weight:bold;">ABS</div>
+    </div>
+    <div class="rapa-stat" style="padding:14px 12px;border-right:1px solid #1f1f1f;text-align:center;box-sizing:border-box;">
+      <div style="font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:#6a6a6a;font-weight:bold;margin-bottom:5px;">Acabado</div>
+      <div style="font-size:12px;color:#f0f0f0;font-weight:bold;">Carbono</div>
+    </div>
+    <div class="rapa-stat" style="padding:14px 12px;border-right:1px solid #1f1f1f;text-align:center;box-sizing:border-box;">
+      <div style="font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:#6a6a6a;font-weight:bold;margin-bottom:5px;">Kit</div>
+      <div style="font-size:12px;color:#f0f0f0;font-weight:bold;">Par I + D</div>
+    </div>
+    <div class="rapa-stat" style="padding:14px 12px;text-align:center;box-sizing:border-box;">
+      <div style="font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:#6a6a6a;font-weight:bold;margin-bottom:5px;">Compat.</div>
+      <div style="font-size:12px;color:#f0f0f0;font-weight:bold;">MK6/7/7.5</div>
+    </div>
+  </div>
+
+  <!-- ================= NAV SEGMENTED CONTROL ================= -->
+  <div class="rapa-nav-wrap" style="padding:14px;background:#0b0b0b;border-top:1px solid #1b1b1b;box-sizing:border-box;">
+    <div class="rapa-nav" style="display:flex;border:1px solid #2a2a2a;background:#111111;border-radius:10px;overflow:hidden;">
+      <button type="button" data-rapa-tab="resumen"    style="flex:1 1 0;min-width:0;cursor:pointer;font-family:inherit;padding:12px 6px;border:0;border-right:1px solid #2a2a2a;background:transparent;color:#9a9a9a;font-size:10px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;transition:background .15s,color .15s;"><span class="lbl-d">Resumen</span><span class="lbl-m" style="display:none;">Resumen</span></button>
+      <button type="button" data-rapa-tab="specs"       style="flex:1 1 0;min-width:0;cursor:pointer;font-family:inherit;padding:12px 6px;border:0;border-right:1px solid #2a2a2a;background:transparent;color:#9a9a9a;font-size:10px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;transition:background .15s,color .15s;"><span class="lbl-d">Specs</span><span class="lbl-m" style="display:none;">Specs</span></button>
+      <button type="button" data-rapa-tab="compat"      style="flex:1 1 0;min-width:0;cursor:pointer;font-family:inherit;padding:12px 6px;border:0;border-right:1px solid #2a2a2a;background:transparent;color:#9a9a9a;font-size:10px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;transition:background .15s,color .15s;"><span class="lbl-d">Compatibilidad</span><span class="lbl-m" style="display:none;">Auto</span></button>
+      <button type="button" data-rapa-tab="instalacion" style="flex:1 1 0;min-width:0;cursor:pointer;font-family:inherit;padding:12px 6px;border:0;border-right:1px solid #2a2a2a;background:transparent;color:#9a9a9a;font-size:10px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;transition:background .15s,color .15s;"><span class="lbl-d">Instalación</span><span class="lbl-m" style="display:none;">Pasos</span></button>
+      <button type="button" data-rapa-tab="kit"         style="flex:1 1 0;min-width:0;cursor:pointer;font-family:inherit;padding:12px 6px;border:0;background:transparent;color:#9a9a9a;font-size:10px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;transition:background .15s,color .15s;"><span class="lbl-d">Kit</span><span class="lbl-m" style="display:none;">Kit</span></button>
+    </div>
+  </div>
+
+  <!-- ================= PANELES (se completan en tasks siguientes) ================= -->
+  <!-- PANEL: RESUMEN -->
+  <!-- PANEL: SPECS -->
+  <!-- PANEL: COMPAT -->
+  <!-- PANEL: INSTALACION -->
+  <!-- PANEL: KIT -->
+
+  <!-- ================= FOOTER (siempre visible) ================= -->
+  <div class="rapa-footer" style="background:linear-gradient(90deg,#d91a1a 0%,#b51212 100%);padding:28px 22px;text-align:center;box-sizing:border-box;">
+    <div style="font-size:22px;font-weight:800;text-transform:uppercase;color:#ffffff;line-height:1.2;letter-spacing:-0.5px;margin-bottom:10px;">Dale a tu Golf<br />el detalle que merece.</div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.65);text-transform:uppercase;letter-spacing:4px;font-weight:bold;line-height:1.6;">Rapa Imports</div>
+  </div>
+
+</div>
+
+<!-- ================= RESPONSIVE (se completa en Task 8) ================= -->
+<!-- @media (max-width:600px) goes here -->
+
+<!-- ================= LÓGICA DE PESTAÑAS ================= -->
+<script>
+(function () {
+  var ACT_BG = "#d91a1a", ACT_TX = "#ffffff";
+  var OFF_TX = "#9a9a9a";
+  function initRapaTabs(wrap) {
+    var btns   = wrap.querySelectorAll("[data-rapa-tab]");
+    var panels = wrap.querySelectorAll("[data-rapa-panel]");
+    function show(id) {
+      panels.forEach(function (p) {
+        p.style.display = (p.getAttribute("data-rapa-panel") === id) ? "block" : "none";
+      });
+      btns.forEach(function (b) {
+        var on = b.getAttribute("data-rapa-tab") === id;
+        b.style.background = on ? ACT_BG : "transparent";
+        b.style.color      = on ? ACT_TX : OFF_TX;
+      });
+    }
+    btns.forEach(function (b) {
+      b.addEventListener("click", function () { show(b.getAttribute("data-rapa-tab")); });
+    });
+    if (btns.length) show(btns[0].getAttribute("data-rapa-tab"));
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".rapa-tabs-wrap").forEach(initRapaTabs);
+  });
+})();
+</script>
