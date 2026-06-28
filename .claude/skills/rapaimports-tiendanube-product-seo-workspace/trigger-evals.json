@@ -1,0 +1,50 @@
+[
+  {
+    "query": "che, cargá este producto en Tiendanube: difusor trasero para Golf MK7 GTI, fibra de carbono, sale 85 lucas. Buscá la info que falte",
+    "should_trigger": true
+  },
+  {
+    "query": "generame la descripción HTML para un volante de fibra de carbono con LED para Audi A3 8V, plug and play",
+    "should_trigger": true
+  },
+  {
+    "query": "completá el template HTML de Default-structure para estas palancas DSG de aluminio rojo, compatibles con VW/Audi caja DSG",
+    "should_trigger": true
+  },
+  {
+    "query": "necesito título SEO, descripción SEO, tags y url para el tablero digital virtual cockpit del BMW F20",
+    "should_trigger": true
+  },
+  {
+    "query": "armame la ficha de producto para Rapa Imports de un alerón tipo ducktail para Golf MK7.5",
+    "should_trigger": true
+  },
+  {
+    "query": "buscá info de estas cachas de espejo carbono para Mercedes clase A W176 y armá todo para subir a la tienda",
+    "should_trigger": true
+  },
+  {
+    "query": "tengo un display LED para mostrar presión de turbo, no sé bien para qué autos sirve. Investigalo y dejame la ficha lista con el seo",
+    "should_trigger": true
+  },
+  {
+    "query": "subí esto a la tienda: kit de difusores y splitter para BMW serie 1 F20 LCI, necesito el html y los campos de optimizacion",
+    "should_trigger": true
+  },
+  {
+    "query": "el botón de WhatsApp de la descripción se ve enorme en el celu, podés achicarlo en el style.css?",
+    "should_trigger": false
+  },
+  {
+    "query": "en script.js la detección de producto por encargo (stock 9999) no está togglendo bien la clase en el listado, revisá marcarProductosEncargo()",
+    "should_trigger": false
+  },
+  {
+    "query": "armame una campaña de Google Ads para los volantes de carbono, con grupos de anuncios y palabras clave con CPC estimado",
+    "should_trigger": false
+  },
+  {
+    "query": "cuántas ventas hicimos de cachas de espejo el mes pasado? pasame un resumen del Excel de ventas de Tiendanube",
+    "should_trigger": false
+  }
+]
