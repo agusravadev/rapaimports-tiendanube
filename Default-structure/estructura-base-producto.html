@@ -1,0 +1,211 @@
+<!--
+  TEMPLATE: ESTRUCTURA BASE DE PRODUCTO (DISEÑO DEFINITIVO · PESTAÑAS · FONDO BLANCO)
+  ===================================================================================
+  Diseño con pestañas: Descripción · Especificaciones · Compatibilidad.
+  Pegar en Tiendanube → Descripción del producto (en modo "Editar HTML / código fuente",
+  NO en el editor visual, para que no se rompan los <script>).
+
+  Sirve tanto para productos con stock como por encargo (stock 9999): el botón
+  "Encargar" se inyecta solo desde script.js en la zona de compra. Esta descripción
+  es la misma para ambos casos.
+
+  REGLA DE FLEXIBILIDAD:
+    - La tabla de ESPECIFICACIONES es libre: cada producto tiene specs distintas.
+      Poné las filas <tr> que correspondan (mínimo ~3, sin tope). Ver ejemplo abajo.
+    - La STATS BAR del header son 3 "destacados" rápidos. Si querés otra cantidad,
+      cambiá grid-template-columns: repeat(N,1fr) y agregá/quitá bloques .rapa-stat
+      (al ÚLTIMO bloque quitarle el border-right). 3 es lo recomendado.
+    - Los chips de MODELOS COMPATIBLES y los del header son repetibles.
+
+  PLACEHOLDERS — reemplazar antes de publicar:
+    {{BADGE_CATEGORIA}}        → Eyebrow rojo. Ej: "Accesorios Tuning de primera línea"
+    {{TITULO_PRODUCTO}}        → Título grande. Ej: "Carcasas de Espejos Retrovisores"
+    {{STAT1_LABEL}} / {{STAT1_VALOR}}  → Destacado 1. Ej: "Material" / "ABS"
+    {{STAT2_LABEL}} / {{STAT2_VALOR}}  → Destacado 2. Ej: "Acabado" / "Carbono"
+    {{STAT3_LABEL}} / {{STAT3_VALOR}}  → Destacado 3. Ej: "Compat." / "MK6/7/7.5"
+    {{DESCRIPCION}}            → Párrafo introductorio del producto (2-4 oraciones).
+    {{FILAS_ESPECIFICACIONES}} → Filas <tr> de la tabla de specs (ver EJEMPLO abajo).
+    {{MODELOS_COMPATIBLES}}    → Uno o más <span> con los modelos (ver EJEMPLO abajo).
+    {{TEXTO_COMPATIBILIDAD}}   → Frase antes del botón de WhatsApp.
+    {{FOOTER_LINEA1}}          → CTA footer línea 1. Ej: "Dale a tu Golf"
+    {{FOOTER_LINEA2}}          → CTA footer línea 2. Ej: "el detalle que merece."
+
+  EJEMPLO — fila de especificación (copiar/repetir, cambiar label y valor):
+    <tr>
+    <td style="padding: 12px; width: 38%; background: #f5f5f5; border: 1px solid #e6e6e6; color: #888888; text-transform: uppercase; font-size: 10px; letter-spacing: 1px; font-weight: bold; vertical-align: top; line-height: 1.5;">Material</td>
+    <td style="padding: 12px; background: #ffffff; border: 1px solid #e6e6e6; color: #222222; font-size: 12px; font-weight: bold; line-height: 1.7; word-break: break-word;">ABS de alta resistencia</td>
+    </tr>
+
+  EJEMPLO — modelo compatible (copiar/repetir uno por modelo):
+    <span style="display: inline-block; margin: 0 4px 6px; padding: 8px 12px; background: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 999px; color: #222222; font-size: 11px; font-weight: bold;">VW Golf MK7 GTI</span>
+
+  NOTA: el número de WhatsApp (5492364626266) ya está en el script. No tocar salvo que cambie.
+-->
+<p>&nbsp;</p>
+<!-- Script WhatsApp (arma el link wa.me desde los meta de la página) -->
+<p>
+<script>
+  var WA_NUMERO  = "5492364626266";
+  var WA_SALUDO  = "Hola Rapa Imports, vengo desde la tienda online y tenía una consulta sobre este producto";
+  function buildWALink() {
+    var nombre = (document.querySelector('meta[property="og:title"]')  || {}).content
+              || document.title || "este producto";
+    var url    = (document.querySelector('link[rel="canonical"]')      || {}).href
+              || (document.querySelector('meta[property="og:url"]')    || {}).content
+              || window.location.href;
+    var texto  = WA_SALUDO + ": " + nombre + " - " + url;
+    var href   = "https://wa.me/" + WA_NUMERO + "?text=" + encodeURIComponent(texto);
+    document.querySelectorAll(".wa-btn").forEach(function (btn) {
+      btn.href = href;
+      /* Forzar tamaño chico aunque el CSS global de la tienda use !important */
+      btn.style.setProperty("font-size", "12px", "important");
+      btn.style.setProperty("line-height", "1.2", "important");
+      btn.style.setProperty("padding", "9px 16px", "important");
+      btn.style.setProperty("display", "inline-flex", "important");
+      btn.style.setProperty("width", "auto", "important");
+      btn.style.setProperty("max-width", "260px", "important");
+      btn.style.setProperty("letter-spacing", "0.5px", "important");
+    });
+  }
+  document.addEventListener("DOMContentLoaded", buildWALink);
+</script>
+</p>
+<div class="rapa-tabs-wrap" style="max-width: 860px; margin: 0 auto; font-family: Arial,Helvetica,sans-serif; background: #ffffff; color: #1a1a1a; border-radius: 14px; overflow: hidden; border: 1px solid #e6e6e6; width: 100%; box-sizing: border-box;"><!-- ================= HEADER (siempre visible) ================= -->
+<div class="rapa-header" style="background: linear-gradient(180deg,#fafafa 0%,#ffffff 100%); padding: 30px 22px 24px; text-align: center; box-sizing: border-box;">
+<div class="rapa-bar" style="width: 44px; height: 3px; background: #d91a1a; margin: 0 auto 16px; border-radius: 2px;">&nbsp;</div>
+<div class="rapa-eyebrow" style="font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: #d91a1a; font-weight: bold; margin-bottom: 12px; line-height: 1.4;"><strong>{{BADGE_CATEGORIA}}</strong></div>
+<div class="rapa-title" style="font-size: 26px; font-weight: 800; color: #0b0b0b; text-transform: uppercase; letter-spacing: -0.8px; line-height: 1.05; word-break: break-word;">{{TITULO_PRODUCTO}}</div>
+</div>
+<!-- ================= STATS BAR (siempre visible · 3 destacados) ================= -->
+<div class="rapa-stats" style="display: grid; grid-template-columns: repeat(3,1fr); border-top: 1px solid #ececec; background: #fafafa;">
+<div class="rapa-stat" style="padding: 14px 12px; border-right: 1px solid #ececec; text-align: center; box-sizing: border-box;">
+<div style="font-size: 9px; letter-spacing: 1.8px; text-transform: uppercase; color: #888888; font-weight: bold; margin-bottom: 5px;">{{STAT1_LABEL}}</div>
+<div style="font-size: 12px; color: #222222; font-weight: bold;">{{STAT1_VALOR}}</div>
+</div>
+<div class="rapa-stat" style="padding: 14px 12px; border-right: 1px solid #ececec; text-align: center; box-sizing: border-box;">
+<div style="font-size: 9px; letter-spacing: 1.8px; text-transform: uppercase; color: #888888; font-weight: bold; margin-bottom: 5px;">{{STAT2_LABEL}}</div>
+<div style="font-size: 12px; color: #222222; font-weight: bold;">{{STAT2_VALOR}}</div>
+</div>
+<div class="rapa-stat" style="padding: 14px 12px; text-align: center; box-sizing: border-box;">
+<div style="font-size: 9px; letter-spacing: 1.8px; text-transform: uppercase; color: #888888; font-weight: bold; margin-bottom: 5px;">{{STAT3_LABEL}}</div>
+<div style="font-size: 12px; color: #222222; font-weight: bold;">{{STAT3_VALOR}}</div>
+</div>
+</div>
+<!-- ================= NAV SEGMENTED CONTROL ================= -->
+<div class="rapa-nav-wrap" style="padding: 14px; background: #ffffff; border-top: 1px solid #ececec; box-sizing: border-box;">
+<div class="rapa-nav" style="display: flex; border: 1px solid #dcdcdc; background: #ffffff; border-radius: 10px; overflow: hidden;"><button style="flex: 1 1 0; min-width: 0; cursor: pointer; font-family: inherit; padding: 12px 6px; border: 0; border-right: 1px solid #dcdcdc; background: transparent; color: #000000; font-size: 10px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: background .15s,color .15s;" type="button" data-rapa-tab="descripcion" data-long="Descripci&oacute;n" data-short="Descrip."><strong class="rapa-lbl">Descripci&oacute;n</strong></button> <button style="flex: 1 1 0; min-width: 0; cursor: pointer; font-family: inherit; padding: 12px 6px; border: 0; border-right: 1px solid #dcdcdc; background: transparent; color: #000000; font-size: 10px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: background .15s,color .15s;" type="button" data-rapa-tab="specs" data-long="Especificaciones" data-short="Specs"><strong class="rapa-lbl">Especificaciones</strong></button> <button style="flex: 1 1 0; min-width: 0; cursor: pointer; font-family: inherit; padding: 12px 6px; border: 0; background: transparent; color: #000000; font-size: 10px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: background .15s,color .15s;" type="button" data-rapa-tab="compat" data-long="Compatibilidad" data-short="Auto"><strong class="rapa-lbl">Compatibilidad</strong></button></div>
+</div>
+<!-- ================= PANEL: DESCRIPCIÓN ================= -->
+<div style="padding: 24px 22px; background: #ffffff; border-top: 1px solid #ececec; box-sizing: border-box;" data-rapa-panel="descripcion">
+<p style="font-size: 10px; color: #d91a1a; text-transform: uppercase; letter-spacing: 3px; font-weight: bold; margin-bottom: 14px; text-align: center;"><strong>Descripci&oacute;n</strong></p>
+<div style="background: #fafafa; border: 1px solid #ececec; border-left: 3px solid #d91a1a; border-radius: 0 10px 10px 0; padding: 18px 20px; box-sizing: border-box;">
+<p style="margin: 0; color: #444444; font-size: 14px; line-height: 1.85;">{{DESCRIPCION}}</p>
+</div>
+</div>
+<!-- ================= PANEL: ESPECIFICACIONES (filas libres) ================= -->
+<div style="display: none; padding: 24px 22px; background: #fafafa; border-top: 1px solid #ececec; box-sizing: border-box;" data-rapa-panel="specs">
+<div style="font-size: 10px; color: #d91a1a; text-transform: uppercase; letter-spacing: 3px; font-weight: bold; margin-bottom: 14px; text-align: center;">Especificaciones t&eacute;cnicas</div>
+<table style="width: 100%; border-collapse: collapse; table-layout: fixed;">
+<tbody>
+{{FILAS_ESPECIFICACIONES}}
+</tbody>
+</table>
+</div>
+<!-- ================= PANEL: COMPATIBILIDAD ================= -->
+<div style="display: none; padding: 24px 22px; background: #ffffff; border-top: 1px solid #ececec; box-sizing: border-box;" data-rapa-panel="compat">
+<div style="font-size: 10px; color: #d91a1a; text-transform: uppercase; letter-spacing: 3px; font-weight: bold; margin-bottom: 14px; text-align: center;">Modelos compatibles</div>
+<div style="line-height: 2.4; margin-bottom: 18px; text-align: center;">{{MODELOS_COMPATIBLES}}</div>
+<div style="background: rgba(37,211,102,0.06); border: 1px solid rgba(37,211,102,0.18); border-radius: 10px; padding: 18px 16px; text-align: center; box-sizing: border-box;">
+<div style="color: #4a4a4a; font-size: 13px; line-height: 1.7; margin-bottom: 14px;">{{TEXTO_COMPATIBILIDAD}}</div>
+<a class="wa-btn" style="display: inline-flex !important; width: auto !important; max-width: 260px; align-items: center; gap: 6px; background: #25D366; color: #ffffff; text-decoration: none; font-size: 12px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; padding: 9px 16px; border-radius: 8px;" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="13" height="13" fill="#ffffff" style="flex:none;" xmlns="http://www.w3.org/2000/svg"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.978-1.027zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/></svg> Consultar por WhatsApp </a></div>
+</div>
+<!-- ================= FOOTER (siempre visible) ================= -->
+<div class="rapa-footer" style="background: linear-gradient(90deg,#d91a1a 0%,#b51212 100%); padding: 28px 22px; text-align: center; box-sizing: border-box;">
+<div style="font-size: 22px; font-weight: 800; text-transform: uppercase; color: #ffffff; line-height: 1.2; letter-spacing: -0.5px; margin-bottom: 10px;">{{FOOTER_LINEA1}}<br />{{FOOTER_LINEA2}}</div>
+<div style="font-size: 11px; color: rgba(255,255,255,0.65); text-transform: uppercase; letter-spacing: 4px; font-weight: bold; line-height: 1.6;">Rapa Imports</div>
+</div>
+</div>
+<!-- ================= LÓGICA DE PESTAÑAS + LABELS RESPONSIVE ================= -->
+<p>
+<script>
+(function () {
+  var ACT_BG = "#d91a1a", ACT_TX = "#ffffff";
+  var OFF_TX = "#000000";
+
+  function applyLabels(wrap) {
+    var mobile = window.innerWidth <= 600;
+    var verySmall = window.innerWidth <= 360;
+
+    var navWrap = wrap.querySelector(".rapa-nav-wrap");
+    if (navWrap) {
+      navWrap.style.padding = mobile ? "10px 6px" : "14px";
+    }
+
+    wrap.querySelectorAll("[data-rapa-tab]").forEach(function (b) {
+      var lbl = b.querySelector(".rapa-lbl");
+
+      /* SIEMPRE usa el texto largo, incluso en celular */
+      if (lbl) {
+        lbl.textContent = b.getAttribute("data-long");
+        lbl.style.display = "block";
+        lbl.style.width = "100%";
+        lbl.style.whiteSpace = "nowrap";
+        lbl.style.overflow = "visible";
+        lbl.style.textOverflow = "clip";
+        lbl.style.lineHeight = "1.15";
+      }
+
+      b.style.flex = "1 1 0";
+      b.style.minWidth = "0";
+      b.style.boxSizing = "border-box";
+      b.style.textAlign = "center";
+      b.style.whiteSpace = "nowrap";
+      b.style.overflow = "visible";
+      b.style.textOverflow = "clip";
+
+      /* Ajuste fino para que entren: DESCRIPCIÓN / ESPECIFICACIONES / COMPATIBILIDAD */
+      b.style.fontSize = mobile ? (verySmall ? "10px" : "10px") : "10px";
+      b.style.letterSpacing = mobile ? "0px" : "1px";
+      b.style.padding = mobile ? "12px 1px" : "12px 6px";
+    });
+  }
+
+  function initRapaTabs(wrap) {
+    var btns = wrap.querySelectorAll("[data-rapa-tab]");
+    var panels = wrap.querySelectorAll("[data-rapa-panel]");
+
+    function show(id) {
+      panels.forEach(function (p) {
+        p.style.display = (p.getAttribute("data-rapa-panel") === id) ? "block" : "none";
+      });
+
+      btns.forEach(function (b) {
+        var on = b.getAttribute("data-rapa-tab") === id;
+        b.style.background = on ? ACT_BG : "transparent";
+        b.style.color = on ? ACT_TX : OFF_TX;
+      });
+    }
+
+    btns.forEach(function (b) {
+      b.addEventListener("click", function () {
+        show(b.getAttribute("data-rapa-tab"));
+      });
+    });
+
+    applyLabels(wrap);
+
+    window.addEventListener("resize", function () {
+      applyLabels(wrap);
+    });
+
+    if (btns.length) {
+      show(btns[0].getAttribute("data-rapa-tab"));
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".rapa-tabs-wrap").forEach(initRapaTabs);
+  });
+})();
+</script>
+</p>

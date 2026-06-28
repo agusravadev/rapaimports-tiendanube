@@ -22,36 +22,33 @@ No hay build system, tests, ni servidor local. Los cambios se verifican en la ti
 
 Cuando el usuario pida crear o completar la descripción HTML de un producto, seguir este flujo **siempre**:
 
-1. **Preguntar si el producto es por encargo o tiene stock físico.**
-   - Por encargo → usar [`Default-structure/encargo.html`](Default-structure/encargo.html)
-   - Stock físico → usar [`Default-structure/stock.html`](Default-structure/stock.html)
+1. **Usar la estructura base única** [`Default-structure/estructura-base-producto.html`](Default-structure/estructura-base-producto.html).
+   - Es el diseño definitivo: pestañas (Descripción · Especificaciones · Compatibilidad), fondo blanco.
+   - Sirve para productos con stock y por encargo (stock 9999) por igual: la descripción es la misma. El botón "Encargar" no va en la descripción; se inyecta desde `script.js` en la zona de compra según la variante.
+   - Los templates anteriores `encargo.html` y `stock.html` quedaron como **legacy** (diseño oscuro con secciones de instalación/kit/beneficios que este diseño ya no usa). No usarlos salvo pedido explícito.
 
-2. **Buscar información del producto en internet** (nombre, specs técnicas, modelos compatibles, pasos de instalación, contenido del kit). Usar fuentes confiables: fabricante, tiendas especializadas, foros de la marca del vehículo.
+2. **Buscar información del producto en internet** (nombre, specs técnicas, modelos compatibles). Usar fuentes confiables: fabricante, tiendas especializadas, foros de la marca del vehículo.
 
-3. **Completar todos los placeholders** `{{...}}` de la estructura base elegida con los datos reales del producto. No dejar ningún placeholder sin reemplazar.
+3. **Completar todos los placeholders** `{{...}}` con los datos reales del producto. No dejar ningún placeholder sin reemplazar.
 
-4. **Entregar el HTML listo para copiar** en el panel de descripción de Tiendanube.
+4. **Entregar el HTML listo para copiar** en el panel de descripción de Tiendanube. Avisar que se pegue en modo "Editar HTML / código fuente" (no en el editor visual) para que no se rompan los `<script>`.
 
-### Diferencias clave entre los dos templates
+### Reglas de la estructura
 
-| Sección | `encargo.html` | `stock.html` |
-|---|---|---|
-| Sección Beneficios/Características | Incluida | Opcional (ver comentario en template) |
+- **Especificaciones flexibles:** la tabla no tiene specs fijas — cada producto lleva las filas `<tr>` que correspondan (mínimo ~3, sin tope). El template trae un `<tr>` de ejemplo en el comentario del header.
+- **Stats bar:** 3 destacados rápidos (recomendado). Para otra cantidad, cambiar `grid-template-columns: repeat(N,1fr)` y agregar/quitar bloques `.rapa-stat` (al último, quitarle el `border-right`).
+- **Botón WhatsApp:** el tamaño se fuerza por JS con `setProperty(..., "important")` porque el CSS global de la tienda estiliza los links `wa.me` con `!important`. No bajar el `font-size` solo por inline: no tiene efecto.
+- **Solo 3 pestañas:** esta versión no tiene instalación ni kit.
 
-> El botón "Encargar" ya no vive en la descripción. Se inyecta automáticamente desde `script.js` en la zona de compra (junto al botón Agregar al carrito) cuando la variante seleccionada es 9999. Los dos templates solo se diferencian por la sección de beneficios.
+### Placeholders
 
-### Placeholders comunes a ambos templates
-
-- `{{BADGE_CATEGORIA}}` — categoría breve del producto (ej: "Accesorios Tuning de primera línea")
-- `{{TITULO_PRODUCTO}}` — nombre del producto en mayúsculas
-- `{{SUBTITULO_PRODUCTO}}` — specs resumidas en una línea separadas por `·`
-- `{{DESCRIPCION_CORTA}}` — párrafo introductorio (~2-3 oraciones)
-- `{{FILAS_ESPECIFICACIONES}}` — filas `<tr>` de la tabla técnica
+- `{{BADGE_CATEGORIA}}` — eyebrow rojo / categoría breve (ej: "Accesorios Tuning de primera línea")
+- `{{TITULO_PRODUCTO}}` — nombre del producto (título grande)
+- `{{STAT1_LABEL}}` / `{{STAT1_VALOR}}` … `{{STAT3_LABEL}}` / `{{STAT3_VALOR}}` — los 3 destacados del header
+- `{{DESCRIPCION}}` — párrafo introductorio (~2-4 oraciones)
+- `{{FILAS_ESPECIFICACIONES}}` — filas `<tr>` libres de la tabla técnica
 - `{{MODELOS_COMPATIBLES}}` — `<span>` por cada modelo compatible
 - `{{TEXTO_COMPATIBILIDAD}}` — frase antes del botón WhatsApp en compatibilidad
-- `{{PASOS_INSTALACION}}` — bloques numerados 01/02/03/04
-- `{{TEXTO_RECOMENDACION}}` — aviso del bloque 🔧 amarillo
-- `{{ITEMS_KIT}}` — `<span>` con el contenido de la caja (neutros en gris, incluidos en verde)
 - `{{FOOTER_LINEA1}}` / `{{FOOTER_LINEA2}}` — CTA del footer rojo
 
 ## Arquitectura del sistema de personalización
