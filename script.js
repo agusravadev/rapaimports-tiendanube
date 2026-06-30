@@ -600,6 +600,34 @@
       span.textContent = '$' + formatearMontoVolante(monto);
     }
 
+    // Tras cotizar: sube hasta el precio y hace un "flash" del número
+    // (blanco instantáneo → vuelve al color original #111827 en ~1s) para
+    // llamar la atención sobre el monto recién calculado. La transición vive
+    // en la regla base del CSS; .precio-flash corta la transición para que el
+    // salto a blanco sea inmediato, y al quitarla la vuelta anima sola.
+    // Solo se invoca dentro del bloque de volantes, así que no afecta a
+    // ningún otro producto.
+    function resaltarPrecioCotizado() {
+      var single = document.querySelector('#single-product');
+      if (!single) return;
+      var priceContainer = single.querySelector('.price-container');
+      if (priceContainer) {
+        var offset = 274; // distancia deseada del tope del precio al borde superior
+        var top = priceContainer.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
+      }
+      var span = single.querySelector('.js-price-display[data-product-price]');
+      if (!span) return;
+      // Esperamos a que el scroll suave acerque el precio antes del flash.
+      setTimeout(function() {
+        span.classList.add('precio-flash');   // salto instantáneo a blanco
+        void span.offsetWidth;                 // fuerza reflow
+        requestAnimationFrame(function() {
+          span.classList.remove('precio-flash'); // transición color → original (1s)
+        });
+      }, 380);
+    }
+
     // Para asignar imagen a una opción, completá su campo `img` con la URL.
     // Si `img` queda como '', se muestra el placeholder gris a rayas.
     var PERSONALIZACIONES_VOLANTE = [
@@ -774,6 +802,7 @@
         escribirPrecioMostrado(total);
         btnCotizar.classList.add('is-cotizado');
         btnCotizar.textContent = 'Cotizado ✓';
+        resaltarPrecioCotizado();
       });
 
       // Cambio en cualquier card: si ya estaba cotizado, vuelve al precio base

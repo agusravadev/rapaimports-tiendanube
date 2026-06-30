@@ -1056,6 +1056,20 @@ body.es-volante #single-product .js-price-display[data-product-price]::after {
 	margin-left: 6px;
 }
 
+/* Flash del precio al cotizar: salto instantáneo a blanco y vuelta suave
+   al color original (#111827) en ~1s. La transición vive acá (regla base)
+   para que el retorno anime; .precio-flash corta la transición para que el
+   salto a blanco sea inmediato. Un @keyframes no serviría: el color base usa
+   !important y las animaciones no lo pisan, pero las transiciones sí. Todo
+   está scopeado a body.es-volante, así que no afecta a ningún otro producto. */
+body.es-volante #single-product .js-price-display[data-product-price] {
+	transition: color 1s ease;
+}
+body.es-volante #single-product .js-price-display[data-product-price].precio-flash {
+	color: #fff !important;
+	transition: none;
+}
+
 /* Ocultar widgets de precio que no aplican a volantes en USD */
 body.es-volante #single-product .payment-discount-price-product-container,
 body.es-volante #single-product .js-product-payments-container,
