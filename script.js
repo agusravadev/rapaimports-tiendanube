@@ -612,7 +612,7 @@
       if (!single) return;
       var priceContainer = single.querySelector('.price-container');
       if (priceContainer) {
-        var offset = 235; // distancia deseada del tope del precio al borde superior
+        var offset = 274; // distancia deseada del tope del precio al borde superior
         var top = priceContainer.getBoundingClientRect().top + window.pageYOffset - offset;
         window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
       }
