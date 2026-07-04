@@ -600,6 +600,34 @@
       span.textContent = '$' + formatearMontoVolante(monto);
     }
 
+    // Tras cotizar: sube hasta el precio y hace un "flash" del número
+    // (blanco instantáneo → vuelve al color original #111827 en ~1s) para
+    // llamar la atención sobre el monto recién calculado. La transición vive
+    // en la regla base del CSS; .precio-flash corta la transición para que el
+    // salto a blanco sea inmediato, y al quitarla la vuelta anima sola.
+    // Solo se invoca dentro del bloque de volantes, así que no afecta a
+    // ningún otro producto.
+    function resaltarPrecioCotizado() {
+      var single = document.querySelector('#single-product');
+      if (!single) return;
+      var priceContainer = single.querySelector('.price-container');
+      if (priceContainer) {
+        var offset = 274; // distancia deseada del tope del precio al borde superior
+        var top = priceContainer.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
+      }
+      var span = single.querySelector('.js-price-display[data-product-price]');
+      if (!span) return;
+      // Esperamos a que el scroll suave acerque el precio antes del flash.
+      setTimeout(function() {
+        span.classList.add('precio-flash');   // salto instantáneo a blanco
+        void span.offsetWidth;                 // fuerza reflow
+        requestAnimationFrame(function() {
+          span.classList.remove('precio-flash'); // transición color → original (1s)
+        });
+      }, 380);
+    }
+
     // Para asignar imagen a una opción, completá su campo `img` con la URL.
     // Si `img` queda como '', se muestra el placeholder gris a rayas.
     var PERSONALIZACIONES_VOLANTE = [
@@ -607,9 +635,9 @@
         id: 'grip',
         label: 'Grip',
         opciones: [
-          { id: 'micro',     label: 'Cuero microperforado', extra: 0,    porDefecto: true, img: 'https://dcdn-us.mitiendanube.com/tmp/stores/007/678/416/products/6cee7853-a7fe-44d7-b13c-9644c178b0f8-f50e6a88cb88c774fc17813204646935.png' },
+          { id: 'micro',     label: 'Cuero microperforado', extra: 0,    porDefecto: true, img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/6cee7853-a7fe-44d7-b13c-9644c178b0f8-f50e6a88cb88c774fc17813204646935-1024-1024.webp' },
           { id: 'liso',      label: 'Cuero liso',           extra: 0,                       img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/chatgpt-image-jun-13-2026-12_31_41-am-a410351347c1416ccd17813215330909-1024-1024.png' },
-          { id: 'alcantara', label: 'Alcantara',            extra: 60.5,                    img: 'https://dcdn-us.mitiendanube.com/tmp/stores/007/678/416/products/65d9b6f8-6c64-43dd-9ae4-28836082b31c-e00a0238141e77a16f17813212780847.png' }
+          { id: 'alcantara', label: 'Alcantara',            extra: 60.5,                    img: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/65d9b6f8-6c64-43dd-9ae4-28836082b31c-e00a0238141e77a16f17813212780847-1024-1024.webp' }
         ]
       },
       {
@@ -774,6 +802,7 @@
         escribirPrecioMostrado(total);
         btnCotizar.classList.add('is-cotizado');
         btnCotizar.textContent = 'Cotizado ✓';
+        resaltarPrecioCotizado();
       });
 
       // Cambio en cualquier card: si ya estaba cotizado, vuelve al precio base
