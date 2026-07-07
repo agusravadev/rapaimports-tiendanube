@@ -81,6 +81,20 @@
   // disponible) y como fallback por el breadcrumb del DOM. Si ninguna fuente
   // está lista al cargar, el MutationObserver de más abajo reintenta.
   function esCategoriaVolante() {
+    // 1. Tag del producto (fuente principal): no depende de categorías ni del
+    //    breadcrumb, viaja siempre en LS.product.tags sin importar cuántas
+    //    categorías tenga el producto ni cuál sea la primaria.
+    //    Regla de operación: todo volante debe llevar el tag "volante" en el panel.
+    try {
+      if (typeof LS !== 'undefined' && LS.product && Array.isArray(LS.product.tags)) {
+        var hitTag = LS.product.tags.some(function(t) {
+          return String(t).trim().toLowerCase() === 'volante';
+        });
+        if (hitTag) return true;
+      }
+    } catch (_) {}
+    // 2. Fallback: LS.product.categories (hoy viene undefined en el detalle;
+    //    se deja por si Tiendanube lo expone en el futuro).
     try {
       if (typeof LS !== 'undefined' && LS.product && Array.isArray(LS.product.categories)) {
         var hit = LS.product.categories.some(function(c) {
@@ -90,6 +104,8 @@
         if (hit) return true;
       }
     } catch (_) {}
+    // 3. Fallback: breadcrumb. Solo detecta si "Volantes" es la categoría
+    //    primaria (la única que Tiendanube renderiza en el breadcrumb).
     var bc = document.querySelector('.breadcrumbs, .breadcrumb, nav.breadcrumb, .js-breadcrumb');
     if (bc) {
       var texto = (bc.textContent || '').toLowerCase();
