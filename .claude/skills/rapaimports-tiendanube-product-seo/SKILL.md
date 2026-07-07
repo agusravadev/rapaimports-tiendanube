@@ -138,6 +138,40 @@ Reglas:
 - **No inventes** que un producto viene en las dos: sólo aplicá esta regla cuando el
   usuario lo aclare.
 
+#### Badges de modelos compatibles (rango de años, no un badge por año)
+
+Cuando un producto es compatible con un modelo en un **rango continuo de años**
+(ej. 2010-2019), **no generes un badge por cada año** duplicando el modelo. Un
+solo badge con el rango completo:
+
+- Correcto: `VW Vento MK6 2011-2018`
+- Incorrecto: `VW Vento MK6 2011`, `VW Vento MK6 2012`, `VW Vento MK6 2013`… (un
+  badge por año)
+
+Si hay más de un modelo compatible (ej. A3 y S3, o Hatchback y Sportback con
+rangos distintos), un badge por modelo con su propio rango, no por año:
+
+- Ej.: `Audi A3/S3 8V Hatchback 2013-2020` (un solo badge, no ocho).
+
+Sólo abrí badges separados por año si el rango **no es continuo** (ej. el
+producto aplica a 2013-2015 y después a 2018-2020 pero no al medio, según lo que
+diga la fuente) — ahí sí hace falta partirlo para no afirmar años que no están
+confirmados.
+
+#### Mensaje de consulta por WhatsApp (compatibilidad)
+
+El texto que acompaña al botón de WhatsApp en la pestaña de Compatibilidad
+(placeholder `{{TEXTO_COMPATIBILIDAD}}`) tiene que ser **genérico**, no
+personalizado por modelo/año. Usar siempre esta frase, tal cual:
+
+```
+¿Tenés dudas de la compatibilidad de este producto con tu vehículo? Consultanos por WhatsApp.
+```
+
+No redactes variantes largas explicando el rango de años o la carrocería en esa
+frase — esa información ya está en el párrafo de compatibilidad y en los badges;
+el mensaje de WhatsApp es sólo la invitación a consultar.
+
 ### 4. Generar los campos de Tiendanube
 
 **A) Tags** — palabras clave para la búsqueda interna de Tiendanube. Incluí marca,
