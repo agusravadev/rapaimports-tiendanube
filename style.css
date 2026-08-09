@@ -19,6 +19,13 @@ input, select, textarea {
 	font-weight: 500 !important;
 }
 
+/* Precio: el tema pone font-weight 700 por defecto (Archivo/Montserrat).
+   Con Outfit ese peso se ve mucho más ancho/grueso que antes. Referencia:
+   saferazor.com.ar usa 400 (regular) en el precio. */
+.js-price-display {
+	font-weight: 400 !important;
+}
+
 body.producto-encargo #single-product [data-store="product-buy-button"], body.producto-encargo #single-product .js-addtocart, body.producto-encargo #single-product .js-addtocart-placeholder, body.producto-encargo #single-product .js-quantity, body.producto-encargo #single-product #product_form .form-row.mb-4, body.producto-encargo #single-product .js-product-discount-container {
 	display: none !important;
 }
