@@ -500,7 +500,7 @@
       setTimeout(function() {
         var header = document.querySelector('.js-head-main');
         var headerH = header ? header.getBoundingClientRect().height : 160;
-        var offset = headerH + 8;
+        var offset = headerH + 180;
         var top = target.getBoundingClientRect().top + window.pageYOffset - offset;
         window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
       }, 150);
