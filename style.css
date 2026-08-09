@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@120;400;500;600;700&display=swap');
 
 /* Tipografía: Outfit en TODA la página (listado, ficha, carrito, modal de
    cuotas, footer, botones, inputs y también el contenido de la descripción
@@ -25,6 +25,12 @@ body * {
    saferazor.com.ar usa 400 (regular) en el precio. */
 .js-price-display {
 	font-weight: 400 !important;
+}
+
+/* Precio principal en la ficha de producto (no en el listado): peso 120,
+   probado a pedido en DevTools — queda mucho más fino que el regular 400. */
+#single-product .js-price-display {
+	font-weight: 120 !important;
 }
 
 /* Precio con transferencia: el tema lo pone en 800 (extra bold), que con
