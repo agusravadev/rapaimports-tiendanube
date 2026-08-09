@@ -1,10 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
 
-/* Tipografía: nombres de producto y precios (listado + ficha) en Outfit */
-.item-name,
-.js-product-name,
-.js-price-display,
-.js-payment-discount-price-product {
+/* Tipografía: Outfit en todo el sitio (listado, ficha, nav, footer, botones,
+   inputs), no solo en título/precio de producto. body cubre la mayoría por
+   herencia, pero headings y botones tienen su propia regla de font-family
+   en el tema y necesitan override explícito para no quedar en Archivo/Montserrat. */
+body,
+h1, h2, h3, h4, h5, h6,
+button, .btn,
+input, select, textarea {
 	font-family: 'Outfit', sans-serif !important;
 }
 
