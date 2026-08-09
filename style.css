@@ -11,6 +11,14 @@ input, select, textarea {
 	font-family: 'Outfit', sans-serif !important;
 }
 
+/* Nombre de producto: peso medium (referencia: saferazor.com.ar usa
+   font-weight 500 en .product-card-title) para que se note el cambio de
+   tipografía a simple vista, no solo la familia. */
+.item-name,
+.js-product-name {
+	font-weight: 500 !important;
+}
+
 body.producto-encargo #single-product [data-store="product-buy-button"], body.producto-encargo #single-product .js-addtocart, body.producto-encargo #single-product .js-addtocart-placeholder, body.producto-encargo #single-product .js-quantity, body.producto-encargo #single-product #product_form .form-row.mb-4, body.producto-encargo #single-product .js-product-discount-container {
 	display: none !important;
 }
