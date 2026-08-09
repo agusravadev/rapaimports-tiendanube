@@ -1,13 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
 
-/* Tipografía: Outfit en todo el sitio (listado, ficha, nav, footer, botones,
-   inputs), no solo en título/precio de producto. body cubre la mayoría por
-   herencia, pero headings y botones tienen su propia regla de font-family
-   en el tema y necesitan override explícito para no quedar en Archivo/Montserrat. */
+/* Tipografía: Outfit en TODA la página (listado, ficha, carrito, modal de
+   cuotas, footer, botones, inputs y también el contenido de la descripción
+   del producto, que trae Arial fijo por HTML/inline desde el template).
+   body sólo cubriría lo que hereda; hay varios elementos con font-family
+   propia (headings del tema, botones, y sobre todo el HTML de la
+   descripción con estilos inline) que necesitan el override directo con
+   el selector universal para no quedar afuera. */
 body,
-h1, h2, h3, h4, h5, h6,
-button, .btn,
-input, select, textarea {
+body * {
 	font-family: 'Outfit', sans-serif !important;
 }
 
@@ -24,6 +25,13 @@ input, select, textarea {
    saferazor.com.ar usa 400 (regular) en el precio. */
 .js-price-display {
 	font-weight: 400 !important;
+}
+
+/* Precio con transferencia: el tema lo pone en 800 (extra bold), que con
+   Outfit se ve demasiado pesado. Se baja a 600 para que siga destacando
+   sobre el precio regular sin quedar tan ancho. */
+.js-payment-discount-price-product {
+	font-weight: 600 !important;
 }
 
 body.producto-encargo #single-product [data-store="product-buy-button"], body.producto-encargo #single-product .js-addtocart, body.producto-encargo #single-product .js-addtocart-placeholder, body.producto-encargo #single-product .js-quantity, body.producto-encargo #single-product #product_form .form-row.mb-4, body.producto-encargo #single-product .js-product-discount-container {
