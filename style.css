@@ -153,13 +153,13 @@ body.producto-encargo #single-product .price-container::after {
 }
 
 #single-product .payment-discount-price-product-container::before {
-	content: "Mejor precio · Transferencia" !important;
+	content: "Transferencia bancaria" !important;
 	position: static !important;
 	display: block !important;
-	font-size: 10px !important;
+	font-size: 12.5px !important;
 	font-weight: 800 !important;
 	letter-spacing: .14em !important;
-	text-transform: uppercase !important;
+	text-transform: none !important;
 	color: #15803d !important;
 	margin: 0 0 4px !important;
 	white-space: nowrap !important;
