@@ -321,6 +321,33 @@
       });
     }
 
+    // 3a-ter. Redirección desde "Comprar" (listado) cuando el producto tiene
+    //         variantes nativas de Tiendanube. El popup de quickshop no tiene
+    //         espacio para renderizar bien el selector dentro de la card, así
+    //         que en vez de abrirlo llevamos al usuario a la ficha del
+    //         producto y scrolleamos hasta el selector de variantes.
+    //         Interceptamos en fase de captura (tercer parámetro true) para
+    //         ganarle al handler nativo de Tiendanube que abre el popup:
+    //         la fase de captura corre antes que cualquier listener en
+    //         bubble, sin importar el orden de carga de los scripts.
+    //         Delegado en document: cubre cards ya presentes y las que
+    //         inyecte el paginado/infinite scroll más adelante, sin
+    //         necesidad de re-registrar el listener.
+    function initRedireccionPersonalizacion() {
+      document.addEventListener('click', function(e) {
+        var btn = e.target.closest ? e.target.closest('.js-item-buy-open') : null;
+        if (!btn) return;
+        var item = btn.closest('.item-product');
+        if (!item) return;
+        var linkEl = item.querySelector('a.item-link, a.js-product-item-image-link-private');
+        if (!linkEl || !linkEl.href) return;
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+        window.location.href = linkEl.href.split('#')[0] + '#personalizaciones';
+      }, true);
+    }
+
     // 3a-bis. Marcar cards de productos de la categoría "Volantes" en
     //         listados. Detección por slug de URL (el listado no expone
     //         la categoría en el HTML de la card). Idempotente.
@@ -455,6 +482,24 @@
       }
 
       aplicarEstado();
+    }
+
+    // 3b-bis. Scroll al selector de variantes nativas en la ficha de producto
+    //         cuando se llega con #personalizaciones (ver
+    //         initRedireccionPersonalizacion). El offset despeja el header
+    //         sticky (~209px en desktop y mobile) dejando el bloque
+    //         "Acabado" + swatches visible apenas debajo.
+    function initScrollPersonalizacionesDetalle() {
+      if (window.location.hash !== '#personalizaciones') return;
+      var single = document.querySelector('#single-product');
+      if (!single) return;
+      var target = single.querySelector('.js-product-variants');
+      if (!target) return;
+      setTimeout(function() {
+        var offset = 180;
+        var top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
+      }, 150);
     }
 
     // 3c. Cuotas reactivas en página de detalle — reemplaza el widget de pagos
@@ -860,6 +905,8 @@
     marcarProductosVolanteListado();
     marcarProductosEncargo();
     initEncargoDetalle();
+    initRedireccionPersonalizacion();
+    initScrollPersonalizacionesDetalle();
     aplicarClaseVolante();
     setTimeout(aplicarClaseVolante, 1500);
     revisarEnvioGratis();
