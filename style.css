@@ -1,3 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
+
+/* Tipografía: nombres de producto y precios (listado + ficha) en Outfit */
+.item-name,
+.js-product-name,
+.js-price-display,
+.js-payment-discount-price-product {
+	font-family: 'Outfit', sans-serif !important;
+}
 
 body.producto-encargo #single-product [data-store="product-buy-button"], body.producto-encargo #single-product .js-addtocart, body.producto-encargo #single-product .js-addtocart-placeholder, body.producto-encargo #single-product .js-quantity, body.producto-encargo #single-product #product_form .form-row.mb-4, body.producto-encargo #single-product .js-product-discount-container {
 	display: none !important;
