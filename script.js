@@ -486,9 +486,9 @@
 
     // 3b-bis. Scroll al selector de variantes nativas en la ficha de producto
     //         cuando se llega con #personalizaciones (ver
-    //         initRedireccionPersonalizacion). El offset despeja el header
-    //         sticky (~209px en desktop y mobile) dejando el bloque
-    //         "Acabado" + swatches visible apenas debajo.
+    //         initRedireccionPersonalizacion). Offset = alto real del header
+    //         sticky (medido en vivo: 152px) + margen de aire, para que el
+    //         bloque "Acabado" + swatches quede visible apenas debajo.
     function initScrollPersonalizacionesDetalle() {
       if (window.location.hash !== '#personalizaciones') return;
       var single = document.querySelector('#single-product');
@@ -496,7 +496,7 @@
       var target = single.querySelector('.js-product-variants');
       if (!target) return;
       setTimeout(function() {
-        var offset = 180;
+        var offset = 172;
         var top = target.getBoundingClientRect().top + window.pageYOffset - offset;
         window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
       }, 150);
