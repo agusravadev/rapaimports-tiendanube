@@ -917,6 +917,8 @@
     initTransferSavings();
     initTransferSavingsProduct();
     initCuotasEncargo();
+    initResenasPrueba();
+    setTimeout(initResenasPrueba, 1500);
     setTimeout(marcarProductosVolanteListado, 1500);
     setTimeout(marcarProductosEncargo, 1500);
     setTimeout(initEncargoDetalle, 1500);
@@ -926,6 +928,31 @@
     initMarqueeAdbar();
     setTimeout(initMarqueeAdbar, 200);
     setTimeout(initBrandsMarquee, 1000);
+
+    // === PRUEBA: fila de reseñas (estrellas + "34 reseñas") ===
+    // Réplica del widget de saferazor.com.ar: las estrellas son el texto
+    // "★★★★★" con un gradiente recortado al glifo (background-clip: text),
+    // así el relleno parcial sale de la variable --rapa-star-rating.
+    // Valores hardcodeados a propósito: es un bloque de prueba, no lee
+    // reseñas reales de ningún lado. Se inserta debajo del título.
+    // Para quitarlo: borrar esta función, sus dos llamadas y el bloque
+    // ".rapa-reviews-row" de style.css.
+    function initResenasPrueba() {
+      var single = document.querySelector('#single-product');
+      if (!single) return;
+      if (single.querySelector('.js-rapa-reviews-row')) return;
+
+      var titulo = single.querySelector('.js-product-name');
+      if (!titulo) return;
+
+      var row = document.createElement('div');
+      row.className = 'js-rapa-reviews-row rapa-reviews-row';
+      row.innerHTML =
+        '<span class="rapa-star-rating" style="--rapa-star-rating: 4.8;"></span>' +
+        '<span class="rapa-reviews-count">34 reseñas</span>';
+
+      titulo.parentNode.insertBefore(row, titulo.nextSibling);
+    }
 
     function initMarqueeAdbar() {
       var adbar = document.querySelector('.js-swiper-adbar');

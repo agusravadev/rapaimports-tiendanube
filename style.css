@@ -143,7 +143,7 @@ body.producto-encargo #single-product .price-container::after {
 	align-items: center !important;
 	flex-wrap: wrap !important;
 	gap: 4px !important;
-	background: transparent !important;
+	background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%) !important;
 	border: 1px solid #bbf7d0 !important;
 	border-radius: 12px !important;
 	padding: 8px 14px 12px !important;
@@ -167,18 +167,20 @@ body.producto-encargo #single-product .price-container::after {
 #single-product .payment-discount-price-product-container>span:nth-child(2),
 #single-product .js-payment-discount-name-product {
 	color: #111827 !important;
-	font-weight: 700 !important;
 	font-size: 14px !important;
 }
 
-/* Separación extra entre el monto y "con ...": el gap del contenedor (4px)
-   deja las palabras juntas entre sí; este margen suma el espacio que separa
-   la frase del precio. */
+/* "con" sin negrita; "transferencia bancaria" en negrita. */
 #single-product .payment-discount-price-product-container>span:nth-child(2) {
+	font-weight: 400 !important;
+	/* Separación extra entre el monto y "con ...": el gap del contenedor
+	   (4px) deja las palabras juntas entre sí; este margen suma el espacio
+	   que separa la frase del precio. */
 	margin-left: 4px !important;
 }
 
 #single-product .js-payment-discount-name-product {
+	font-weight: 700 !important;
 	text-transform: lowercase !important;
 }
 
@@ -334,6 +336,59 @@ body.producto-encargo #single-product .price-container::after {
 #single-product [data-component="product.quantity.minus"],
 #single-product [data-component="product.quantity.plus"] {
 	border-radius: 4px !important;
+}
+
+/* === PRUEBA: fila de reseñas (estrellas + "34 reseñas") ===
+   Réplica del widget de saferazor.com.ar. Las estrellas son el glifo
+   "★★★★★" pintado con un gradiente recortado al texto, así el porcentaje
+   de relleno sale de --rapa-star-rating (0 a 5).
+   El font-family lleva !important porque la regla global `body *` fuerza
+   Outfit, que no trae el glifo de estrella con el mismo trazo.
+   La inyecta initReseñasPrueba() en script.js; para quitar todo, borrar
+   este bloque y esa función. */
+#single-product .rapa-reviews-row {
+	display: flex !important;
+	align-items: center !important;
+	gap: 12px !important;
+	margin: 5px 0 10px !important;
+}
+
+#single-product .rapa-star-rating {
+	--rapa-star-percent: calc(var(--rapa-star-rating) / 5 * 100%);
+	display: inline-block !important;
+	font-family: Times, "Times New Roman", serif !important;
+	font-size: 19px !important;
+	line-height: 1 !important;
+}
+
+#single-product .rapa-star-rating::before {
+	content: "★★★★★";
+	background: linear-gradient(90deg, #fd9a52 var(--rapa-star-percent), #e1e1e1 var(--rapa-star-percent));
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	color: transparent;
+}
+
+#single-product .rapa-reviews-count {
+	font-size: 14px !important;
+	font-weight: 400 !important;
+	color: #111827 !important;
+	line-height: 1 !important;
+}
+
+/* Texto base de la ficha a 14px: selector de variante ("Acabado: ..."),
+   los botones de variante y los avisos de stock. Los precios principales y
+   el título quedan afuera: tienen su propio tamaño más arriba. */
+#single-product .form-label,
+#single-product .js-insta-variation-label,
+#single-product .js-insta-variant,
+#single-product .btn-variant,
+#single-product .btn-variant-content,
+#single-product .js-last-product,
+#single-product .js-latest-products-available,
+#single-product .js-product-stock {
+	font-size: 14px !important;
 }
 
 #single-product .product-description a[href*="wa.me"] {
