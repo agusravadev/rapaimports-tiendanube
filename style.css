@@ -117,11 +117,13 @@ body.producto-encargo #single-product .price-container::after {
 #single-product .rapa-ahorra {
 	order: 4 !important;
 	width: 100% !important;
-	margin: 0 !important;
+	/* Los 8px de arriba lo separan de la fila de reseñas y lo corren hacia
+	   abajo, dejándolo más cerca del recuadro de transferencia. */
+	margin: 8px 0 0 !important;
 	line-height: 1 !important;
-	/* Alineado con el texto de adentro del recuadro de transferencia:
-	   su borde (1px) + su padding izquierdo (14px). */
-	padding-left: 15px !important;
+	/* Sin indentar: arranca donde arranca el recuadro de transferencia,
+	   o sea el borde izquierdo del .price-container. */
+	padding-left: 0 !important;
 }
 
 #single-product .rapa-ahorra-texto {
@@ -173,9 +175,9 @@ body.producto-encargo #single-product .price-container::after {
 	border: 1px solid #bbf7d0 !important;
 	border-radius: 12px !important;
 	padding: 8px 14px 12px !important;
-	/* 2px + los 10px de gap del .price-container = 12px hasta "AHORRA 25%",
-	   la mitad de la separación anterior. */
-	margin-top: 2px !important;
+	/* Sin margen propio: la separación hasta "AHORRA 25%" queda en los 10px
+	   de gap del .price-container. */
+	margin-top: 0 !important;
 	margin-bottom: 0 !important;
 	overflow: visible !important;
 }
@@ -400,13 +402,13 @@ body.producto-encargo #single-product .price-container::after {
 
 #single-product .rapa-reviews-stars svg {
 	display: block !important;
-	width: 19px !important;
-	height: 19px !important;
+	width: 18.5px !important;
+	height: 18.5px !important;
 	flex-shrink: 0 !important;
 }
 
 #single-product .rapa-reviews-count {
-	font-size: 15px !important;
+	font-size: 14.5px !important;
 	font-weight: 400 !important;
 	color: #111827 !important;
 	line-height: 1 !important;
