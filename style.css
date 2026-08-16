@@ -104,7 +104,7 @@ body.producto-encargo #single-product .price-container::after {
 }
 
 #single-product .payment-discount-price-product-container {
-	order: 3;
+	order: 4;
 	width: 100%;
 }
 
@@ -339,35 +339,37 @@ body.producto-encargo #single-product .price-container::after {
 }
 
 /* === PRUEBA: fila de reseñas (estrellas + "34 reseñas") ===
-   Réplica del widget de saferazor.com.ar. Las estrellas son el glifo
-   "★★★★★" pintado con un gradiente recortado al texto, así el porcentaje
-   de relleno sale de --rapa-star-rating (0 a 5).
-   El font-family lleva !important porque la regla global `body *` fuerza
-   Outfit, que no trae el glifo de estrella con el mismo trazo.
-   La inyecta initReseñasPrueba() en script.js; para quitar todo, borrar
+   Réplica del widget de saferazor.com.ar. Las estrellas son SVG inline, no
+   el glifo "★" con gradiente recortado (background-clip: text + text-fill
+   transparent) que usa saferazor: esa técnica depende de que el editor de
+   CSS de Tiendanube no altere el `content` unicode ni las propiedades
+   -webkit-, y las estrellas quedaban invisibles. El SVG no depende de
+   fuentes ni de background-clip.
+   Vive dentro de .price-container con order 3, así cae debajo del precio y
+   encima del recuadro de transferencia (order 4).
+   La inyecta initResenasPrueba() en script.js; para quitar todo, borrar
    este bloque y esa función. */
 #single-product .rapa-reviews-row {
+	order: 3 !important;
+	width: 100% !important;
 	display: flex !important;
 	align-items: center !important;
-	gap: 12px !important;
-	margin: 5px 0 10px !important;
+	gap: 8px !important;
+	margin: 0 !important;
 }
 
-#single-product .rapa-star-rating {
-	--rapa-star-percent: calc(var(--rapa-star-rating) / 5 * 100%);
-	display: inline-block !important;
-	font-family: Times, "Times New Roman", serif !important;
-	font-size: 19px !important;
-	line-height: 1 !important;
+#single-product .rapa-reviews-stars {
+	display: inline-flex !important;
+	align-items: center !important;
+	gap: 1px !important;
+	flex-shrink: 0 !important;
 }
 
-#single-product .rapa-star-rating::before {
-	content: "★★★★★";
-	background: linear-gradient(90deg, #fd9a52 var(--rapa-star-percent), #e1e1e1 var(--rapa-star-percent));
-	-webkit-background-clip: text;
-	background-clip: text;
-	-webkit-text-fill-color: transparent;
-	color: transparent;
+#single-product .rapa-reviews-stars svg {
+	display: block !important;
+	width: 16px !important;
+	height: 16px !important;
+	flex-shrink: 0 !important;
 }
 
 #single-product .rapa-reviews-count {

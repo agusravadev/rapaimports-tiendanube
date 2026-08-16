@@ -930,11 +930,15 @@
     setTimeout(initBrandsMarquee, 1000);
 
     // === PRUEBA: fila de reseñas (estrellas + "34 reseñas") ===
-    // Réplica del widget de saferazor.com.ar: las estrellas son el texto
-    // "★★★★★" con un gradiente recortado al glifo (background-clip: text),
-    // así el relleno parcial sale de la variable --rapa-star-rating.
+    // Réplica del widget de saferazor.com.ar. Las estrellas van como SVG
+    // inline y no como el glifo "★" con gradiente recortado (background-clip
+    // + text-fill transparent) que usa saferazor: esa técnica depende de que
+    // el editor de CSS de Tiendanube no toque el `content` unicode ni las
+    // propiedades -webkit-, y ahí las estrellas quedaban invisibles. El SVG
+    // no depende de fuentes ni de background-clip.
     // Valores hardcodeados a propósito: es un bloque de prueba, no lee
-    // reseñas reales de ningún lado. Se inserta debajo del título.
+    // reseñas reales de ningún lado. Se inserta dentro de .price-container,
+    // debajo del precio (ver `order` en style.css).
     // Para quitarlo: borrar esta función, sus dos llamadas y el bloque
     // ".rapa-reviews-row" de style.css.
     function initResenasPrueba() {
@@ -942,16 +946,24 @@
       if (!single) return;
       if (single.querySelector('.js-rapa-reviews-row')) return;
 
-      var titulo = single.querySelector('.js-product-name');
-      if (!titulo) return;
+      var priceContainer = single.querySelector('.price-container');
+      if (!priceContainer) return;
+
+      var estrella =
+        '<svg viewBox="0 0 24 24" width="16" height="16" fill="#fd9a52" aria-hidden="true">' +
+          '<polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>' +
+        '</svg>';
+
+      var estrellas = '';
+      for (var i = 0; i < 5; i++) estrellas += estrella;
 
       var row = document.createElement('div');
       row.className = 'js-rapa-reviews-row rapa-reviews-row';
       row.innerHTML =
-        '<span class="rapa-star-rating" style="--rapa-star-rating: 4.8;"></span>' +
+        '<span class="rapa-reviews-stars">' + estrellas + '</span>' +
         '<span class="rapa-reviews-count">34 reseñas</span>';
 
-      titulo.parentNode.insertBefore(row, titulo.nextSibling);
+      priceContainer.appendChild(row);
     }
 
     function initMarqueeAdbar() {
