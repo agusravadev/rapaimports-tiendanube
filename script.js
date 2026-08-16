@@ -952,11 +952,6 @@
     // en style.css). Para quitarlo: borrar estas funciones, las dos llamadas
     // a initResenasPrueba y el bloque ".rapa-reviews-row" de style.css.
 
-    // Pentagrama con ratio 0.382 en un viewBox de 24x24 (centro 12,12, R=11).
-    var RAPA_STAR_PATH = 'M12,1L14.47,8.6L22.46,8.6L16,13.3L18.47,20.9L12,16.2L5.53,20.9L8,13.3L1.54,8.6L9.53,8.6Z';
-    var RAPA_STAR_LLENO = '#fd9a52';
-    var RAPA_STAR_VACIO = '#e1e1e1';
-
     // Hash estable (djb2): el mismo producto devuelve siempre el mismo
     // puntaje, así no cambia en cada recarga, pero varía entre productos.
     function hashCadena(str) {
@@ -977,12 +972,21 @@
     // relleno: 0 = vacía, 1 = llena, 0.5 = mitad pintada. La parte no pintada
     // queda gris (no desaparece).
     function svgEstrella(relleno, uid) {
+      // Las constantes viven acá adentro a propósito: initResenasPrueba() se
+      // llama más arriba en el archivo que este bloque, así que un `var` a
+      // nivel de módulo estaría hoisteado pero todavía sin asignar (undefined)
+      // en la primera llamada, y las estrellas salían con d="undefined".
+      // Pentagrama con ratio 0.382 en un viewBox de 24x24 (centro 12,12, R=11).
+      var PATH = 'M12,1L14.47,8.6L22.46,8.6L16,13.3L18.47,20.9L12,16.2L5.53,20.9L8,13.3L1.54,8.6L9.53,8.6Z';
+      var LLENO = '#fd9a52';
+      var VACIO = '#e1e1e1';
+
       var svgAbre = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">';
       if (relleno >= 1) {
-        return svgAbre + '<path d="' + RAPA_STAR_PATH + '" fill="' + RAPA_STAR_LLENO + '"/></svg>';
+        return svgAbre + '<path d="' + PATH + '" fill="' + LLENO + '"/></svg>';
       }
       if (relleno <= 0) {
-        return svgAbre + '<path d="' + RAPA_STAR_PATH + '" fill="' + RAPA_STAR_VACIO + '"/></svg>';
+        return svgAbre + '<path d="' + PATH + '" fill="' + VACIO + '"/></svg>';
       }
       // Relleno parcial: un gradiente con los dos stops en el mismo offset
       // corta la estrella en seco, sin degradé.
@@ -990,10 +994,10 @@
       var gid = 'rapa-star-grad-' + uid;
       return svgAbre +
           '<defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="1" y2="0">' +
-            '<stop offset="' + corte + '" stop-color="' + RAPA_STAR_LLENO + '"/>' +
-            '<stop offset="' + corte + '" stop-color="' + RAPA_STAR_VACIO + '"/>' +
+            '<stop offset="' + corte + '" stop-color="' + LLENO + '"/>' +
+            '<stop offset="' + corte + '" stop-color="' + VACIO + '"/>' +
           '</linearGradient></defs>' +
-          '<path d="' + RAPA_STAR_PATH + '" fill="url(#' + gid + ')"/>' +
+          '<path d="' + PATH + '" fill="url(#' + gid + ')"/>' +
         '</svg>';
     }
 
