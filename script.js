@@ -983,7 +983,7 @@
       var LLENO = '#fd9a52';
       var VACIO = '#e1e1e1';
 
-      var svgAbre = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">';
+      var svgAbre = '<svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true">';
       if (relleno >= 1) {
         return svgAbre + '<path d="' + PATH + '" fill="' + LLENO + '"/></svg>';
       }
