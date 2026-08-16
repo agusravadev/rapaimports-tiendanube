@@ -919,6 +919,8 @@
     initCuotasEncargo();
     initResenasPrueba();
     setTimeout(initResenasPrueba, 1500);
+    initAhorraTransferencia();
+    setTimeout(initAhorraTransferencia, 1500);
     setTimeout(marcarProductosVolanteListado, 1500);
     setTimeout(marcarProductosEncargo, 1500);
     setTimeout(initEncargoDetalle, 1500);
@@ -1028,6 +1030,52 @@
         '<span class="rapa-reviews-count">' + puntajeTexto + ' de 5</span>';
 
       priceContainer.appendChild(row);
+    }
+
+    // === "AHORRA 25%" arriba del recuadro de transferencia ===
+    // Va dentro de .price-container, entre la fila de reseñas (order 3) y el
+    // recuadro de transferencia (order 5); ver style.css.
+    //
+    // Subrayado copiado de saferazor (.text-button): línea de 1px de ancho
+    // completo, 2px por debajo del texto, en el color del texto al 40% de
+    // opacidad. Allá se arma con un ::before absoluto en `top: calc(100% +
+    // 2px)`; acá se resuelve con border-bottom + padding-bottom, que da el
+    // mismo resultado sin depender de pseudo-elementos (el panel de CSS de
+    // Tiendanube ya nos descartó una regla ::before antes). No se copia el
+    // ::after que saferazor despliega en hover: ese texto allá es un enlace
+    // y este es una etiqueta fija.
+
+    // Descuento por transferencia calculado de los precios reales, para no
+    // mostrar un número fijo que podría no coincidir con el del producto.
+    // Si no se puede leer, cae en 25 (el descuento configurado en la tienda).
+    function porcentajeTransferencia() {
+      var single = document.querySelector('#single-product');
+      if (!single) return 25;
+      var trans = single.querySelector('.js-payment-discount-price-product[data-priceraw-without-shipping]');
+      var reg = single.querySelector('.js-price-display[data-product-price]');
+      if (!trans || !reg) return 25;
+      var t = parseInt(trans.getAttribute('data-priceraw-without-shipping'), 10);
+      var r = parseInt(reg.getAttribute('data-product-price'), 10);
+      if (!t || !r || t >= r) return 25;
+      return Math.round((1 - t / r) * 100);
+    }
+
+    function initAhorraTransferencia() {
+      var single = document.querySelector('#single-product');
+      if (!single) return;
+      if (single.querySelector('.js-rapa-ahorra')) return;
+
+      var priceContainer = single.querySelector('.price-container');
+      if (!priceContainer) return;
+
+      // El div ocupa la fila completa y el span de adentro es inline-block,
+      // para que el subrayado mida lo que mide el texto y no toda la fila.
+      var fila = document.createElement('div');
+      fila.className = 'js-rapa-ahorra rapa-ahorra';
+      fila.innerHTML =
+        '<span class="rapa-ahorra-texto">AHORRA ' + porcentajeTransferencia() + '%</span>';
+
+      priceContainer.appendChild(fila);
     }
 
     function initMarqueeAdbar() {
