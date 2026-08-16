@@ -143,7 +143,7 @@ body.producto-encargo #single-product .price-container::after {
 	align-items: center !important;
 	flex-wrap: wrap !important;
 	gap: 4px !important;
-	background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%) !important;
+	background: transparent !important;
 	border: 1px solid #bbf7d0 !important;
 	border-radius: 12px !important;
 	padding: 8px 14px 12px !important;
@@ -154,7 +154,7 @@ body.producto-encargo #single-product .price-container::after {
 
 #single-product .js-payment-discount-price-product {
 	font-size: 24px !important;
-	font-weight: 800 !important;
+	font-weight: 400 !important;
 	color: #15803d !important;
 	line-height: 1.1 !important;
 	letter-spacing: -.01em !important;
@@ -167,8 +167,15 @@ body.producto-encargo #single-product .price-container::after {
 #single-product .payment-discount-price-product-container>span:nth-child(2),
 #single-product .js-payment-discount-name-product {
 	color: #111827 !important;
-	font-weight: 400 !important;
+	font-weight: 700 !important;
 	font-size: 14px !important;
+}
+
+/* Separación extra entre el monto y "con ...": el gap del contenedor (4px)
+   deja las palabras juntas entre sí; este margen suma el espacio que separa
+   la frase del precio. */
+#single-product .payment-discount-price-product-container>span:nth-child(2) {
+	margin-left: 4px !important;
 }
 
 #single-product .js-payment-discount-name-product {
@@ -194,7 +201,7 @@ body.producto-encargo #single-product .price-container::after {
 	padding: 12px 14px !important;
 	border: 1px solid #e5e7eb !important;
 	border-radius: 10px !important;
-	font-size: 13px !important;
+	font-size: 14px !important;
 	color: #374151 !important;
 	margin-bottom: 15px !important;
 	background: transparent !important;
@@ -242,7 +249,7 @@ body.producto-encargo #single-product .price-container::after {
 	margin-bottom: 10px !important;
 	background: transparent !important;
 	min-height: 48px;
-	font-size: 13px !important;
+	font-size: 14px !important;
 }
 
 #single-product .free-shipping-message .float-left {
@@ -260,7 +267,7 @@ body.producto-encargo #single-product .price-container::after {
 #single-product .free-shipping-message .text-accent {
 	color: #15803d !important;
 	font-weight: 700 !important;
-	font-size: 13px !important;
+	font-size: 14px !important;
 }
 
 #single-product .free-shipping-message .text-accent::after {
