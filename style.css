@@ -338,13 +338,16 @@ body.producto-encargo #single-product .price-container::after {
 	border-radius: 4px !important;
 }
 
-/* === PRUEBA: fila de reseñas (estrellas + "34 reseñas") ===
-   Réplica del widget de saferazor.com.ar. Las estrellas son SVG inline, no
-   el glifo "★" con gradiente recortado (background-clip: text + text-fill
-   transparent) que usa saferazor: esa técnica depende de que el editor de
-   CSS de Tiendanube no altere el `content` unicode ni las propiedades
-   -webkit-, y las estrellas quedaban invisibles. El SVG no depende de
-   fuentes ni de background-clip.
+/* === PRUEBA: fila de reseñas (estrellas + "4.5 de 5") ===
+   Réplica del widget de saferazor.com.ar. Las estrellas son SVG inline con
+   forma de pentagrama (ratio 0.382, el mismo del glifo ★ de Times que usa
+   saferazor), no el glifo con gradiente recortado (background-clip: text +
+   text-fill transparent): esa técnica depende de que el editor de CSS de
+   Tiendanube no altere el `content` unicode ni las propiedades -webkit-, y
+   las estrellas quedaban invisibles. El SVG trae medidas y colores como
+   atributos propios, así que no depende ni de fuentes ni de este CSS.
+   El relleno parcial (media estrella) lo resuelve un linearGradient dentro
+   del SVG; la parte no pintada queda gris, no desaparece.
    Vive dentro de .price-container con order 3, así cae debajo del precio y
    encima del recuadro de transferencia (order 4).
    La inyecta initResenasPrueba() en script.js; para quitar todo, borrar
@@ -358,10 +361,12 @@ body.producto-encargo #single-product .price-container::after {
 	margin: 0 !important;
 }
 
+/* gap 0: el propio viewBox del SVG ya deja aire a los costados de la punta,
+   igual que el bearing lateral del glifo ★. Con gap extra quedan separadas. */
 #single-product .rapa-reviews-stars {
 	display: inline-flex !important;
 	align-items: center !important;
-	gap: 1px !important;
+	gap: 0 !important;
 	flex-shrink: 0 !important;
 }
 

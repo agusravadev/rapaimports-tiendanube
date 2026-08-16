@@ -929,18 +929,74 @@
     setTimeout(initMarqueeAdbar, 200);
     setTimeout(initBrandsMarquee, 1000);
 
-    // === PRUEBA: fila de reseñas (estrellas + "34 reseñas") ===
-    // Réplica del widget de saferazor.com.ar. Las estrellas van como SVG
-    // inline y no como el glifo "★" con gradiente recortado (background-clip
-    // + text-fill transparent) que usa saferazor: esa técnica depende de que
-    // el editor de CSS de Tiendanube no toque el `content` unicode ni las
-    // propiedades -webkit-, y ahí las estrellas quedaban invisibles. El SVG
-    // no depende de fuentes ni de background-clip.
-    // Valores hardcodeados a propósito: es un bloque de prueba, no lee
-    // reseñas reales de ningún lado. Se inserta dentro de .price-container,
-    // debajo del precio (ver `order` en style.css).
-    // Para quitarlo: borrar esta función, sus dos llamadas y el bloque
-    // ".rapa-reviews-row" de style.css.
+    // === PRUEBA: fila de reseñas (estrellas + "4.5 de 5") ===
+    // Réplica del widget de saferazor.com.ar.
+    //
+    // Forma de la estrella: saferazor usa el glifo "★" de Times. Ese glifo es
+    // un pentagrama clásico, con radio interno / radio externo = cos(72°) /
+    // cos(36°) ≈ 0.382, que es lo que le da las puntas afiladas. Las estrellas
+    // "de librería" (feather, bootstrap y similares) usan ratio 0.5: cuerpo
+    // ancho y puntas romas, que es lo que se ve como emoji. Acá el path se
+    // calculó con 0.382 para que coincida con el glifo.
+    //
+    // Van como SVG inline y no como el glifo con gradiente recortado
+    // (background-clip: text + text-fill transparent) que usa saferazor:
+    // esa técnica depende de que el editor de CSS de Tiendanube no toque el
+    // `content` unicode ni las propiedades -webkit-, y ahí las estrellas
+    // quedaban invisibles. El SVG lleva medidas y colores como atributos
+    // propios, así que no depende de fuentes, de background-clip ni del CSS.
+    //
+    // Es un bloque de PRUEBA: el puntaje no sale de reseñas reales, se deriva
+    // del id del producto (ver puntajeResenaProducto).
+    // Se inserta dentro de .price-container, debajo del precio (ver `order`
+    // en style.css). Para quitarlo: borrar estas funciones, las dos llamadas
+    // a initResenasPrueba y el bloque ".rapa-reviews-row" de style.css.
+
+    // Pentagrama con ratio 0.382 en un viewBox de 24x24 (centro 12,12, R=11).
+    var RAPA_STAR_PATH = 'M12,1L14.47,8.6L22.46,8.6L16,13.3L18.47,20.9L12,16.2L5.53,20.9L8,13.3L1.54,8.6L9.53,8.6Z';
+    var RAPA_STAR_LLENO = '#fd9a52';
+    var RAPA_STAR_VACIO = '#e1e1e1';
+
+    // Hash estable (djb2): el mismo producto devuelve siempre el mismo
+    // puntaje, así no cambia en cada recarga, pero varía entre productos.
+    function hashCadena(str) {
+      var h = 5381;
+      for (var i = 0; i < str.length; i++) {
+        h = ((h << 5) + h + str.charCodeAt(i)) | 0;
+      }
+      return Math.abs(h);
+    }
+
+    // Devuelve el puntaje en décimas (41 a 50) => 4.1 a 5.0.
+    function puntajeResenaProducto() {
+      var idInput = document.querySelector('input[name="add_to_cart"]');
+      var semilla = (idInput && idInput.value) || location.pathname;
+      return 41 + (hashCadena(semilla) % 10);
+    }
+
+    // relleno: 0 = vacía, 1 = llena, 0.5 = mitad pintada. La parte no pintada
+    // queda gris (no desaparece).
+    function svgEstrella(relleno, uid) {
+      var svgAbre = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">';
+      if (relleno >= 1) {
+        return svgAbre + '<path d="' + RAPA_STAR_PATH + '" fill="' + RAPA_STAR_LLENO + '"/></svg>';
+      }
+      if (relleno <= 0) {
+        return svgAbre + '<path d="' + RAPA_STAR_PATH + '" fill="' + RAPA_STAR_VACIO + '"/></svg>';
+      }
+      // Relleno parcial: un gradiente con los dos stops en el mismo offset
+      // corta la estrella en seco, sin degradé.
+      var corte = (relleno * 100).toFixed(1) + '%';
+      var gid = 'rapa-star-grad-' + uid;
+      return svgAbre +
+          '<defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="1" y2="0">' +
+            '<stop offset="' + corte + '" stop-color="' + RAPA_STAR_LLENO + '"/>' +
+            '<stop offset="' + corte + '" stop-color="' + RAPA_STAR_VACIO + '"/>' +
+          '</linearGradient></defs>' +
+          '<path d="' + RAPA_STAR_PATH + '" fill="url(#' + gid + ')"/>' +
+        '</svg>';
+    }
+
     function initResenasPrueba() {
       var single = document.querySelector('#single-product');
       if (!single) return;
@@ -949,19 +1005,23 @@
       var priceContainer = single.querySelector('.price-container');
       if (!priceContainer) return;
 
-      var estrella =
-        '<svg viewBox="0 0 24 24" width="16" height="16" fill="#fd9a52" aria-hidden="true">' +
-          '<polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>' +
-        '</svg>';
+      var decimas = puntajeResenaProducto();
+      var puntaje = decimas / 10;
+      // "5 de 5" si es redondo, "4.3 de 5" si no.
+      var puntajeTexto = (decimas % 10 === 0) ? String(decimas / 10) : puntaje.toFixed(1);
 
       var estrellas = '';
-      for (var i = 0; i < 5; i++) estrellas += estrella;
+      for (var i = 0; i < 5; i++) {
+        var relleno = Math.max(0, Math.min(1, puntaje - i));
+        estrellas += svgEstrella(relleno, i);
+      }
 
       var row = document.createElement('div');
       row.className = 'js-rapa-reviews-row rapa-reviews-row';
+      row.setAttribute('aria-label', puntajeTexto + ' de 5');
       row.innerHTML =
         '<span class="rapa-reviews-stars">' + estrellas + '</span>' +
-        '<span class="rapa-reviews-count">34 reseñas</span>';
+        '<span class="rapa-reviews-count">' + puntajeTexto + ' de 5</span>';
 
       priceContainer.appendChild(row);
     }
