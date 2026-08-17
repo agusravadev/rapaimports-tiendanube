@@ -128,13 +128,13 @@ body.producto-encargo #single-product .price-container::after {
 
 #single-product .rapa-ahorra-texto {
 	display: inline-block !important;
-	/* Corrimiento fino probado en DevTools: 7px hacia abajo y 10px hacia la
-	   izquierda. Va con position relative a propósito y no con margin: así
-	   se mueve sólo el texto, sin empujar al recuadro de transferencia ni
-	   cambiar la altura de la fila. */
+	/* Corrimiento de 7px hacia abajo, con position relative a propósito y no
+	   con margin: así se mueve sólo el texto, sin empujar al recuadro de
+	   transferencia ni cambiar la altura de la fila.
+	   Sin corrimiento horizontal: el texto arranca en la misma x donde
+	   empieza el recuadro de transferencia. */
 	position: relative !important;
 	top: 7px !important;
-	right: 10px !important;
 	font-size: 14px !important;
 	font-weight: 400 !important;
 	color: #111827 !important;
@@ -180,7 +180,7 @@ body.producto-encargo #single-product .price-container::after {
 	gap: 4px !important;
 	background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%) !important;
 	border: 1px solid #bbf7d0 !important;
-	border-radius: 12px !important;
+	border-radius: 4px !important;
 	padding: 8px 14px 12px !important;
 	/* Sin margen propio: la separación hasta "AHORRA 25%" queda en los 10px
 	   de gap del .price-container. */
@@ -239,7 +239,7 @@ body.producto-encargo #single-product .price-container::after {
 	align-items: center !important;
 	padding: 12px 14px !important;
 	border: 1px solid #e5e7eb !important;
-	border-radius: 10px !important;
+	border-radius: 4px !important;
 	font-size: 14px !important;
 	color: #374151 !important;
 	margin-bottom: 15px !important;
@@ -283,7 +283,7 @@ body.producto-encargo #single-product .price-container::after {
 	align-items: center;
 	gap: 8px;
 	border: 1px solid #e5e7eb !important;
-	border-radius: 10px !important;
+	border-radius: 4px !important;
 	padding: 12px 14px !important;
 	margin-bottom: 10px !important;
 	background: transparent !important;
