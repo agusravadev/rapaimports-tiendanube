@@ -917,6 +917,10 @@
     initTransferSavings();
     initTransferSavingsProduct();
     initCuotasEncargo();
+    initResenasPrueba();
+    setTimeout(initResenasPrueba, 1500);
+    initAhorraTransferencia();
+    setTimeout(initAhorraTransferencia, 1500);
     setTimeout(marcarProductosVolanteListado, 1500);
     setTimeout(marcarProductosEncargo, 1500);
     setTimeout(initEncargoDetalle, 1500);
@@ -926,6 +930,153 @@
     initMarqueeAdbar();
     setTimeout(initMarqueeAdbar, 200);
     setTimeout(initBrandsMarquee, 1000);
+
+    // === PRUEBA: fila de reseñas (estrellas + "4.5 de 5") ===
+    // Réplica del widget de saferazor.com.ar.
+    //
+    // Forma de la estrella: saferazor usa el glifo "★" de Times. Ese glifo es
+    // un pentagrama clásico, con radio interno / radio externo = cos(72°) /
+    // cos(36°) ≈ 0.382, que es lo que le da las puntas afiladas. Las estrellas
+    // "de librería" (feather, bootstrap y similares) usan ratio 0.5: cuerpo
+    // ancho y puntas romas, que es lo que se ve como emoji. Acá el path se
+    // calculó con 0.382 para que coincida con el glifo.
+    //
+    // Van como SVG inline y no como el glifo con gradiente recortado
+    // (background-clip: text + text-fill transparent) que usa saferazor:
+    // esa técnica depende de que el editor de CSS de Tiendanube no toque el
+    // `content` unicode ni las propiedades -webkit-, y ahí las estrellas
+    // quedaban invisibles. El SVG lleva medidas y colores como atributos
+    // propios, así que no depende de fuentes, de background-clip ni del CSS.
+    //
+    // Es un bloque de PRUEBA: el puntaje no sale de reseñas reales, se deriva
+    // del id del producto (ver puntajeResenaProducto).
+    // Se inserta dentro de .price-container, debajo del precio (ver `order`
+    // en style.css). Para quitarlo: borrar estas funciones, las dos llamadas
+    // a initResenasPrueba y el bloque ".rapa-reviews-row" de style.css.
+
+    // Hash estable (djb2): el mismo producto devuelve siempre el mismo
+    // puntaje, así no cambia en cada recarga, pero varía entre productos.
+    function hashCadena(str) {
+      var h = 5381;
+      for (var i = 0; i < str.length; i++) {
+        h = ((h << 5) + h + str.charCodeAt(i)) | 0;
+      }
+      return Math.abs(h);
+    }
+
+    // Devuelve el puntaje en décimas (41 a 50) => 4.1 a 5.0.
+    function puntajeResenaProducto() {
+      var idInput = document.querySelector('input[name="add_to_cart"]');
+      var semilla = (idInput && idInput.value) || location.pathname;
+      return 41 + (hashCadena(semilla) % 10);
+    }
+
+    // relleno: 0 = vacía, 1 = llena, 0.5 = mitad pintada. La parte no pintada
+    // queda gris (no desaparece).
+    function svgEstrella(relleno, uid) {
+      // Las constantes viven acá adentro a propósito: initResenasPrueba() se
+      // llama más arriba en el archivo que este bloque, así que un `var` a
+      // nivel de módulo estaría hoisteado pero todavía sin asignar (undefined)
+      // en la primera llamada, y las estrellas salían con d="undefined".
+      // Pentagrama con ratio 0.382 en un viewBox de 24x24 (centro 12,12, R=11).
+      var PATH = 'M12,1L14.47,8.6L22.46,8.6L16,13.3L18.47,20.9L12,16.2L5.53,20.9L8,13.3L1.54,8.6L9.53,8.6Z';
+      var LLENO = '#fd9a52';
+      var VACIO = '#e1e1e1';
+
+      var svgAbre = '<svg viewBox="0 0 24 24" width="18.5" height="18.5" aria-hidden="true">';
+      if (relleno >= 1) {
+        return svgAbre + '<path d="' + PATH + '" fill="' + LLENO + '"/></svg>';
+      }
+      if (relleno <= 0) {
+        return svgAbre + '<path d="' + PATH + '" fill="' + VACIO + '"/></svg>';
+      }
+      // Relleno parcial: un gradiente con los dos stops en el mismo offset
+      // corta la estrella en seco, sin degradé.
+      var corte = (relleno * 100).toFixed(1) + '%';
+      var gid = 'rapa-star-grad-' + uid;
+      return svgAbre +
+          '<defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="1" y2="0">' +
+            '<stop offset="' + corte + '" stop-color="' + LLENO + '"/>' +
+            '<stop offset="' + corte + '" stop-color="' + VACIO + '"/>' +
+          '</linearGradient></defs>' +
+          '<path d="' + PATH + '" fill="url(#' + gid + ')"/>' +
+        '</svg>';
+    }
+
+    function initResenasPrueba() {
+      var single = document.querySelector('#single-product');
+      if (!single) return;
+      if (single.querySelector('.js-rapa-reviews-row')) return;
+
+      var priceContainer = single.querySelector('.price-container');
+      if (!priceContainer) return;
+
+      var decimas = puntajeResenaProducto();
+      var puntaje = decimas / 10;
+      // "5 de 5" si es redondo, "4.3 de 5" si no.
+      var puntajeTexto = (decimas % 10 === 0) ? String(decimas / 10) : puntaje.toFixed(1);
+
+      var estrellas = '';
+      for (var i = 0; i < 5; i++) {
+        var relleno = Math.max(0, Math.min(1, puntaje - i));
+        estrellas += svgEstrella(relleno, i);
+      }
+
+      var row = document.createElement('div');
+      row.className = 'js-rapa-reviews-row rapa-reviews-row';
+      row.setAttribute('aria-label', puntajeTexto + ' de 5');
+      row.innerHTML =
+        '<span class="rapa-reviews-stars">' + estrellas + '</span>' +
+        '<span class="rapa-reviews-count">' + puntajeTexto + ' de 5</span>';
+
+      priceContainer.appendChild(row);
+    }
+
+    // === "AHORRA 25%" arriba del recuadro de transferencia ===
+    // Va dentro de .price-container, entre la fila de reseñas (order 3) y el
+    // recuadro de transferencia (order 5); ver style.css.
+    //
+    // Subrayado copiado de saferazor (.text-button): línea de 1px de ancho
+    // completo, 2px por debajo del texto, en el color del texto al 40% de
+    // opacidad. Allá se arma con un ::before absoluto en `top: calc(100% +
+    // 2px)`; acá se resuelve con border-bottom + padding-bottom, que da el
+    // mismo resultado sin depender de pseudo-elementos (el panel de CSS de
+    // Tiendanube ya nos descartó una regla ::before antes). No se copia el
+    // ::after que saferazor despliega en hover: ese texto allá es un enlace
+    // y este es una etiqueta fija.
+
+    // Descuento por transferencia calculado de los precios reales, para no
+    // mostrar un número fijo que podría no coincidir con el del producto.
+    // Si no se puede leer, cae en 25 (el descuento configurado en la tienda).
+    function porcentajeTransferencia() {
+      var single = document.querySelector('#single-product');
+      if (!single) return 25;
+      var trans = single.querySelector('.js-payment-discount-price-product[data-priceraw-without-shipping]');
+      var reg = single.querySelector('.js-price-display[data-product-price]');
+      if (!trans || !reg) return 25;
+      var t = parseInt(trans.getAttribute('data-priceraw-without-shipping'), 10);
+      var r = parseInt(reg.getAttribute('data-product-price'), 10);
+      if (!t || !r || t >= r) return 25;
+      return Math.round((1 - t / r) * 100);
+    }
+
+    function initAhorraTransferencia() {
+      var single = document.querySelector('#single-product');
+      if (!single) return;
+      if (single.querySelector('.js-rapa-ahorra')) return;
+
+      var priceContainer = single.querySelector('.price-container');
+      if (!priceContainer) return;
+
+      // El div ocupa la fila completa y el span de adentro es inline-block,
+      // para que el subrayado mida lo que mide el texto y no toda la fila.
+      var fila = document.createElement('div');
+      fila.className = 'js-rapa-ahorra rapa-ahorra';
+      fila.innerHTML =
+        '<span class="rapa-ahorra-texto">AHORRA ' + porcentajeTransferencia() + '%</span>';
+
+      priceContainer.appendChild(fila);
+    }
 
     function initMarqueeAdbar() {
       var adbar = document.querySelector('.js-swiper-adbar');

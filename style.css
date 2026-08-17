@@ -27,12 +27,6 @@ body * {
 	font-weight: 400 !important;
 }
 
-/* Precio principal en la ficha de producto (no en el listado): peso 120,
-   probado a pedido en DevTools — queda mucho más fino que el regular 400. */
-#single-product .js-price-display {
-	font-weight: 120 !important;
-}
-
 /* Precio con transferencia: el tema lo pone en 800 (extra bold), que con
    Outfit se ve demasiado pesado. Se baja a 600 para que siga destacando
    sobre el precio regular sin quedar tan ancho. */
@@ -110,17 +104,45 @@ body.producto-encargo #single-product .price-container::after {
 }
 
 #single-product .payment-discount-price-product-container {
-	order: 3;
+	order: 5;
 	width: 100%;
 }
 
+/* "AHORRA 25%" entre la fila de reseñas (order 3) y el recuadro de
+   transferencia (order 5). Lo inyecta initAhorraTransferencia() en script.js.
+   El subrayado replica el de saferazor (.text-button): 1px de ancho completo,
+   2px por debajo del texto, en el color del texto al 40% de opacidad. Allá
+   sale de un ::before absoluto; acá de border-bottom + padding-bottom, que
+   se ve igual y no depende de pseudo-elementos. */
+#single-product .rapa-ahorra {
+	order: 4 !important;
+	width: 100% !important;
+	/* Los 8px de arriba lo separan de la fila de reseñas y lo corren hacia
+	   abajo, dejándolo más cerca del recuadro de transferencia. */
+	margin: 8px 0 0 !important;
+	line-height: 1 !important;
+	/* Sin indentar: arranca donde arranca el recuadro de transferencia,
+	   o sea el borde izquierdo del .price-container. */
+	padding-left: 0 !important;
+}
+
+#single-product .rapa-ahorra-texto {
+	display: inline-block !important;
+	font-size: 14px !important;
+	font-weight: 400 !important;
+	color: #111827 !important;
+	letter-spacing: .02em !important;
+	padding-bottom: 2px !important;
+	border-bottom: 1px solid rgba(17, 24, 39, .4) !important;
+}
+
 #single-product .js-product-name {
-	font-size: 21px !important;
+	font-size: 28px !important;
 }
 
 #single-product .js-price-display {
 	font-size: 24px !important;
-	font-weight: 700 !important;
+	font-weight: 400 !important;
 	color: #111827 !important;
 	line-height: 1 !important;
 	letter-spacing: -1px;
@@ -128,7 +150,7 @@ body.producto-encargo #single-product .price-container::after {
 }
 
 #single-product .js-compare-price-display {
-	font-size: 16px !important;
+	font-size: 23px !important;
 	color: #9ca3af !important;
 	font-weight: 400 !important;
 	text-decoration: line-through;
@@ -148,57 +170,51 @@ body.producto-encargo #single-product .price-container::after {
 	display: flex !important;
 	align-items: center !important;
 	flex-wrap: wrap !important;
-	gap: 0 !important;
+	gap: 4px !important;
 	background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%) !important;
 	border: 1px solid #bbf7d0 !important;
 	border-radius: 12px !important;
 	padding: 8px 14px 12px !important;
-	margin-top: 14px !important;
+	/* Sin margen propio: la separación hasta "AHORRA 25%" queda en los 10px
+	   de gap del .price-container. */
+	margin-top: 0 !important;
 	margin-bottom: 0 !important;
 	overflow: visible !important;
 }
 
-#single-product .payment-discount-price-product-container::before {
-	content: "Transferencia bancaria" !important;
-	position: static !important;
-	display: block !important;
-	font-size: 12.5px !important;
-	font-weight: 800 !important;
-	letter-spacing: .14em !important;
-	text-transform: none !important;
-	color: #15803d !important;
-	margin: 0 0 4px !important;
-	white-space: nowrap !important;
-	line-height: 1.2 !important;
-	flex-basis: 100% !important;
-}
-
-#single-product .payment-discount-price-product-container::after {
-	content: "−25%" !important;
-	position: absolute !important;
-	top: 50% !important;
-	right: 14px !important;
-	transform: translateY(-50%) !important;
-	background: #16a34a !important;
-	color: #fff !important;
-	font-size: 12px !important;
-	font-weight: 800 !important;
-	padding: 5px 10px !important;
-	border-radius: 6px !important;
-	letter-spacing: .02em !important;
-	line-height: 1.2 !important;
-}
-
 #single-product .js-payment-discount-price-product {
 	font-size: 24px !important;
-	font-weight: 800 !important;
+	font-weight: 400 !important;
 	color: #15803d !important;
 	line-height: 1.1 !important;
 	letter-spacing: -.01em !important;
 	margin-right: 0 !important;
 }
 
-#single-product .payment-discount-price-product-container>span:nth-child(2), #single-product .js-payment-discount-name-product, #single-product .transfer-savings-label, #single-product .js-transfer-savings-label {
+/* "$XXX.XXX con transferencia bancaria" en una sola línea: reutiliza los
+   spans nativos "con" / "Transferencia bancaria" que Tiendanube ya renderiza
+   junto al monto (antes ocultos), en vez de texto fijo. */
+#single-product .payment-discount-price-product-container>span:nth-child(2),
+#single-product .js-payment-discount-name-product {
+	color: #111827 !important;
+	font-size: 14px !important;
+}
+
+/* "con" sin negrita; "transferencia bancaria" en negrita. */
+#single-product .payment-discount-price-product-container>span:nth-child(2) {
+	font-weight: 400 !important;
+	/* Separación extra entre el monto y "con ...": el gap del contenedor
+	   (4px) deja las palabras juntas entre sí; este margen suma el espacio
+	   que separa la frase del precio. */
+	margin-left: 4px !important;
+}
+
+#single-product .js-payment-discount-name-product {
+	font-weight: 700 !important;
+	text-transform: lowercase !important;
+}
+
+#single-product .transfer-savings-label, #single-product .js-transfer-savings-label {
 	display: none !important;
 }
 
@@ -217,7 +233,7 @@ body.producto-encargo #single-product .price-container::after {
 	padding: 12px 14px !important;
 	border: 1px solid #e5e7eb !important;
 	border-radius: 10px !important;
-	font-size: 13px !important;
+	font-size: 14px !important;
 	color: #374151 !important;
 	margin-bottom: 15px !important;
 	background: transparent !important;
@@ -265,7 +281,7 @@ body.producto-encargo #single-product .price-container::after {
 	margin-bottom: 10px !important;
 	background: transparent !important;
 	min-height: 48px;
-	font-size: 13px !important;
+	font-size: 14px !important;
 }
 
 #single-product .free-shipping-message .float-left {
@@ -281,9 +297,9 @@ body.producto-encargo #single-product .price-container::after {
 }
 
 #single-product .free-shipping-message .text-accent {
-	color: #111827 !important;
-	font-weight: 600 !important;
-	font-size: 13px !important;
+	color: #15803d !important;
+	font-weight: 700 !important;
+	font-size: 14px !important;
 }
 
 #single-product .free-shipping-message .text-accent::after {
@@ -334,10 +350,82 @@ body.producto-encargo #single-product .price-container::after {
 	0%, 100% {
 		transform: scale(1);
 	}
-	
+
 	50% {
 		transform: scale(1.04);
 	}
+}
+
+/* Botones estilo SafeRazor: mucho menos redondeados (casi cuadrados). */
+#single-product [data-store="product-buy-button"],
+#single-product .js-addtocart:not(.js-addtocart-placeholder),
+#single-product .js-addtocart-placeholder {
+	border-radius: 4px !important;
+}
+
+#single-product [data-component="product.quantity.minus"],
+#single-product [data-component="product.quantity.plus"] {
+	border-radius: 4px !important;
+}
+
+/* === PRUEBA: fila de reseñas (estrellas + "4.5 de 5") ===
+   Réplica del widget de saferazor.com.ar. Las estrellas son SVG inline con
+   forma de pentagrama (ratio 0.382, el mismo del glifo ★ de Times que usa
+   saferazor), no el glifo con gradiente recortado (background-clip: text +
+   text-fill transparent): esa técnica depende de que el editor de CSS de
+   Tiendanube no altere el `content` unicode ni las propiedades -webkit-, y
+   las estrellas quedaban invisibles. El SVG trae medidas y colores como
+   atributos propios, así que no depende ni de fuentes ni de este CSS.
+   El relleno parcial (media estrella) lo resuelve un linearGradient dentro
+   del SVG; la parte no pintada queda gris, no desaparece.
+   Vive dentro de .price-container con order 3, así cae debajo del precio y
+   encima del recuadro de transferencia (order 4).
+   La inyecta initResenasPrueba() en script.js; para quitar todo, borrar
+   este bloque y esa función. */
+#single-product .rapa-reviews-row {
+	order: 3 !important;
+	width: 100% !important;
+	display: flex !important;
+	align-items: center !important;
+	gap: 8px !important;
+	margin: 0 !important;
+}
+
+/* gap 0: el propio viewBox del SVG ya deja aire a los costados de la punta,
+   igual que el bearing lateral del glifo ★. Con gap extra quedan separadas. */
+#single-product .rapa-reviews-stars {
+	display: inline-flex !important;
+	align-items: center !important;
+	gap: 0 !important;
+	flex-shrink: 0 !important;
+}
+
+#single-product .rapa-reviews-stars svg {
+	display: block !important;
+	width: 18.5px !important;
+	height: 18.5px !important;
+	flex-shrink: 0 !important;
+}
+
+#single-product .rapa-reviews-count {
+	font-size: 14.5px !important;
+	font-weight: 400 !important;
+	color: #111827 !important;
+	line-height: 1 !important;
+}
+
+/* Texto base de la ficha a 14px: selector de variante ("Acabado: ..."),
+   los botones de variante y los avisos de stock. Los precios principales y
+   el título quedan afuera: tienen su propio tamaño más arriba. */
+#single-product .form-label,
+#single-product .js-insta-variation-label,
+#single-product .js-insta-variant,
+#single-product .btn-variant,
+#single-product .btn-variant-content,
+#single-product .js-last-product,
+#single-product .js-latest-products-available,
+#single-product .js-product-stock {
+	font-size: 14px !important;
 }
 
 #single-product .product-description a[href*="wa.me"] {
