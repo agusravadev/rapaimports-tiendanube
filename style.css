@@ -1353,9 +1353,11 @@ body.es-volante #single-product .cuotas-encargo-row {
 	justify-content: center !important;
 	min-height: 42px !important;
 	padding: 8px 4px 2px !important;
+	color: #111 !important;
 	font-size: 13px !important;
 	font-weight: 600 !important;
 	line-height: 1.25 !important;
+	text-decoration: none !important;
 }
 
 #single-product .rapa-material-option.btn-variant-no-stock {

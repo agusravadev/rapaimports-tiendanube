@@ -927,6 +927,13 @@
     setTimeout(initCuotasEncargo, 1500);
     inyectarBloqueVolante();
     setTimeout(inyectarBloqueVolante, 1500);
+
+    // Las funciones de acabado están declaradas más abajo (se elevan), pero
+    // las URLs deben existir antes de la primera ejecución.
+    IMAGENES_ACABADO = {
+      carbono: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/e6915c9d-23d8-48f3-a108-47814d8e30c6-9e62bd67ceafdec93917891891148874-1024-1024.webp',
+      negroPiano: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/chatgpt-image-sep-12-2026-02_06_39-am-3967622552898a662e17891896131601-1024-1024.webp'
+    };
     initMarqueeAdbar();
     setTimeout(initMarqueeAdbar, 200);
     initVariantesAcabadoVisual();
@@ -1130,10 +1137,7 @@
     // y alguna terminación de fibra de carbono en tarjetas visuales. Los <a>
     // originales de Tiendanube se conservan para no interferir con su lógica
     // de variantes, precio, stock ni carrito.
-    var IMAGENES_ACABADO = {
-      carbono: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/e6915c9d-23d8-48f3-a108-47814d8e30c6-9e62bd67ceafdec93917891891148874-1024-1024.webp',
-      negroPiano: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/chatgpt-image-sep-12-2026-02_06_39-am-3967622552898a662e17891896131601-1024-1024.webp'
-    };
+    var IMAGENES_ACABADO;
 
     function normalizarAcabado(valor) {
       return String(valor || '')
@@ -1182,9 +1186,6 @@
         var tieneCarbono = datos.some(function(dato) { return dato.tipo === 'carbono'; });
         if (!todosSonAcabados || !tieneNegroPiano || !tieneCarbono) return;
 
-        grupo.dataset.rapaAcabadosInit = '1';
-        grupo.classList.add('rapa-material-group');
-
         datos.forEach(function(dato) {
           var opcion = dato.elemento;
           var contenido = opcion.querySelector('.btn-variant-content');
@@ -1192,7 +1193,6 @@
 
           opcion.classList.add('rapa-material-option');
           opcion.setAttribute('data-rapa-material', dato.tipo);
-          contenido.textContent = '';
 
           var imagenWrap = document.createElement('span');
           imagenWrap.className = 'rapa-material-option__image';
@@ -1209,9 +1209,15 @@
           etiqueta.className = 'rapa-material-option__label';
           etiqueta.textContent = dato.nombre;
 
+          contenido.textContent = '';
           contenido.appendChild(imagenWrap);
           contenido.appendChild(etiqueta);
         });
+
+        // Se marca como inicializado recién después de completar todas las
+        // tarjetas. Si algo falla, un reintento todavía puede recuperarlo.
+        grupo.classList.add('rapa-material-group');
+        grupo.dataset.rapaAcabadosInit = '1';
       });
     }
 
