@@ -771,6 +771,17 @@ a.btn.btn-encargar.btn-personalizar:hover {
 	animation: adbar-ticker 28s linear infinite !important;
 }
 
+/* En escritorio el aviso vive dentro de un .container del tema, que limita
+   su ancho. Lo extendemos al viewport sin alterar el layout de mobile. */
+@media (min-width: 768px) {
+	.adbar-marquee-custom {
+		width: 100vw !important;
+		max-width: 100vw !important;
+		margin-left: calc(50% - 50vw) !important;
+		margin-right: calc(50% - 50vw) !important;
+	}
+}
+
 @keyframes adbar-ticker {
 	0% {
 		transform: translateX(0);

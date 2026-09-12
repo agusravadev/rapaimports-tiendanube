@@ -1107,6 +1107,21 @@
       if (next) next.style.setProperty('display', 'none', 'important');
 
       container.insertBefore(wrapper, adbar);
+
+      // En desktop, dos copias pueden ser más angostas que la pantalla. Se
+      // repite el grupo hasta llenar el viewport y luego se duplica: así al
+      // salir el texto por la izquierda, la siguiente copia entra de inmediato
+      // por la derecha, sin dejar un hueco. Mobile conserva sus dos copias
+      // originales y por lo tanto su comportamiento actual.
+      if (window.matchMedia && window.matchMedia('(min-width: 768px)').matches) {
+        var groupWidth = inner.scrollWidth / 2;
+        var copies = groupWidth ? Math.ceil(wrapper.clientWidth / groupWidth) : 1;
+
+        if (copies > 1) {
+          var grupoCompleto = Array(copies).fill(texto).join(sep);
+          inner.innerHTML = grupoCompleto + sep + grupoCompleto;
+        }
+      }
     }
 
     function initBrandsMarquee() {
