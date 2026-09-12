@@ -1276,7 +1276,7 @@ body.es-volante #single-product .cuotas-encargo-row {
    estos materiales y contiene al menos una opción de cada familia. */
 #single-product .js-product-variants-group.rapa-material-group {
 	display: grid !important;
-	grid-template-columns: repeat(2, 112px) !important;
+	grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
 	justify-content: start !important;
 	gap: 8px !important;
 }
@@ -1321,18 +1321,20 @@ body.es-volante #single-product .cuotas-encargo-row {
 
 #single-product .rapa-material-option .btn-variant-content {
 	display: flex !important;
-	flex-direction: column !important;
+	flex-direction: row !important;
 	width: 100% !important;
-	align-items: stretch !important;
+	min-width: 0 !important;
+	align-items: center !important;
 	line-height: 1.25 !important;
 }
 
 #single-product .rapa-material-option__image {
 	position: relative !important;
 	display: block !important;
-	width: 100% !important;
-	height: 0 !important;
-	padding-top: 100% !important;
+	flex: 0 0 48px !important;
+	width: 48px !important;
+	height: 48px !important;
+	padding-top: 0 !important;
 	overflow: hidden !important;
 	border-radius: 5px !important;
 	background: #f3f4f6 !important;
@@ -1350,15 +1352,19 @@ body.es-volante #single-product .cuotas-encargo-row {
 
 #single-product .rapa-material-option__label {
 	display: flex !important;
+	flex: 1 1 auto !important;
+	min-width: 0 !important;
 	align-items: center !important;
-	justify-content: center !important;
-	min-height: 32px !important;
-	padding: 5px 2px 1px !important;
+	justify-content: flex-start !important;
+	min-height: 48px !important;
+	padding: 0 4px 0 8px !important;
 	color: #111 !important;
 	font-size: 11px !important;
 	font-weight: 600 !important;
 	line-height: 1.25 !important;
+	text-align: left !important;
 	text-decoration: none !important;
+	overflow-wrap: break-word !important;
 	box-sizing: border-box !important;
 }
 
