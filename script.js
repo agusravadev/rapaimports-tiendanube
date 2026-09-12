@@ -929,6 +929,8 @@
     setTimeout(inyectarBloqueVolante, 1500);
     initMarqueeAdbar();
     setTimeout(initMarqueeAdbar, 200);
+    initVariantesAcabadoVisual();
+    setTimeout(initVariantesAcabadoVisual, 500);
     setTimeout(initBrandsMarquee, 1000);
 
     // === PRUEBA: fila de reseñas (estrellas + "4.5 de 5") ===
@@ -1122,6 +1124,95 @@
           inner.innerHTML = grupoCompleto + sep + grupoCompleto;
         }
       }
+    }
+
+    // Convierte únicamente los selectores de acabado que ofrecen Negro piano
+    // y alguna terminación de fibra de carbono en tarjetas visuales. Los <a>
+    // originales de Tiendanube se conservan para no interferir con su lógica
+    // de variantes, precio, stock ni carrito.
+    var IMAGENES_ACABADO = {
+      carbono: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/e6915c9d-23d8-48f3-a108-47814d8e30c6-9e62bd67ceafdec93917891891148874-1024-1024.webp',
+      negroPiano: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/chatgpt-image-sep-12-2026-02_06_39-am-3967622552898a662e17891896131601-1024-1024.webp'
+    };
+
+    function normalizarAcabado(valor) {
+      return String(valor || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim()
+        .toLowerCase();
+    }
+
+    function tipoAcabadoVisual(valor) {
+      var nombre = normalizarAcabado(valor);
+      if (nombre.indexOf('negro piano') !== -1) return 'negroPiano';
+      if (nombre.indexOf('fibra de carbono') !== -1 ||
+          nombre.indexOf('simil carbono') !== -1 ||
+          nombre.indexOf('carbono forjad') !== -1 ||
+          nombre.indexOf('fibra forjad') !== -1 ||
+          nombre === 'forjada') return 'carbono';
+      return null;
+    }
+
+    function initVariantesAcabadoVisual() {
+      var single = document.querySelector('#single-product');
+      if (!single) return;
+
+      single.querySelectorAll('.js-product-variants-group').forEach(function(grupo) {
+        if (grupo.dataset.rapaAcabadosInit) return;
+
+        var opciones = Array.from(grupo.querySelectorAll('.js-insta-variant'));
+        if (opciones.length < 2) return;
+
+        var datos = opciones.map(function(opcion) {
+          var nombre = opcion.getAttribute('data-option') ||
+                       opcion.getAttribute('title') ||
+                       opcion.textContent;
+          return {
+            elemento: opcion,
+            nombre: String(nombre || '').trim(),
+            tipo: tipoAcabadoVisual(nombre)
+          };
+        });
+
+        // El grupo completo debe ser de materiales y debe ofrecer las dos
+        // familias. Así no se modifican talles, colores u otras variantes.
+        var todosSonAcabados = datos.every(function(dato) { return !!dato.tipo; });
+        var tieneNegroPiano = datos.some(function(dato) { return dato.tipo === 'negroPiano'; });
+        var tieneCarbono = datos.some(function(dato) { return dato.tipo === 'carbono'; });
+        if (!todosSonAcabados || !tieneNegroPiano || !tieneCarbono) return;
+
+        grupo.dataset.rapaAcabadosInit = '1';
+        grupo.classList.add('rapa-material-group');
+
+        datos.forEach(function(dato) {
+          var opcion = dato.elemento;
+          var contenido = opcion.querySelector('.btn-variant-content');
+          if (!contenido) return;
+
+          opcion.classList.add('rapa-material-option');
+          opcion.setAttribute('data-rapa-material', dato.tipo);
+          contenido.textContent = '';
+
+          var imagenWrap = document.createElement('span');
+          imagenWrap.className = 'rapa-material-option__image';
+
+          var imagen = document.createElement('img');
+          imagen.src = IMAGENES_ACABADO[dato.tipo];
+          imagen.alt = '';
+          imagen.loading = 'lazy';
+          imagen.decoding = 'async';
+          imagen.setAttribute('aria-hidden', 'true');
+          imagenWrap.appendChild(imagen);
+
+          var etiqueta = document.createElement('span');
+          etiqueta.className = 'rapa-material-option__label';
+          etiqueta.textContent = dato.nombre;
+
+          contenido.appendChild(imagenWrap);
+          contenido.appendChild(etiqueta);
+        });
+      });
     }
 
     function initBrandsMarquee() {
@@ -1424,6 +1515,7 @@
     var _bannersCarouselTimer = null;
     var _volanteTimer = null;
     var _volanteListadoTimer = null;
+    var _acabadosVisualesTimer = null;
     var observador = new MutationObserver(function() {
       revisarEnvioGratis();
       clearTimeout(_volanteTimer);
@@ -1442,6 +1534,8 @@
       _savingsTimer = setTimeout(initTransferSavingsProduct, 300);
       clearTimeout(_bannersCarouselTimer);
       _bannersCarouselTimer = setTimeout(initBannersCategoriaCarousel, 300);
+      clearTimeout(_acabadosVisualesTimer);
+      _acabadosVisualesTimer = setTimeout(initVariantesAcabadoVisual, 300);
     });
     observador.observe(document.body, { childList: true, subtree: true });
   }

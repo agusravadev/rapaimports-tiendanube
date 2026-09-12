@@ -1271,6 +1271,101 @@ body.es-volante #single-product .cuotas-encargo-row {
 	display: none !important;
 }
 
+/* === Variantes visuales de acabado: Negro piano / Fibra de carbono ===
+   La clase se agrega por JS solamente cuando todo el grupo corresponde a
+   estos materiales y contiene al menos una opción de cada familia. */
+#single-product .js-product-variants-group.rapa-material-group {
+	display: grid !important;
+	grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+	gap: 12px !important;
+}
+
+#single-product .rapa-material-group > .form-group,
+#single-product .rapa-material-group > .form-label {
+	grid-column: 1 / -1 !important;
+}
+
+#single-product .rapa-material-group > .form-label {
+	margin: 0 !important;
+}
+
+#single-product .rapa-material-option.btn.btn-variant {
+	display: block !important;
+	width: 100% !important;
+	height: auto !important;
+	min-height: 0 !important;
+	max-height: none !important;
+	margin: 0 !important;
+	padding: 8px !important;
+	background: #fff !important;
+	border: 2px solid #e5e7eb !important;
+	border-radius: 10px !important;
+	color: #111 !important;
+	text-align: center !important;
+	text-decoration: none !important;
+	box-sizing: border-box !important;
+	cursor: pointer !important;
+	transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease !important;
+}
+
+#single-product .rapa-material-option.btn.btn-variant:hover {
+	border-color: #9ca3af !important;
+	transform: translateY(-1px) !important;
+}
+
+#single-product .rapa-material-option.btn.btn-variant.selected {
+	border-color: #e30613 !important;
+	box-shadow: 0 0 0 1px #e30613 inset !important;
+}
+
+#single-product .rapa-material-option .btn-variant-content {
+	display: flex !important;
+	flex-direction: column !important;
+	width: 100% !important;
+	align-items: stretch !important;
+	line-height: 1.25 !important;
+}
+
+#single-product .rapa-material-option__image {
+	position: relative !important;
+	display: block !important;
+	width: 100% !important;
+	height: 0 !important;
+	padding-top: 100% !important;
+	overflow: hidden !important;
+	border-radius: 7px !important;
+	background: #f3f4f6 !important;
+}
+
+#single-product .rapa-material-option__image img {
+	position: absolute !important;
+	top: 0 !important;
+	left: 0 !important;
+	display: block !important;
+	width: 100% !important;
+	height: 100% !important;
+	object-fit: cover !important;
+}
+
+#single-product .rapa-material-option__label {
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	min-height: 42px !important;
+	padding: 8px 4px 2px !important;
+	font-size: 13px !important;
+	font-weight: 600 !important;
+	line-height: 1.25 !important;
+}
+
+#single-product .rapa-material-option.btn-variant-no-stock {
+	opacity: .5 !important;
+}
+
+#single-product .rapa-material-option.btn-variant-no-stock .rapa-material-option__image img {
+	filter: grayscale(1) !important;
+}
+
 /* === Volantes en LISTADO (cards) ===
    Las cards reciben la clase .item-volante desde script.html
    (detección por slug de URL en marcarProductosVolanteListado). */
