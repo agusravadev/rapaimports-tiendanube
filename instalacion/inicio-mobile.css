@@ -1,0 +1,73 @@
+/* Nueva portada: agregar al final del editor CSS de Tiendanube. */
+.js-home-sections-container > [data-rapa-banner-display] ~ .section-brands-home {
+	margin-top: 0 !important;
+}
+
+#rapa-before-after .rapa-compare-mobile-action {
+	display: none;
+}
+
+@media (max-width: 767px) {
+	#rapa-before-after {
+		padding: 0;
+	}
+
+	#rapa-before-after .rapa-compare-layout {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 0;
+		max-width: 500px;
+	}
+
+	#rapa-before-after .rapa-compare-copy {
+		padding: 18px 20px 16px;
+		text-align: center;
+	}
+
+	#rapa-before-after h2 {
+		font-size: 32px;
+		letter-spacing: -1px;
+	}
+
+	#rapa-before-after .rapa-compare-eyebrow {
+		display: none;
+	}
+
+	#rapa-before-after .rapa-compare-description,
+	#rapa-before-after .rapa-compare-copy .rapa-compare-link {
+		display: none;
+	}
+
+	#rapa-before-after .rapa-compare-view {
+		padding-top: 100% !important;
+		border-radius: 0;
+	}
+
+	#rapa-before-after .rapa-compare-label {
+		top: 12px;
+	}
+
+	#rapa-before-after .rapa-compare-label-before {
+		left: 12px;
+	}
+
+	#rapa-before-after .rapa-compare-label-after {
+		right: 12px;
+	}
+
+	#rapa-before-after .rapa-compare-help {
+		margin: 12px 16px 0;
+		font-size: 12px;
+	}
+
+	#rapa-before-after .rapa-compare-mobile-action {
+		display: block !important;
+		padding: 18px 20px 22px;
+	}
+
+	#rapa-before-after .rapa-compare-mobile-action .rapa-compare-link {
+		display: flex;
+		justify-content: space-between;
+		width: 100%;
+		min-height: 50px;
+	}
+}

@@ -943,11 +943,12 @@
 
     function initComparadorAntesDespues() {
       var home = document.querySelector('.js-home-sections-container');
-      if (!home || document.getElementById('rapa-before-after')) return;
-
-      var instagram = home.querySelector('[data-store="home-instagram-feed"], .section-instafeed-home');
-      var destacados = home.querySelector('[data-store="home-products-featured"], .section-featured-home');
-      if (!instagram && !destacados) return;
+      if (!home) return;
+      var existente = document.getElementById('rapa-before-after');
+      if (existente) {
+        if (!existente.hidden) colocarAlInicio(existente);
+        return;
+      }
 
       var section = document.createElement('section');
       section.id = 'rapa-before-after';
@@ -964,14 +965,17 @@
           '</div>',
           '<div class="rapa-compare-media">',
             '<div class="rapa-compare-view" id="rapa-before-after-view" style="height:0;padding-top:125%">',
-              '<img class="rapa-compare-image rapa-compare-after" style="top:0;left:0" src="https://dcdn-us.mitiendanube.com/stores/007/678/416/products/volante-despues-4710de5be37b5031b517923032342461-1024-1024.webp" alt="Después: volante personalizado en fibra de carbono, con display y costuras rojas" width="1200" height="1500" loading="lazy" decoding="async" draggable="false">',
-              '<img class="rapa-compare-image rapa-compare-before" style="top:0;left:0;clip-path:inset(0 50% 0 0)" src="https://dcdn-us.mitiendanube.com/stores/007/678/416/products/volantes-antes-1b7f4b739986606b9d17923032341602-1024-1024.webp" alt="Antes: volante original de Volkswagen" width="1200" height="1500" loading="lazy" decoding="async" draggable="false">',
+              '<img class="rapa-compare-image rapa-compare-after" style="top:0;left:0" src="https://dcdn-us.mitiendanube.com/stores/007/678/416/products/volante-despues-4710de5be37b5031b517923032342461-1024-1024.webp" alt="Después: volante personalizado en fibra de carbono, con display y costuras rojas" width="1200" height="1500" loading="eager" fetchpriority="high" decoding="async" draggable="false">',
+              '<img class="rapa-compare-image rapa-compare-before" style="top:0;left:0;clip-path:inset(0 50% 0 0)" src="https://dcdn-us.mitiendanube.com/stores/007/678/416/products/volantes-antes-1b7f4b739986606b9d17923032341602-1024-1024.webp" alt="Antes: volante original de Volkswagen" width="1200" height="1500" loading="eager" fetchpriority="high" decoding="async" draggable="false">',
               '<span class="rapa-compare-label rapa-compare-label-before" aria-hidden="true">Antes</span>',
               '<span class="rapa-compare-label rapa-compare-label-after" aria-hidden="true">Después</span>',
               '<input class="rapa-compare-range" type="range" min="0" max="100" step="1" value="50" aria-label="Comparar el volante antes y después" aria-controls="rapa-before-after-view" aria-describedby="rapa-before-after-help" aria-valuetext="50 % del antes y 50 % del después">',
               '<div class="rapa-compare-divider" style="left:50%" aria-hidden="true"><span class="rapa-compare-handle"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m8 7-5 5 5 5m8-10 5 5-5 5M3 12h18"/></svg></span></div>',
             '</div>',
             '<p id="rapa-before-after-help" class="rapa-compare-help">Arrastrá la línea y descubrí la diferencia.</p>',
+          '</div>',
+          '<div class="rapa-compare-mobile-action" style="display:none">',
+            '<a class="rapa-compare-link" href="/volantes/">Encontrá tu volante <span aria-hidden="true">&#8599;</span></a>',
           '</div>',
         '</div>'
       ].join('');
@@ -989,13 +993,35 @@
         range.setAttribute('aria-valuetext', position + ' % del antes y ' + (100 - position) + ' % del después');
       });
 
-      // Si el CDN no responde, ocultamos este bloque sin dejar fotos rotas.
+      // Ante un error de imagen, recuperamos el banner original de la tienda.
       section.querySelectorAll('img').forEach(function(img) {
-        img.addEventListener('error', function() { section.hidden = true; });
+        img.addEventListener('error', function() {
+          section.hidden = true;
+          home.querySelectorAll('[data-rapa-banner-display]').forEach(function(banner) {
+            banner.hidden = banner.getAttribute('data-rapa-banner-hidden') === '1';
+            var display = banner.getAttribute('data-rapa-banner-display');
+            if (display) banner.style.setProperty('display', display, banner.getAttribute('data-rapa-banner-priority'));
+            else banner.style.removeProperty('display');
+            banner.removeAttribute('data-rapa-banner-display');
+            banner.removeAttribute('data-rapa-banner-priority');
+            banner.removeAttribute('data-rapa-banner-hidden');
+          });
+        });
       });
 
-      if (instagram) instagram.parentNode.insertBefore(section, instagram);
-      else destacados.parentNode.insertBefore(section, destacados.nextSibling);
+      colocarAlInicio(section);
+
+      function colocarAlInicio(comparador) {
+        home.querySelectorAll('[data-store="home-slider"]').forEach(function(banner) {
+          if (banner.hasAttribute('data-rapa-banner-display')) return;
+          banner.setAttribute('data-rapa-banner-display', banner.style.getPropertyValue('display'));
+          banner.setAttribute('data-rapa-banner-priority', banner.style.getPropertyPriority('display'));
+          banner.setAttribute('data-rapa-banner-hidden', banner.hidden ? '1' : '0');
+          banner.hidden = true;
+          banner.style.setProperty('display', 'none', 'important');
+        });
+        if (home.firstElementChild !== comparador) home.insertBefore(comparador, home.firstChild);
+      }
     }
 
 
