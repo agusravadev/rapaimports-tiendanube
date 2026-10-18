@@ -963,24 +963,29 @@
             '<a class="rapa-compare-link" href="/volantes/">Encontrá tu volante <span aria-hidden="true">&#8599;</span></a>',
           '</div>',
           '<div class="rapa-compare-media">',
-            '<div class="rapa-compare-view" id="rapa-before-after-view" style="--rapa-compare-position:50%">',
-              '<img class="rapa-compare-image rapa-compare-after" src="https://dcdn-us.mitiendanube.com/stores/007/678/416/products/volante-despues-4710de5be37b5031b517923032342461-1024-1024.webp" alt="Después: volante personalizado en fibra de carbono, con display y costuras rojas" width="1200" height="1500" loading="lazy" decoding="async" draggable="false">',
-              '<img class="rapa-compare-image rapa-compare-before" src="https://dcdn-us.mitiendanube.com/stores/007/678/416/products/volantes-antes-1b7f4b739986606b9d17923032341602-1024-1024.webp" alt="Antes: volante original de Volkswagen" width="1200" height="1500" loading="lazy" decoding="async" draggable="false">',
+            '<div class="rapa-compare-view" id="rapa-before-after-view" style="height:0;padding-top:125%">',
+              '<img class="rapa-compare-image rapa-compare-after" style="top:0;left:0" src="https://dcdn-us.mitiendanube.com/stores/007/678/416/products/volante-despues-4710de5be37b5031b517923032342461-1024-1024.webp" alt="Después: volante personalizado en fibra de carbono, con display y costuras rojas" width="1200" height="1500" loading="lazy" decoding="async" draggable="false">',
+              '<img class="rapa-compare-image rapa-compare-before" style="top:0;left:0;clip-path:inset(0 50% 0 0)" src="https://dcdn-us.mitiendanube.com/stores/007/678/416/products/volantes-antes-1b7f4b739986606b9d17923032341602-1024-1024.webp" alt="Antes: volante original de Volkswagen" width="1200" height="1500" loading="lazy" decoding="async" draggable="false">',
               '<span class="rapa-compare-label rapa-compare-label-before" aria-hidden="true">Antes</span>',
               '<span class="rapa-compare-label rapa-compare-label-after" aria-hidden="true">Después</span>',
               '<input class="rapa-compare-range" type="range" min="0" max="100" step="1" value="50" aria-label="Comparar el volante antes y después" aria-controls="rapa-before-after-view" aria-describedby="rapa-before-after-help" aria-valuetext="50 % del antes y 50 % del después">',
-              '<div class="rapa-compare-divider" aria-hidden="true"><span class="rapa-compare-handle"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m8 7-5 5 5 5m8-10 5 5-5 5M3 12h18"/></svg></span></div>',
+              '<div class="rapa-compare-divider" style="left:50%" aria-hidden="true"><span class="rapa-compare-handle"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m8 7-5 5 5 5m8-10 5 5-5 5M3 12h18"/></svg></span></div>',
             '</div>',
             '<p id="rapa-before-after-help" class="rapa-compare-help">Arrastrá la línea y descubrí la diferencia.</p>',
           '</div>',
         '</div>'
       ].join('');
 
-      var view = section.querySelector('.rapa-compare-view');
+      // El editor CSS de Tiendanube elimina aspect-ratio, inset y clip-path.
+      // Reservamos el alto con padding y aplicamos el recorte directamente
+      // desde JS para que no pase por ese procesamiento.
+      var before = section.querySelector('.rapa-compare-before');
+      var divider = section.querySelector('.rapa-compare-divider');
       var range = section.querySelector('.rapa-compare-range');
       range.addEventListener('input', function() {
         var position = Number(range.value);
-        view.style.setProperty('--rapa-compare-position', position + '%');
+        before.style.clipPath = 'inset(0 ' + (100 - position) + '% 0 0)';
+        divider.style.left = position + '%';
         range.setAttribute('aria-valuetext', position + ' % del antes y ' + (100 - position) + ' % del después');
       });
 
