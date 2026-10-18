@@ -1,6 +1,6 @@
 # Comparador antes y después
 
-La implementación principal está en `script.js` y en el bloque final de `style.css`. El comparador ocupa el primer lugar de la portada y reemplaza el banner `home-slider`. En PC mantiene el diseño de dos columnas y la proporción 4:5; en mobile usa una comparación cuadrada de borde a borde, título compacto y la barra existente de marcas pegada al borde inferior de la imagen, sin botón. No muestra el texto “Arrastrá…” ni reserva una franja debajo. El fondo es negro puro y el título usa el rojo de la página (`#E30613`). El divisor se controla con un rango nativo accesible, arrastrando o con teclado.
+La implementación principal está en `script.js` y en el bloque final de `style.css`. El comparador ocupa el primer lugar de la portada y reemplaza el banner `home-slider`. En PC mantiene el diseño de dos columnas y la proporción 4:5; en mobile usa una comparación cuadrada de borde a borde, título compacto y la fila de marcas centrada en su bloque negro, con 32px de espacio arriba y abajo, sin botón. No muestra el texto “Arrastrá…” ni reserva una franja debajo. El fondo es negro puro y el título usa el rojo de la página (`#E30613`). El divisor se controla con un rango nativo accesible, arrastrando o con teclado.
 
 ## Instalación por CDN
 
@@ -18,3 +18,5 @@ Para actualizar un comparador ya instalado a la nueva portada, agregar `inicio-m
 Si la portada ya estaba instalada con el commit `414e86cfcdd7fb74275ccc2a00f9d9e2b5b7974c`, basta con agregar `ajuste-portada-minimal.css` **al final** del editor CSS y actualizar el commit del footer. Este ajuste replica el mockup aprobado: quita el botón de mobile, reduce el espacio antes de las marcas y aplica negro puro y rojo intenso. La distribución y el botón de PC se conservan. El script nuevo ya no genera el botón de mobile; el CSS también oculta el anterior durante la transición.
 
 Para quitar “Arrastrá…” de una portada ya instalada, actualizar el commit del script del footer a la versión nueva. `script.js` ya no genera ese párrafo ni su referencia `aria-describedby`; el rango conserva su nombre accesible y su estado. No hace falta volver a pegar CSS si ya se aplicaron los ajustes de color y de separación de la barra. Los estilos antiguos de la ayuda en el panel quedan sin efecto porque el elemento deja de existir.
+
+Para bajar y centrar la fila de marcas en mobile, agregar la versión actual de `ajuste-portada-minimal.css` al final del editor CSS. La sección recibe `padding: 32px 0` y el carrusel interno `padding: 0`, para que el espacio sea igual arriba y abajo. Este ajuste es solo CSS: no requiere cambiar el script ni el commit del footer. PC conserva el espaciado anterior.

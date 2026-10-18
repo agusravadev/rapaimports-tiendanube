@@ -19,11 +19,11 @@
 
 @media (max-width: 767px) {
 	.js-home-sections-container > [data-rapa-banner-display] ~ .section-brands-home {
-		padding-top: 0;
+		padding: 32px 0;
 	}
 
 	.js-home-sections-container > [data-rapa-banner-display] ~ .section-brands-home .brands-marquee-custom {
-		padding-top: 0;
+		padding: 0;
 	}
 
 	#rapa-before-after {
