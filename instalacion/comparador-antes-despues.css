@@ -1,0 +1,268 @@
+/* === Portada: comparador de volantes antes y después === */
+#rapa-before-after {
+	padding: 64px 24px;
+	background: #111;
+	color: #fff;
+}
+
+#rapa-before-after[hidden] {
+	display: none !important;
+}
+
+#rapa-before-after,
+#rapa-before-after * {
+	box-sizing: border-box;
+}
+
+#rapa-before-after .rapa-compare-layout {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 448px);
+	align-items: center;
+	gap: 72px;
+	width: 100%;
+	max-width: 1080px;
+	margin: 0 auto;
+}
+
+#rapa-before-after .rapa-compare-eyebrow {
+	margin: 0 0 20px;
+	color: #ff4650;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 2px;
+	text-transform: uppercase;
+}
+
+#rapa-before-after h2 {
+	margin: 0;
+	color: #fff;
+	font-size: clamp(36px, 4.5vw, 60px);
+	font-weight: 600;
+	line-height: 1.06;
+	letter-spacing: -2px;
+	text-transform: none;
+}
+
+#rapa-before-after h2 span {
+	color: #ff4650;
+}
+
+#rapa-before-after .rapa-compare-description {
+	max-width: 370px;
+	margin: 24px 0 30px;
+	color: #b8b8b8;
+	font-size: 16px;
+	font-weight: 400;
+	line-height: 1.65;
+}
+
+#rapa-before-after .rapa-compare-link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 28px;
+	max-width: 100%;
+	min-height: 48px;
+	padding: 14px 22px;
+	border: 1px solid #e30613;
+	border-radius: 4px;
+	background: #e30613;
+	color: #fff;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.3;
+	text-decoration: none;
+	transition: background .2s ease, border-color .2s ease;
+}
+
+#rapa-before-after .rapa-compare-link:hover {
+	border-color: #b90510;
+	background: #b90510;
+	color: #fff;
+}
+
+#rapa-before-after .rapa-compare-link:focus-visible {
+	outline: 2px solid #fff;
+	outline-offset: 4px;
+}
+
+#rapa-before-after .rapa-compare-link span {
+	font-size: 22px;
+	line-height: 1;
+}
+
+#rapa-before-after .rapa-compare-media {
+	min-width: 0;
+}
+
+#rapa-before-after .rapa-compare-view {
+	position: relative;
+	isolation: isolate;
+	width: 100%;
+	aspect-ratio: 4 / 5;
+	overflow: hidden;
+	border-radius: 8px;
+	background: #222;
+	cursor: ew-resize;
+	user-select: none;
+	-webkit-user-select: none;
+}
+
+#rapa-before-after .rapa-compare-image {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	max-width: none;
+	margin: 0;
+	object-fit: cover;
+	pointer-events: none;
+	-webkit-user-drag: none;
+}
+
+#rapa-before-after .rapa-compare-before {
+	clip-path: inset(0 calc(100% - var(--rapa-compare-position)) 0 0);
+}
+
+#rapa-before-after .rapa-compare-label {
+	position: absolute;
+	top: 16px;
+	z-index: 1;
+	padding: 8px 12px;
+	border-radius: 3px;
+	background: rgba(0, 0, 0, .68);
+	color: #fff;
+	font-size: 10px;
+	font-weight: 600;
+	line-height: 1;
+	letter-spacing: 1.4px;
+	text-transform: uppercase;
+	pointer-events: none;
+}
+
+#rapa-before-after .rapa-compare-label-before {
+	left: 16px;
+}
+
+#rapa-before-after .rapa-compare-label-after {
+	right: 16px;
+	background: #e30613;
+}
+
+/* El thumb transparente mide 44px. El ancho extra permite llegar a los
+   extremos sin desfasar el divisor respecto del punto de arrastre. */
+#rapa-before-after .rapa-compare-range {
+	position: absolute;
+	top: 0;
+	left: -22px;
+	z-index: 3;
+	display: block;
+	width: calc(100% + 44px);
+	height: 100%;
+	max-width: none;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	opacity: 0;
+	appearance: none;
+	-webkit-appearance: none;
+	cursor: ew-resize;
+	touch-action: pan-y;
+}
+
+#rapa-before-after .rapa-compare-range::-webkit-slider-runnable-track {
+	height: 100%;
+}
+
+#rapa-before-after .rapa-compare-range::-webkit-slider-thumb {
+	width: 44px;
+	height: 100%;
+	border: 0;
+	appearance: none;
+	-webkit-appearance: none;
+}
+
+#rapa-before-after .rapa-compare-range::-moz-range-track {
+	height: 100%;
+}
+
+#rapa-before-after .rapa-compare-range::-moz-range-thumb {
+	width: 44px;
+	height: 100%;
+	border: 0;
+}
+
+#rapa-before-after .rapa-compare-divider {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: var(--rapa-compare-position);
+	z-index: 2;
+	width: 2px;
+	background: #fff;
+	transform: translateX(-50%);
+	pointer-events: none;
+}
+
+#rapa-before-after .rapa-compare-handle {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	border: 2px solid #fff;
+	border-radius: 50%;
+	background: #fff;
+	color: #111;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, .25);
+	transform: translate(-50%, -50%);
+}
+
+#rapa-before-after .rapa-compare-range:focus-visible ~ .rapa-compare-divider .rapa-compare-handle {
+	outline: 3px solid #e30613;
+	outline-offset: 4px;
+}
+
+#rapa-before-after .rapa-compare-help {
+	margin: 14px 0 0;
+	color: #b8b8b8;
+	font-size: 12px;
+	line-height: 1.5;
+	text-align: center;
+}
+
+@media (max-width: 767px) {
+	#rapa-before-after {
+		padding: 40px 20px;
+	}
+
+	#rapa-before-after .rapa-compare-layout {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 30px;
+		max-width: 500px;
+	}
+
+	#rapa-before-after h2 {
+		font-size: clamp(36px, 9vw, 48px);
+		letter-spacing: -1.3px;
+	}
+
+	#rapa-before-after .rapa-compare-eyebrow {
+		margin-bottom: 16px;
+	}
+
+	#rapa-before-after .rapa-compare-description {
+		margin: 18px 0 22px;
+		font-size: 15px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	#rapa-before-after .rapa-compare-link {
+		transition: none;
+	}
+}

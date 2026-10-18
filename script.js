@@ -927,9 +927,72 @@
     setTimeout(initCuotasEncargo, 1500);
     inyectarBloqueVolante();
     setTimeout(inyectarBloqueVolante, 1500);
+
+    // Las funciones de acabado están declaradas más abajo (se elevan), pero
+    // las URLs deben existir antes de la primera ejecución.
+    IMAGENES_ACABADO = {
+      carbono: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/e6915c9d-23d8-48f3-a108-47814d8e30c6-9e62bd67ceafdec93917891891148874-1024-1024.webp',
+      negroPiano: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/chatgpt-image-sep-12-2026-02_06_39-am-3967622552898a662e17891896131601-1024-1024.webp'
+    };
     initMarqueeAdbar();
     setTimeout(initMarqueeAdbar, 200);
+    initVariantesAcabadoVisual();
+    setTimeout(initVariantesAcabadoVisual, 500);
     setTimeout(initBrandsMarquee, 1000);
+    initComparadorAntesDespues();
+
+    function initComparadorAntesDespues() {
+      var home = document.querySelector('.js-home-sections-container');
+      if (!home || document.getElementById('rapa-before-after')) return;
+
+      var instagram = home.querySelector('[data-store="home-instagram-feed"], .section-instafeed-home');
+      var destacados = home.querySelector('[data-store="home-products-featured"], .section-featured-home');
+      if (!instagram && !destacados) return;
+
+      var section = document.createElement('section');
+      section.id = 'rapa-before-after';
+      section.className = 'section-before-after-home';
+      section.setAttribute('data-store', 'home-before-after');
+      section.setAttribute('aria-labelledby', 'rapa-before-after-title');
+      section.innerHTML = [
+        '<div class="rapa-compare-layout">',
+          '<div class="rapa-compare-copy">',
+            '<p class="rapa-compare-eyebrow">Antes &amp; después</p>',
+            '<h2 id="rapa-before-after-title">El cambio está<br>en <span>tus manos.</span></h2>',
+            '<p class="rapa-compare-description">Dale otra presencia al interior de tu auto. Combiná materiales, terminaciones y tecnología en un volante hecho a tu medida.</p>',
+            '<a class="rapa-compare-link" href="/volantes/">Encontrá tu volante <span aria-hidden="true">&#8599;</span></a>',
+          '</div>',
+          '<div class="rapa-compare-media">',
+            '<div class="rapa-compare-view" id="rapa-before-after-view" style="--rapa-compare-position:50%">',
+              '<img class="rapa-compare-image rapa-compare-after" src="https://dcdn-us.mitiendanube.com/stores/007/678/416/products/volante-despues-4710de5be37b5031b517923032342461-1024-1024.webp" alt="Después: volante personalizado en fibra de carbono, con display y costuras rojas" width="1200" height="1500" loading="lazy" decoding="async" draggable="false">',
+              '<img class="rapa-compare-image rapa-compare-before" src="https://dcdn-us.mitiendanube.com/stores/007/678/416/products/volantes-antes-1b7f4b739986606b9d17923032341602-1024-1024.webp" alt="Antes: volante original de Volkswagen" width="1200" height="1500" loading="lazy" decoding="async" draggable="false">',
+              '<span class="rapa-compare-label rapa-compare-label-before" aria-hidden="true">Antes</span>',
+              '<span class="rapa-compare-label rapa-compare-label-after" aria-hidden="true">Después</span>',
+              '<input class="rapa-compare-range" type="range" min="0" max="100" step="1" value="50" aria-label="Comparar el volante antes y después" aria-controls="rapa-before-after-view" aria-describedby="rapa-before-after-help" aria-valuetext="50 % del antes y 50 % del después">',
+              '<div class="rapa-compare-divider" aria-hidden="true"><span class="rapa-compare-handle"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m8 7-5 5 5 5m8-10 5 5-5 5M3 12h18"/></svg></span></div>',
+            '</div>',
+            '<p id="rapa-before-after-help" class="rapa-compare-help">Arrastrá la línea y descubrí la diferencia.</p>',
+          '</div>',
+        '</div>'
+      ].join('');
+
+      var view = section.querySelector('.rapa-compare-view');
+      var range = section.querySelector('.rapa-compare-range');
+      range.addEventListener('input', function() {
+        var position = Number(range.value);
+        view.style.setProperty('--rapa-compare-position', position + '%');
+        range.setAttribute('aria-valuetext', position + ' % del antes y ' + (100 - position) + ' % del después');
+      });
+
+      // Si el CDN no responde, ocultamos este bloque sin dejar fotos rotas.
+      section.querySelectorAll('img').forEach(function(img) {
+        img.addEventListener('error', function() { section.hidden = true; });
+      });
+
+      if (instagram) instagram.parentNode.insertBefore(section, instagram);
+      else destacados.parentNode.insertBefore(section, destacados.nextSibling);
+    }
+
 
     // === PRUEBA: fila de reseñas (estrellas + "4.5 de 5") ===
     // Réplica del widget de saferazor.com.ar.
@@ -1107,6 +1170,109 @@
       if (next) next.style.setProperty('display', 'none', 'important');
 
       container.insertBefore(wrapper, adbar);
+
+      // En desktop, dos copias pueden ser más angostas que la pantalla. Se
+      // repite el grupo hasta llenar el viewport y luego se duplica: así al
+      // salir el texto por la izquierda, la siguiente copia entra de inmediato
+      // por la derecha, sin dejar un hueco. Mobile conserva sus dos copias
+      // originales y por lo tanto su comportamiento actual.
+      if (window.matchMedia && window.matchMedia('(min-width: 768px)').matches) {
+        var groupWidth = inner.scrollWidth / 2;
+        var copies = groupWidth ? Math.ceil(wrapper.clientWidth / groupWidth) : 1;
+
+        if (copies > 1) {
+          var grupoCompleto = Array(copies).fill(texto).join(sep);
+          inner.innerHTML = grupoCompleto + sep + grupoCompleto;
+        }
+      }
+    }
+
+    // Convierte únicamente los selectores de acabado que ofrecen Negro piano
+    // y alguna terminación de fibra de carbono en tarjetas visuales. Los <a>
+    // originales de Tiendanube se conservan para no interferir con su lógica
+    // de variantes, precio, stock ni carrito.
+    var IMAGENES_ACABADO;
+
+    function normalizarAcabado(valor) {
+      return String(valor || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim()
+        .toLowerCase();
+    }
+
+    function tipoAcabadoVisual(valor) {
+      var nombre = normalizarAcabado(valor);
+      if (nombre.indexOf('negro piano') !== -1) return 'negroPiano';
+      if (nombre.indexOf('fibra de carbono') !== -1 ||
+          nombre.indexOf('simil carbono') !== -1 ||
+          nombre.indexOf('carbono forjad') !== -1 ||
+          nombre.indexOf('fibra forjad') !== -1 ||
+          nombre === 'forjada') return 'carbono';
+      return null;
+    }
+
+    function initVariantesAcabadoVisual() {
+      var single = document.querySelector('#single-product');
+      if (!single) return;
+
+      single.querySelectorAll('.js-product-variants-group').forEach(function(grupo) {
+        if (grupo.dataset.rapaAcabadosInit) return;
+
+        var opciones = Array.from(grupo.querySelectorAll('.js-insta-variant'));
+        if (opciones.length < 2) return;
+
+        var datos = opciones.map(function(opcion) {
+          var nombre = opcion.getAttribute('data-option') ||
+                       opcion.getAttribute('title') ||
+                       opcion.textContent;
+          return {
+            elemento: opcion,
+            nombre: String(nombre || '').trim(),
+            tipo: tipoAcabadoVisual(nombre)
+          };
+        });
+
+        // El grupo completo debe ser de materiales y debe ofrecer las dos
+        // familias. Así no se modifican talles, colores u otras variantes.
+        var todosSonAcabados = datos.every(function(dato) { return !!dato.tipo; });
+        var tieneNegroPiano = datos.some(function(dato) { return dato.tipo === 'negroPiano'; });
+        var tieneCarbono = datos.some(function(dato) { return dato.tipo === 'carbono'; });
+        if (!todosSonAcabados || !tieneNegroPiano || !tieneCarbono) return;
+
+        datos.forEach(function(dato) {
+          var opcion = dato.elemento;
+          var contenido = opcion.querySelector('.btn-variant-content');
+          if (!contenido) return;
+
+          opcion.classList.add('rapa-material-option');
+          opcion.setAttribute('data-rapa-material', dato.tipo);
+
+          var imagenWrap = document.createElement('span');
+          imagenWrap.className = 'rapa-material-option__image';
+
+          var imagen = document.createElement('img');
+          imagen.src = IMAGENES_ACABADO[dato.tipo];
+          imagen.alt = '';
+          imagen.loading = 'lazy';
+          imagen.decoding = 'async';
+          imagen.setAttribute('aria-hidden', 'true');
+          imagenWrap.appendChild(imagen);
+
+          var etiqueta = document.createElement('span');
+          etiqueta.className = 'rapa-material-option__label';
+          etiqueta.textContent = dato.nombre;
+
+          contenido.textContent = '';
+          contenido.appendChild(imagenWrap);
+          contenido.appendChild(etiqueta);
+        });
+
+        // Se marca como inicializado recién después de completar todas las
+        // tarjetas. Si algo falla, un reintento todavía puede recuperarlo.
+        grupo.classList.add('rapa-material-group');
+        grupo.dataset.rapaAcabadosInit = '1';
+      });
     }
 
     function initBrandsMarquee() {
@@ -1409,6 +1575,7 @@
     var _bannersCarouselTimer = null;
     var _volanteTimer = null;
     var _volanteListadoTimer = null;
+    var _acabadosVisualesTimer = null;
     var observador = new MutationObserver(function() {
       revisarEnvioGratis();
       clearTimeout(_volanteTimer);
@@ -1427,6 +1594,9 @@
       _savingsTimer = setTimeout(initTransferSavingsProduct, 300);
       clearTimeout(_bannersCarouselTimer);
       _bannersCarouselTimer = setTimeout(initBannersCategoriaCarousel, 300);
+      initComparadorAntesDespues();
+      clearTimeout(_acabadosVisualesTimer);
+      _acabadosVisualesTimer = setTimeout(initVariantesAcabadoVisual, 300);
     });
     observador.observe(document.body, { childList: true, subtree: true });
   }
