@@ -22,6 +22,10 @@
 		padding-top: 0;
 	}
 
+	.js-home-sections-container > [data-rapa-banner-display] ~ .section-brands-home .brands-marquee-custom {
+		padding-top: 0;
+	}
+
 	#rapa-before-after {
 		padding: 0;
 	}
@@ -35,6 +39,10 @@
 	#rapa-before-after .rapa-compare-copy {
 		padding: 18px 20px 16px;
 		text-align: center;
+	}
+
+	#rapa-before-after .rapa-compare-media {
+		position: relative;
 	}
 
 	#rapa-before-after h2 {
@@ -69,7 +77,15 @@
 	}
 
 	#rapa-before-after .rapa-compare-help {
-		margin: 12px 16px 0;
+		position: absolute;
+		right: 8px;
+		bottom: 8px;
+		left: 8px;
+		z-index: 4;
+		margin: 0;
+		color: #fff;
 		font-size: 12px;
+		text-shadow: 0 1px 4px rgba(0, 0, 0, .9);
+		pointer-events: none;
 	}
 }

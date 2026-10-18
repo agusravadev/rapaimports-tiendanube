@@ -1,6 +1,6 @@
 # Comparador antes y después
 
-La implementación principal está en `script.js` y en el bloque final de `style.css`. El comparador ocupa el primer lugar de la portada y reemplaza el banner `home-slider`. En PC mantiene el diseño de dos columnas y la proporción 4:5; en mobile usa una comparación cuadrada de borde a borde, título compacto y la barra existente de marcas a 12px del texto de ayuda, sin botón. El fondo es negro puro y el título usa el rojo de la página (`#E30613`). El divisor se controla con un rango nativo accesible, arrastrando o con teclado.
+La implementación principal está en `script.js` y en el bloque final de `style.css`. El comparador ocupa el primer lugar de la portada y reemplaza el banner `home-slider`. En PC mantiene el diseño de dos columnas y la proporción 4:5; en mobile usa una comparación cuadrada de borde a borde, título compacto y la barra existente de marcas pegada al borde inferior de la imagen, sin botón. El texto de ayuda se superpone a la foto, a 8px del borde inferior, sin reservar una franja debajo. El fondo es negro puro y el título usa el rojo de la página (`#E30613`). El divisor se controla con un rango nativo accesible, arrastrando o con teclado.
 
 ## Instalación por CDN
 
@@ -16,3 +16,5 @@ El editor CSS de Tiendanube elimina propiedades como `aspect-ratio`, `inset`, `c
 Para actualizar un comparador ya instalado a la nueva portada, agregar `inicio-mobile.css` **al final** del editor CSS y actualizar el commit del footer. El bloque de PC conserva su diseño. Las imágenes cargan de inmediato porque ahora forman parte del inicio. Si una foto falla, se vuelve a mostrar el banner original; su configuración no se borra del tema.
 
 Si la portada ya estaba instalada con el commit `414e86cfcdd7fb74275ccc2a00f9d9e2b5b7974c`, basta con agregar `ajuste-portada-minimal.css` **al final** del editor CSS y actualizar el commit del footer. Este ajuste replica el mockup aprobado: quita el botón de mobile, reduce el espacio antes de las marcas y aplica negro puro y rojo intenso. La distribución y el botón de PC se conservan. El script nuevo ya no genera el botón de mobile; el CSS también oculta el anterior durante la transición.
+
+Si el footer ya sirve el commit `98e2c5af6c8f5a0597b1198e97290b258013e5c4`, la actualización que lleva “Arrastrá…” al pie de la foto requiere **solo CSS**: agregar la versión actual de `ajuste-portada-minimal.css` al final del editor. No hay que cambiar el commit del footer. En mobile se elimina el espacio que reservaba la ayuda y el padding superior de la barra, incluido el del carrusel de marcas. El texto no intercepta el arrastre del comparador. PC conserva su ayuda y distribución anteriores.
