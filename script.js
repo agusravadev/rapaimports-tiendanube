@@ -974,9 +974,6 @@
             '</div>',
             '<p id="rapa-before-after-help" class="rapa-compare-help">Arrastrá la línea y descubrí la diferencia.</p>',
           '</div>',
-          '<div class="rapa-compare-mobile-action" style="display:none">',
-            '<a class="rapa-compare-link" href="/volantes/">Encontrá tu volante <span aria-hidden="true">&#8599;</span></a>',
-          '</div>',
         '</div>'
       ].join('');
 

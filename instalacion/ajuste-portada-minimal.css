@@ -1,0 +1,21 @@
+/* Ajuste aprobado: pegar al final de Diseño → Editar CSS. */
+#rapa-before-after,
+#rapa-before-after .rapa-compare-view {
+	background: #000;
+}
+
+#rapa-before-after h2 span,
+#rapa-before-after .rapa-compare-eyebrow {
+	color: #e30613;
+}
+
+/* Compatibilidad mientras se actualiza el commit del script del footer. */
+#rapa-before-after .rapa-compare-mobile-action {
+	display: none !important;
+}
+
+@media (max-width: 767px) {
+	.js-home-sections-container > [data-rapa-banner-display] ~ .section-brands-home {
+		padding-top: 0;
+	}
+}

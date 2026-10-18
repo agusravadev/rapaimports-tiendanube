@@ -1,13 +1,27 @@
-/* Nueva portada: agregar al final del editor CSS de Tiendanube. */
+/* Portada actualizada: agregar al final del editor CSS de Tiendanube. */
 .js-home-sections-container > [data-rapa-banner-display] ~ .section-brands-home {
 	margin-top: 0 !important;
 }
 
 #rapa-before-after .rapa-compare-mobile-action {
-	display: none;
+	display: none !important;
+}
+
+#rapa-before-after,
+#rapa-before-after .rapa-compare-view {
+	background: #000;
+}
+
+#rapa-before-after h2 span,
+#rapa-before-after .rapa-compare-eyebrow {
+	color: #e30613;
 }
 
 @media (max-width: 767px) {
+	.js-home-sections-container > [data-rapa-banner-display] ~ .section-brands-home {
+		padding-top: 0;
+	}
+
 	#rapa-before-after {
 		padding: 0;
 	}
@@ -57,17 +71,5 @@
 	#rapa-before-after .rapa-compare-help {
 		margin: 12px 16px 0;
 		font-size: 12px;
-	}
-
-	#rapa-before-after .rapa-compare-mobile-action {
-		display: block !important;
-		padding: 18px 20px 22px;
-	}
-
-	#rapa-before-after .rapa-compare-mobile-action .rapa-compare-link {
-		display: flex;
-		justify-content: space-between;
-		width: 100%;
-		min-height: 50px;
 	}
 }
