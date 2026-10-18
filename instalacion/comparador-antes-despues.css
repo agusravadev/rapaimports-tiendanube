@@ -234,14 +234,6 @@
 	outline-offset: 4px;
 }
 
-#rapa-before-after .rapa-compare-help {
-	margin: 14px 0 0;
-	color: #b8b8b8;
-	font-size: 12px;
-	line-height: 1.5;
-	text-align: center;
-}
-
 @media (min-width: 768px) and (max-width: 1050px) {
 	#rapa-before-after h2 {
 		font-size: 44px;
@@ -273,10 +265,6 @@
 		text-align: center;
 	}
 
-	#rapa-before-after .rapa-compare-media {
-		position: relative;
-	}
-
 	#rapa-before-after h2 {
 		font-size: 32px;
 		letter-spacing: -1px;
@@ -306,19 +294,6 @@
 
 	#rapa-before-after .rapa-compare-label-after {
 		right: 12px;
-	}
-
-	#rapa-before-after .rapa-compare-help {
-		position: absolute;
-		right: 8px;
-		bottom: 8px;
-		left: 8px;
-		z-index: 4;
-		margin: 0;
-		color: #fff;
-		font-size: 12px;
-		text-shadow: 0 1px 4px rgba(0, 0, 0, .9);
-		pointer-events: none;
 	}
 }
 

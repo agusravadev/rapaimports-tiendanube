@@ -969,10 +969,9 @@
               '<img class="rapa-compare-image rapa-compare-before" style="top:0;left:0;clip-path:inset(0 50% 0 0)" src="https://dcdn-us.mitiendanube.com/stores/007/678/416/products/volantes-antes-1b7f4b739986606b9d17923032341602-1024-1024.webp" alt="Antes: volante original de Volkswagen" width="1200" height="1500" loading="eager" fetchpriority="high" decoding="async" draggable="false">',
               '<span class="rapa-compare-label rapa-compare-label-before" aria-hidden="true">Antes</span>',
               '<span class="rapa-compare-label rapa-compare-label-after" aria-hidden="true">Después</span>',
-              '<input class="rapa-compare-range" type="range" min="0" max="100" step="1" value="50" aria-label="Comparar el volante antes y después" aria-controls="rapa-before-after-view" aria-describedby="rapa-before-after-help" aria-valuetext="50 % del antes y 50 % del después">',
+              '<input class="rapa-compare-range" type="range" min="0" max="100" step="1" value="50" aria-label="Comparar el volante antes y después" aria-controls="rapa-before-after-view" aria-valuetext="50 % del antes y 50 % del después">',
               '<div class="rapa-compare-divider" style="left:50%" aria-hidden="true"><span class="rapa-compare-handle"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m8 7-5 5 5 5m8-10 5 5-5 5M3 12h18"/></svg></span></div>',
             '</div>',
-            '<p id="rapa-before-after-help" class="rapa-compare-help">Arrastrá la línea y descubrí la diferencia.</p>',
           '</div>',
         '</div>'
       ].join('');
