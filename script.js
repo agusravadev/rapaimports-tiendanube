@@ -429,7 +429,9 @@
             if (!section) return;
             var seleccion = [];
             section.querySelectorAll('.volante-personalizacion__eje').forEach(function(eje) {
-              var ejeLabel = (eje.querySelector('.volante-personalizacion__eje-label') || {}).textContent || '';
+              // El título visible ya incluye la opción ("GRIP: Cuero liso").
+              // Usar el nombre del eje para no repetirla en el mensaje.
+              var ejeLabel = (eje.getAttribute('data-eje-label') || '').trim();
               var activa = eje.querySelector('.volante-card.is-active');
               var opcionLabel = activa ? (activa.getAttribute('data-label') || activa.textContent || '').trim() : '';
               if (ejeLabel && opcionLabel) {
