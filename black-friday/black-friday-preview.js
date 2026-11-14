@@ -91,10 +91,12 @@
 @media(max-width:767px){.bf-title{font-size:64px}}
 .bf-title{margin-top:0}
 .bf-title .bf-outline{color:#fff;-webkit-text-stroke:0}
-.bf-combos{background:radial-gradient(120% 70% at 50% 0%,#170204 0%,#0b0b0b 55%,#000 100%)}
-.bf-combos::before{opacity:.16}
-.bf-combos::after{opacity:.1}
-.bf-title .bf-red{text-shadow:0 0 14px rgba(227,6,19,.25)}
+.bf-combos{background:radial-gradient(120% 70% at 50% 0%,#0f0506 0%,#0a0a0a 55%,#000 100%)}
+.bf-combos::before{opacity:.06}
+.bf-combos::after{opacity:.04}
+.bf-title .bf-red{text-shadow:0 0 10px rgba(227,6,19,.15);animation:bf-flicker2 2.2s infinite}
+@keyframes bf-flicker2{0%,38%,44%,100%{opacity:1}40%{opacity:.5}42%{opacity:.85}78%{opacity:1}80%{opacity:.6}82%{opacity:1}}
+.combos-countdown-unit{box-shadow:0 4px 14px rgba(0,0,0,.45)}
 .bf-hero{padding-top:30px}
 @media(min-width:768px){.bf-hero{padding-top:48px}}
 .bf-particles span{color:#8a1018}
