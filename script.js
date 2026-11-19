@@ -2196,3 +2196,343 @@ ${M} .payment-discount-price-cart-container > span:nth-child(3),${M} .js-payment
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();
+
+
+// ============================================================
+// Combo Black Friday: "Combo Difusor + Alerón para Golf"
+// Solo actúa en el single product del combo (LS.product.id 381089521).
+// Agrega banner Black Friday con countdown, bloque de ahorro
+// (combo + transferencia) y la sección "Este combo contiene" con la
+// personalización del alerón y del pomo. Si el combo tiene variantes
+// cargadas con las propiedades "Alerón - Acabado", "Pomo - Color" y
+// "Pomo - Acabado", sincroniza los <select> nativos para que la
+// configuración llegue en el pedido.
+// ============================================================
+(function () {
+  function initComboBlackFriday() {
+    var COMBO_ID = 381089521;
+    if (!window.LS || !LS.product || LS.product.id !== COMBO_ID) return;
+    if (document.querySelector('.cbf-contiene')) return;
+    var sp = document.querySelector('#single-product');
+    if (!sp || !sp.querySelector('#product_form') || !sp.querySelector('.js-price-container') || !sp.querySelector('section.page-header')) return;
+
+    var CDN = '//dcdn-us.mitiendanube.com/stores/007/678/416/products/';
+    // Mismas texturas que usa initVariantesAcabadoVisual() en las fichas individuales
+    var TEXTURA = {
+      piano: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/chatgpt-image-sep-12-2026-02_06_39-am-3967622552898a662e17891896131601-1024-1024.webp',
+      carbono: 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/e6915c9d-23d8-48f3-a108-47814d8e30c6-9e62bd67ceafdec93917891891148874-1024-1024.webp'
+    };
+    var ACABADOS = [
+      { v: 'Negro piano brillante', img: TEXTURA.piano },
+      { v: 'Simil fibra de carbono', img: TEXTURA.carbono }
+    ];
+
+    var ITEMS = [
+      { key: 'aleron', nombre: 'Alerón Oettinger Golf GTI MK7/7.5', valor: 210000, url: '/productos/aleron-oettinger-golf-gti/',
+        img: CDN + 'dab75253-3add-439a-b61d-21f369891484-a35ecb95ce2aeeaa0d17791936830290-1024-1024.webp',
+        imgPor: { 'Negro piano brillante': CDN + 'dab75253-3add-439a-b61d-21f369891484-a35ecb95ce2aeeaa0d17791936830290-1024-1024.webp',
+                  'Simil fibra de carbono': CDN + '-672a59dd144dacfaea17831435543611-1024-1024.webp' },
+        // Precio de lista del alerón por separado según acabado (ficha individual)
+        valorPor: { 'Negro piano brillante': 210000, 'Simil fibra de carbono': 250000 },
+        grupos: [ { prop: 'Alerón - Acabado', label: 'Acabado', tipo: 'material', opciones: ACABADOS } ] },
+      { key: 'difusor', nombre: 'Difusor trasero Golf GTI/TSI MK7', valor: 234000, url: '/productos/difusor-mk7/',
+        img: CDN + 'diseno-sin-titulo-26-188a4107918ac45e7917792287902507-1024-1024.webp', fijo: 'Negro piano brillante', grupos: [] },
+      { key: 'pomo', nombre: 'Pomo palanca AT estilo MK8', valor: 94000, regalo: true, url: '/productos/pomo-palanca-de-cambio-negro-brillante-at-estilo-mk8/',
+        img: CDN + '7e6d6041-60f2-4b10-9c94-dcd2e1747e65-31d4ded3f8822c77e317862533620107-1024-1024.webp',
+        imgs: {
+          'Blanco|Negro piano brillante': CDN + '7e6d6041-60f2-4b10-9c94-dcd2e1747e65-31d4ded3f8822c77e317862533620107-1024-1024.webp',
+          'Blanco|Simil fibra de carbono': CDN + '2116e2cf-0cd9-413b-81fb-8917249c2dfd-7998d60f7c114b3b1b17862429094914-1024-1024.webp',
+          'Rojo|Negro piano brillante': CDN + '5f959644-4342-4b73-ba77-53e270257b0d-7530502c2a7bc5c0a917862537367824-1024-1024.webp',
+          'Rojo|Simil fibra de carbono': CDN + 'a9698d03-b03b-43a5-a7cc-a5e06bc901ee-37448daa71dfec0c8117862430398842-1024-1024.webp' },
+        grupos: [
+          { prop: 'Pomo - Color', label: 'Color', tipo: 'foto', opciones: [
+            { v: 'Blanco', img: CDN + '7e6d6041-60f2-4b10-9c94-dcd2e1747e65-31d4ded3f8822c77e317862533620107-100-0.webp' },
+            { v: 'Rojo', img: CDN + '5f959644-4342-4b73-ba77-53e270257b0d-7530502c2a7bc5c0a917862537367824-100-0.webp' } ] },
+          { prop: 'Pomo - Acabado', label: 'Acabado', tipo: 'material', opciones: ACABADOS } ] }
+    ];
+
+    var STORE_KEY = 'rapa_combo_' + COMBO_ID;
+    var sel = {};
+    try { sel = JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {}; } catch (e) { sel = {}; }
+
+    function fmt(n) { return '$' + Math.round(n).toLocaleString('es-AR'); }
+    function precioCombo() { var el = document.querySelector('#price_display'); var raw = el && parseInt(el.getAttribute('data-product-price'), 10); return raw ? raw / 100 : 410960; }
+    function precioTransfer() { var el = document.querySelector('.js-payment-discount-price-product'); var raw = el && parseInt(el.getAttribute('data-priceraw-without-shipping'), 10); return raw ? raw / 100 : Math.round(precioCombo() * 0.75); }
+
+    // Cuentas: precio de lista de cada producto por separado vs combo vs combo por transferencia
+    // Se recalcula en cada cambio: el valor del alerón depende del acabado
+    // elegido y el precio del combo cambia cuando Tiendanube cambia de variante.
+    function valorItem(it) {
+      if (!it.valorPor) return it.valor;
+      var elegido = sel[it.key] && sel[it.key][it.grupos[0].prop];
+      return it.valorPor[elegido] || it.valor;
+    }
+    function calcularAhorro() {
+      var separado = ITEMS.reduce(function (a, i) { return a + valorItem(i); }, 0);
+      var combo = precioCombo(), transfer = precioTransfer();
+      var total = (separado - combo) + (combo - transfer);
+      return { separado: separado, combo: separado - combo, transfer: combo - transfer, total: total, pct: Math.round(total / separado * 100) };
+    }
+
+    var css = `
+    body.cbf-on #single-product{--cbf-red:#d71920;--cbf-ink:#111;--cbf-muted:#6b6b6b;--cbf-line:#e7e7e7;--cbf-soft:#f6f6f6}
+    .cbf-hero{position:relative;overflow:hidden;background:#0d0d0d;color:#fff;border-radius:12px;padding:12px 14px;margin:6px 0 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;animation:cbfUp .5s ease both}
+    .cbf-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.12) 50%,transparent 70%);transform:translateX(-100%);animation:cbfShine 3.2s ease-in-out infinite;pointer-events:none}
+    .cbf-hero-tag{display:flex;flex-direction:column;line-height:1.05}
+    .cbf-hero-tag b{font-size:18px;letter-spacing:.06em;font-weight:900}
+    .cbf-hero-tag b span{color:var(--cbf-red)}
+    .cbf-hero-tag small{font-size:11px;color:#bdbdbd;letter-spacing:.08em;text-transform:uppercase;margin-top:3px}
+    .cbf-clock{display:flex;align-items:center;gap:4px;font-variant-numeric:tabular-nums}
+    .cbf-clock .u{background:#1f1f1f;border:1px solid #2c2c2c;border-radius:6px;min-width:34px;text-align:center;padding:4px 2px}
+    .cbf-clock .u b{display:block;font-size:16px;font-weight:800}
+    .cbf-clock .u small{display:block;font-size:8px;color:#9a9a9a;text-transform:uppercase;letter-spacing:.06em}
+    .cbf-clock .s{color:var(--cbf-red);font-weight:800}
+    .cbf-save{position:relative;overflow:hidden;border:0;background:linear-gradient(135deg,#e30613 0%,#b3000c 100%);color:#fff;border-radius:14px;padding:14px 14px 12px;margin:0 0 14px;animation:cbfUp .5s .05s ease both,cbfSaveGlow 2.4s ease-in-out 1s infinite}
+    .cbf-save::before{content:"";position:absolute;right:-30px;top:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.08);pointer-events:none}
+    .cbf-save::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.28) 50%,transparent 65%);transform:translateX(-100%);animation:cbfShine 2.8s ease-in-out infinite;pointer-events:none}
+    .cbf-save-top{position:relative;display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .cbf-save-top b{display:flex;flex-direction:column;color:#fff;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;line-height:1.1}
+    .cbf-save-top b em{font-style:normal;color:#fff;font-size:26px;font-weight:900;letter-spacing:-.01em;text-transform:none;margin-top:3px;font-variant-numeric:tabular-nums;text-shadow:0 2px 10px rgba(0,0,0,.18)}
+    .cbf-save-pill{background:#fff;color:#e30613;font-weight:900;font-size:18px;padding:8px 12px;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.18);animation:cbfPulse 1.6s ease-in-out infinite;white-space:nowrap;line-height:1}
+    .cbf-save-pill small{display:block;font-size:9px;font-weight:800;letter-spacing:.1em;text-align:center;margin-top:2px;color:#111}
+    .cbf-save-rows{position:relative;margin-top:10px;padding-top:8px;border-top:1px dashed rgba(255,255,255,.35);font-size:12.5px;color:rgba(255,255,255,.88)}
+    .cbf-save-rows div{display:flex;justify-content:space-between;gap:8px;padding:2px 0}
+    .cbf-save-rows span:last-child{color:#fff;font-weight:800;white-space:nowrap}
+    .cbf-save-rows s{color:rgba(255,255,255,.7)}
+    @keyframes cbfSaveGlow{0%,100%{box-shadow:0 6px 18px rgba(227,6,19,.25)}50%{box-shadow:0 8px 28px rgba(227,6,19,.55)}}
+    .cbf-contiene{margin:4px 0 18px;animation:cbfUp .5s .1s ease both}
+    .cbf-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px;gap:8px}
+    .cbf-head h3{font-size:15px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin:0;color:var(--cbf-ink)}
+    .cbf-head span{font-size:12px;color:var(--cbf-muted);white-space:nowrap}
+    .cbf-head span.ok{color:#15803d;font-weight:700}
+    .cbf-item{border:1px solid var(--cbf-line);border-radius:12px;background:#fff;margin-bottom:8px;overflow:hidden;transition:border-color .25s,box-shadow .25s;opacity:0;animation:cbfUp .45s ease forwards}
+    .cbf-item:nth-child(2){animation-delay:.08s}.cbf-item:nth-child(3){animation-delay:.16s}.cbf-item:nth-child(4){animation-delay:.24s}
+    .cbf-item.open{border-color:#cfcfcf;box-shadow:0 6px 18px rgba(0,0,0,.06)}
+    .cbf-item.err{border-color:var(--cbf-red);animation:cbfShake .45s ease forwards}
+    .cbf-row{display:flex;align-items:center;gap:12px;padding:10px 12px;cursor:pointer;width:100%;background:none;border:0;text-align:left}
+    .cbf-thumb{position:relative;width:58px;height:58px;flex:0 0 58px;border-radius:9px;background:var(--cbf-soft);overflow:hidden}
+    .cbf-thumb img{width:100%;height:100%;object-fit:contain;transition:opacity .25s,transform .35s}
+    .cbf-thumb img.swap{opacity:0;transform:scale(.92)}
+    .cbf-info{flex:1;min-width:0;display:block}
+    .cbf-name{display:block;font-size:14px;font-weight:700;color:var(--cbf-ink);line-height:1.2}
+    .cbf-meta{font-size:12px;color:var(--cbf-muted);margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .cbf-meta s{color:#9a9a9a}
+    .cbf-gift{background:#111;color:#fff;font-size:10px;font-weight:800;letter-spacing:.08em;padding:2px 8px;border-radius:999px;display:inline-flex;align-items:center;gap:4px}
+    .cbf-gift b{color:#22c55e;font-weight:900}
+    .cbf-gift i{display:inline-block;font-style:normal;animation:cbfWiggle 2.4s ease-in-out infinite}
+    .cbf-chosen{display:block;font-size:12px;margin-top:4px;color:var(--cbf-ink);font-weight:600}
+    .cbf-chosen.pending{color:var(--cbf-red)}
+    .cbf-chosen.pending::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--cbf-red);margin-right:6px;vertical-align:1px;animation:cbfBlink 1.2s ease-in-out infinite}
+    .cbf-status{flex:0 0 auto;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--cbf-line);transition:all .25s;color:var(--cbf-ink)}
+    .cbf-status svg{width:12px;height:12px;transition:transform .3s}
+    .cbf-item.open:not(.done) .cbf-status svg{transform:rotate(180deg)}
+    .cbf-item.done .cbf-status{background:#111;border-color:#111;color:#fff;animation:cbfPop .35s ease}
+    .cbf-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s ease}
+    .cbf-item.open .cbf-panel{grid-template-rows:1fr}
+    .cbf-panel>div{overflow:hidden}
+    .cbf-panel-in{padding:2px 0 12px;border-top:1px dashed var(--cbf-line);margin:0 12px}
+    .cbf-group{margin-top:12px}
+    .cbf-group .form-label{display:block;margin-bottom:8px}
+    .cbf-group .form-label strong.pend{color:var(--cbf-red);font-weight:600}
+    .cbf-opts-material{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    .cbf-opts-foto{display:flex;flex-wrap:wrap}
+    #single-product .cbf-opts-foto .btn-variant-color{position:relative;cursor:pointer}
+    #single-product .cbf-opts-foto .btn-variant-color.selected{border:2px solid #e30613 !important}
+    #single-product .cbf-opts-foto .btn-variant-content-square{position:relative;overflow:hidden}
+    .cbf-fixed{font-size:13px;color:var(--cbf-ink);margin-top:12px;display:flex;align-items:center;gap:10px}
+    .cbf-fixed img{width:40px;height:40px;border-radius:5px;object-fit:cover}
+    .cbf-link{display:inline-block;margin-top:10px;font-size:12px;color:var(--cbf-muted);text-decoration:underline}
+    body.cbf-on #single-product .js-addtocart.cbf-ready{animation:cbfGlow 1.8s ease-in-out infinite}
+    .cbf-toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,20px);opacity:0;background:#111;color:#fff;font-size:13px;padding:10px 14px;border-radius:10px;z-index:100000;max-width:92vw;transition:all .3s;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+    .cbf-toast.show{opacity:1;transform:translate(-50%,0)}
+    @keyframes cbfUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+    @keyframes cbfShine{0%,60%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+    @keyframes cbfPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+    @keyframes cbfPop{0%{transform:scale(.6)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+    @keyframes cbfShake{0%{opacity:1;transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}100%{opacity:1;transform:none}}
+    @keyframes cbfBlink{0%,100%{opacity:1}50%{opacity:.25}}
+    @keyframes cbfWiggle{0%,80%,100%{transform:rotate(0)}85%{transform:rotate(-14deg)}90%{transform:rotate(12deg)}95%{transform:rotate(-6deg)}}
+    @keyframes cbfGlow{0%,100%{box-shadow:0 0 0 0 rgba(255,106,0,.45)}50%{box-shadow:0 0 0 8px rgba(255,106,0,0)}}
+    body.cbf-on #single-product #product_form .js-product-variants{display:none !important}
+    @media (min-width:768px){.cbf-hero-tag b{font-size:20px}}
+    @media (prefers-reduced-motion:reduce){body.cbf-on .cbf-hero::after,body.cbf-on .cbf-save,body.cbf-on .cbf-save::after,body.cbf-on .cbf-save-pill,body.cbf-on .cbf-gift i,body.cbf-on .js-addtocart.cbf-ready{animation:none}}
+    `;
+    var st = document.createElement('style'); st.id = 'cbf-style'; st.textContent = css; document.head.appendChild(st);
+    document.body.classList.add('cbf-on');
+
+    var priceBox = sp.querySelector('.js-price-container');
+    var form = sp.querySelector('#product_form');
+
+    // ---------- Banner Black Friday + countdown ----------
+    var hero = document.createElement('div'); hero.className = 'cbf-hero';
+    hero.innerHTML = '<div class="cbf-hero-tag"><b>BLACK <span>FRIDAY</span></b><small>Combo exclusivo</small></div>' +
+      '<div class="cbf-clock" role="timer" aria-label="La oferta termina en"><div class="u"><b data-h>00</b><small>hs</small></div><span class="s">:</span><div class="u"><b data-m>00</b><small>min</small></div><span class="s">:</span><div class="u"><b data-s>00</b><small>seg</small></div></div>';
+    var ph = sp.querySelector('section.page-header'); ph.parentNode.insertBefore(hero, ph);
+    function pad(n) { return (n < 10 ? '0' : '') + n; }
+    function tick() { var off = -3 * 3600 * 1000, now = Date.now() + off; var fin = Math.floor(now / 86400000) * 86400000 + 86400000; var r = Math.max(0, Math.floor((fin - now) / 1000));
+      hero.querySelector('[data-h]').textContent = pad(Math.floor(r / 3600)); hero.querySelector('[data-m]').textContent = pad(Math.floor(r % 3600 / 60)); hero.querySelector('[data-s]').textContent = pad(r % 60); }
+    tick(); setInterval(tick, 1000);
+
+    // ---------- Ahorro: combo + transferencia ----------
+    var save = document.createElement('div'); save.className = 'cbf-save';
+    save.innerHTML =
+      '<div class="cbf-save-top"><b>🔥 Ahorrás hasta<em>$0</em></b><span class="cbf-save-pill"><span data-a="pct"></span><small>OFF</small></span></div>' +
+      '<div class="cbf-save-rows">' +
+        '<div><span>Por separado (alerón + difusor + pomo)</span><span><s data-a="separado"></s></span></div>' +
+        '<div><span>Ahorro por llevar el combo</span><span data-a="combo"></span></div>' +
+        '<div><span>Ahorro extra pagando por transferencia</span><span data-a="transfer"></span></div>' +
+      '</div>';
+    priceBox.parentNode.insertBefore(save, priceBox.nextSibling);
+
+    // Pinta el bloque de ahorro; el total se anima desde el valor anterior
+    var ahorroMostrado = 0, ahorroRaf = null, ahorroFirma = '';
+    function pintarAhorro() {
+      var a = calcularAhorro();
+      var firma = [a.separado, a.combo, a.transfer].join('|');
+      if (firma === ahorroFirma) return;
+      ahorroFirma = firma;
+      save.querySelector('[data-a="pct"]').textContent = '-' + a.pct + '%';
+      save.querySelector('[data-a="separado"]').textContent = fmt(a.separado);
+      save.querySelector('[data-a="combo"]').textContent = '-' + fmt(a.combo);
+      save.querySelector('[data-a="transfer"]').textContent = '-' + fmt(a.transfer);
+      var em = save.querySelector('em'), desde = ahorroMostrado, hasta = a.total, t0 = performance.now(), dur = desde ? 700 : 1400;
+      if (ahorroRaf) cancelAnimationFrame(ahorroRaf);
+      function step(t) {
+        var p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+        ahorroMostrado = desde + (hasta - desde) * e;
+        em.textContent = fmt(ahorroMostrado);
+        if (p < 1) ahorroRaf = requestAnimationFrame(step); else ahorroRaf = null;
+      }
+      ahorroRaf = requestAnimationFrame(step);
+    }
+    // Tiendanube reescribe el precio al cambiar de variante: recalcular
+    var precioObsTimer;
+    new MutationObserver(function () {
+      clearTimeout(precioObsTimer);
+      precioObsTimer = setTimeout(pintarAhorro, 120);
+    }).observe(priceBox, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['data-product-price', 'data-priceraw-without-shipping'] });
+
+    // ---------- Sección Contiene ----------
+    var box = document.createElement('section'); box.className = 'cbf-contiene';
+    box.innerHTML = '<div class="cbf-head"><h3>Este combo contiene</h3><span class="cbf-head-status"></span></div>';
+    var chevron = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4l4 4 4-4"/></svg>';
+    var check = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 6.5l2.5 2.5L10 3"/></svg>';
+
+    function opcionHTML(g, gi, o) {
+      if (g.tipo === 'foto') {
+        return '<a class="btn btn-variant btn-variant-color cbf-opt" role="button" title="' + o.v + '" data-g="' + gi + '" data-v="' + o.v + '">' +
+          '<span class="btn-variant-content btn-variant-content-square" data-name="' + o.v + '"><img class="img-absolute-centered-vertically" src="' + o.img + '" alt="' + o.v + '"></span></a>';
+      }
+      return '<a class="btn btn-variant rapa-material-option cbf-opt" role="button" title="' + o.v + '" data-g="' + gi + '" data-v="' + o.v + '">' +
+        '<span class="btn-variant-content"><span class="rapa-material-option__image"><img src="' + o.img + '" alt="" loading="lazy"></span>' +
+        '<span class="rapa-material-option__label">' + o.v + '</span></span></a>';
+    }
+
+    ITEMS.forEach(function (it) {
+      sel[it.key] = sel[it.key] || {};
+      var card = document.createElement('div'); card.className = 'cbf-item'; card.dataset.key = it.key;
+      var meta = it.regalo ? '<span class="cbf-gift"><i>🎁</i> DE <b>REGALO</b></span><s>' + fmt(it.valor) + '</s>' : '<span>Valor <span class="cbf-valor">' + fmt(it.valor) + '</span></span>';
+      var panel = '';
+      it.grupos.forEach(function (g, gi) {
+        panel += '<div class="cbf-group" data-gi="' + gi + '"><label class="form-label">' + g.label + ': <strong class="cbf-glabel"></strong></label>' +
+          '<div class="cbf-opts-' + g.tipo + '">' + g.opciones.map(function (o) { return opcionHTML(g, gi, o); }).join('') + '</div></div>';
+      });
+      if (it.fijo) panel += '<div class="cbf-fixed"><img src="' + TEXTURA.piano + '" alt="">Terminación ' + it.fijo + ' · lista para instalar</div>';
+      panel += '<a class="cbf-link" href="' + it.url + '" target="_blank" rel="noopener">Ver detalle del producto</a>';
+      card.innerHTML = '<button type="button" class="cbf-row" aria-expanded="false"><span class="cbf-thumb"><img src="' + it.img + '" alt="" loading="lazy"></span>' +
+        '<span class="cbf-info"><span class="cbf-name">' + it.nombre + '</span><span class="cbf-meta">' + meta + '</span><span class="cbf-chosen"></span></span>' +
+        '<span class="cbf-status">' + chevron + '</span></button><div class="cbf-panel"><div><div class="cbf-panel-in">' + panel + '</div></div></div>';
+      box.appendChild(card);
+
+      card.querySelector('.cbf-row').addEventListener('click', function () {
+        var open = !card.classList.contains('open');
+        box.querySelectorAll('.cbf-item.open').forEach(function (c) { if (c !== card) { c.classList.remove('open'); c.querySelector('.cbf-row').setAttribute('aria-expanded', 'false'); } });
+        card.classList.toggle('open', open); this.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+      card.querySelectorAll('.cbf-opt').forEach(function (b) {
+        b.addEventListener('click', function (e) {
+          e.preventDefault();
+          var g = it.grupos[+b.dataset.g]; sel[it.key][g.prop] = b.dataset.v; card.classList.remove('err'); render(true, it.key);
+          if (completo(it)) { var next = ITEMS.filter(function (x) { return !completo(x); })[0]; setTimeout(function () { if (next) abrir(next.key); else card.classList.remove('open'); }, 500); }
+        });
+      });
+    });
+    form.parentNode.insertBefore(box, form);
+
+    function completo(it) { return it.grupos.every(function (g) { return sel[it.key][g.prop]; }); }
+    function abrir(key) { box.querySelectorAll('.cbf-item').forEach(function (c) { var on = c.dataset.key === key; c.classList.toggle('open', on); c.querySelector('.cbf-row').setAttribute('aria-expanded', on ? 'true' : 'false'); }); }
+    function resumen() { var p = []; ITEMS.forEach(function (it) { if (!it.grupos.length) return; p.push(it.nombre.split(' ')[0] + ': ' + it.grupos.map(function (g) { return sel[it.key][g.prop]; }).join(' / ')); }); return p.join(' · '); }
+
+    // Con las variantes cargadas en Tiendanube ("Alerón - Acabado", "Pomo - Color",
+    // "Pomo - Acabado") sincroniza los <select> nativos para que la configuración
+    // llegue en el pedido como variante.
+    function syncVariantes() {
+      form.querySelectorAll('.js-product-variants .form-group').forEach(function (grp) {
+        var lab = grp.querySelector('label'); var s = grp.querySelector('select.js-variation-option'); if (!lab || !s) return;
+        var nombre = lab.textContent.trim().split(':')[0].trim().toLowerCase();
+        ITEMS.forEach(function (it) { it.grupos.forEach(function (g) {
+          if (g.prop.toLowerCase() === nombre && sel[it.key][g.prop] && s.value !== sel[it.key][g.prop]) { s.value = sel[it.key][g.prop]; s.dispatchEvent(new Event('change', { bubbles: true })); }
+        }); });
+      });
+    }
+
+    function render(anim, changedKey) {
+      var listos = 0, total = 0;
+      ITEMS.forEach(function (it) {
+        var card = box.querySelector('.cbf-item[data-key="' + it.key + '"]'); var chosen = card.querySelector('.cbf-chosen');
+        var valorEl = card.querySelector('.cbf-valor'); if (valorEl) valorEl.textContent = fmt(valorItem(it));
+        card.querySelectorAll('.cbf-opt').forEach(function (b) { var g = it.grupos[+b.dataset.g]; b.classList.toggle('selected', sel[it.key][g.prop] === b.dataset.v); });
+        it.grupos.forEach(function (g, gi) {
+          var lbl = card.querySelector('.cbf-group[data-gi="' + gi + '"] .cbf-glabel');
+          lbl.textContent = sel[it.key][g.prop] || 'elegí una opción';
+          lbl.classList.toggle('pend', !sel[it.key][g.prop]);
+        });
+        if (!it.grupos.length) { chosen.textContent = it.fijo; chosen.className = 'cbf-chosen'; card.classList.add('done'); card.querySelector('.cbf-status').innerHTML = check; return; }
+        total++; var ok = completo(it); if (ok) listos++;
+        var faltan = it.grupos.filter(function (g) { return !sel[it.key][g.prop]; }).map(function (g) { return g.label.toLowerCase(); });
+        chosen.textContent = ok ? it.grupos.map(function (g) { return sel[it.key][g.prop]; }).join(' · ') : 'Elegí ' + faltan.join(' y ');
+        chosen.className = 'cbf-chosen' + (ok ? '' : ' pending');
+        card.classList.toggle('done', ok); card.querySelector('.cbf-status').innerHTML = ok ? check : chevron;
+        var img = card.querySelector('.cbf-thumb img'), src = it.img;
+        if (it.imgs) src = it.imgs[(sel[it.key]['Pomo - Color'] || 'Blanco') + '|' + (sel[it.key]['Pomo - Acabado'] || 'Negro piano brillante')] || it.img;
+        else if (it.imgPor) src = it.imgPor[sel[it.key][it.grupos[0].prop]] || it.img;
+        if (img.getAttribute('src') !== src) {
+          if (anim && changedKey === it.key) { img.classList.add('swap'); setTimeout(function () { img.onload = function () { img.classList.remove('swap'); }; img.src = src; }, 180); }
+          else img.src = src;
+        }
+      });
+      var hs = box.querySelector('.cbf-head-status'); var btn = sp.querySelector('.js-addtocart');
+      if (listos === total) { hs.textContent = '✔ Combo listo'; hs.className = 'cbf-head-status ok'; btn && btn.classList.add('cbf-ready'); }
+      else { hs.textContent = 'Personalizá ' + (total - listos) + (total - listos === 1 ? ' producto' : ' productos'); hs.className = 'cbf-head-status'; btn && btn.classList.remove('cbf-ready'); }
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(sel)); } catch (e) {}
+      syncVariantes();
+      pintarAhorro();
+      // El precio del combo puede actualizarse un instante después del cambio de variante
+      setTimeout(pintarAhorro, 400);
+    }
+    render(false);
+
+    function toast(msg) { var t = document.createElement('div'); t.className = 'cbf-toast'; t.textContent = msg; document.body.appendChild(t);
+      requestAnimationFrame(function () { t.classList.add('show'); }); setTimeout(function () { t.classList.remove('show'); setTimeout(function () { t.remove(); }, 300); }, 3200); }
+
+    form.addEventListener('click', function (e) {
+      var btn = e.target.closest('.js-addtocart'); if (!btn) return;
+      var pend = ITEMS.filter(function (it) { return !completo(it); });
+      if (pend.length) { e.preventDefault(); e.stopImmediatePropagation();
+        var c = box.querySelector('.cbf-item[data-key="' + pend[0].key + '"]'); c.classList.remove('err'); void c.offsetWidth; c.classList.add('err');
+        abrir(pend[0].key); box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        toast('Elegí las opciones del ' + pend[0].nombre.split(' ')[0].toLowerCase() + ' para continuar'); return; }
+    }, true);
+  }
+
+  function intentar() {
+    try { initComboBlackFriday(); } catch (e) { console.warn('[rapa] combo BF', e); }
+  }
+  function arrancar() {
+    intentar();
+    setTimeout(intentar, 800);
+    setTimeout(intentar, 2000);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arrancar);
+  else arrancar();
+})();
