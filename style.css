@@ -172,6 +172,11 @@ body.producto-encargo #single-product .price-container::after {
 	display: none !important;
 }
 
+/* Ocultar etiquetas de oferta sobre las imágenes de las tarjetas. */
+.item-product .js-offer-label {
+	display: none !important;
+}
+
 #single-product .payment-discount-price-product-container {
 	position: relative !important;
 	display: flex !important;
@@ -816,6 +821,85 @@ a.btn.btn-encargar.btn-personalizar:hover {
 @media (min-width:768px) {
 	.banners-carousel-title {
 		margin: 48px 0 24px;
+	}
+}
+
+/* Countdown de la sección Combos (inyectado por script.js) */
+.banners-carousel-title + .combos-countdown {
+	margin-top: -6px;
+}
+
+.combos-countdown {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	margin: 0 auto 20px;
+	font-family: "Montserrat", Sans-serif;
+	text-align: center;
+}
+
+.combos-countdown-label {
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: .12em;
+	text-transform: uppercase;
+	color: #e30613;
+}
+
+.combos-countdown-clock {
+	display: inline-flex;
+	align-items: flex-start;
+	gap: 6px;
+}
+
+.combos-countdown-unit {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-width: 58px;
+	padding: 8px 6px 6px;
+	background: #111;
+	border-bottom: 3px solid #e30613;
+	border-radius: 6px;
+	color: #fff;
+}
+
+.combos-countdown-unit b {
+	font-size: 26px;
+	font-weight: 800;
+	line-height: 1;
+	font-variant-numeric: tabular-nums;
+}
+
+.combos-countdown-unit small {
+	margin-top: 4px;
+	font-size: 10px;
+	font-weight: 600;
+	letter-spacing: .08em;
+	text-transform: uppercase;
+	color: rgba(255, 255, 255, .7);
+}
+
+.combos-countdown-sep {
+	padding-top: 8px;
+	font-size: 24px;
+	font-weight: 800;
+	line-height: 1;
+	color: #111;
+}
+
+@media (min-width:768px) {
+	.combos-countdown {
+		margin-bottom: 28px;
+	}
+
+	.combos-countdown-unit {
+		min-width: 70px;
+	}
+
+	.combos-countdown-unit b {
+		font-size: 32px;
 	}
 }
 

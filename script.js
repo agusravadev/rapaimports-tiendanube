@@ -1431,6 +1431,41 @@
     var _savingsTimer = null;
     var _volanteInyectTimer = null;
 
+    // Countdown de la sección "Combos": cuenta hasta las 23:59:59 de hoy
+    // en hora Argentina (UTC-3), sin importar la zona horaria del visitante.
+    // Al llegar a cero reinicia para el día siguiente.
+    var _combosCountdownTimer = null;
+    function crearCountdownCombos() {
+      var box = document.createElement('div');
+      box.className = 'combos-countdown';
+      box.setAttribute('role', 'timer');
+      box.innerHTML =
+        '<span class="combos-countdown-label">La oferta termina en</span>' +
+        '<span class="combos-countdown-clock">' +
+          '<span class="combos-countdown-unit"><b data-cd="h">00</b><small>horas</small></span>' +
+          '<span class="combos-countdown-sep">:</span>' +
+          '<span class="combos-countdown-unit"><b data-cd="m">00</b><small>min</small></span>' +
+          '<span class="combos-countdown-sep">:</span>' +
+          '<span class="combos-countdown-unit"><b data-cd="s">00</b><small>seg</small></span>' +
+        '</span>';
+
+      function pad(n) { return (n < 10 ? '0' : '') + n; }
+      function tick() {
+        var AR_OFFSET = -3 * 3600 * 1000;
+        var nowAr = Date.now() + AR_OFFSET;
+        var finDia = Math.floor(nowAr / 86400000) * 86400000 + 86400000;
+        var resto = Math.max(0, Math.floor((finDia - nowAr) / 1000));
+        document.querySelectorAll('.combos-countdown').forEach(function(el) {
+          el.querySelector('[data-cd="h"]').textContent = pad(Math.floor(resto / 3600));
+          el.querySelector('[data-cd="m"]').textContent = pad(Math.floor(resto % 3600 / 60));
+          el.querySelector('[data-cd="s"]').textContent = pad(resto % 60);
+        });
+      }
+      if (!_combosCountdownTimer) _combosCountdownTimer = setInterval(tick, 1000);
+      setTimeout(tick, 0);
+      return box;
+    }
+
     // Carrusel de banners de categoría (mobile, infinito)
     function initBannersCategoriaCarousel() {
       var rows = document.querySelectorAll('.row');
@@ -1444,8 +1479,9 @@
 
         var titulo = document.createElement('h2');
         titulo.className = 'banners-carousel-title h6 text-primary h1-md';
-        titulo.textContent = 'Lo más buscado...';
+        titulo.textContent = 'Combos';
         wrapper.appendChild(titulo);
+        wrapper.appendChild(crearCountdownCombos());
 
         wrapper.appendChild(row);
 
@@ -2039,6 +2075,19 @@ ${M} .payment-discount-price-cart-container{display:flex!important;flex-wrap:wra
 ${M} .payment-discount-price-cart-container > span:first-child{display:none!important}
 ${M} .payment-discount-price-cart{flex:0 0 100%;font-size:28px!important;font-weight:800!important;line-height:1.1;letter-spacing:-.01em;color:#1f8a4c!important}
 ${M} .payment-discount-price-cart-container > span:nth-child(3),${M} .js-payment-discount-name-cart{font-size:13px!important;font-weight:600!important;color:#1f8a4c!important;text-transform:lowercase}
+/* ---------- Sin deslizamiento lateral ----------
+   El encabezado del tema mide 100% + 40px (para tapar el padding del
+   modal) y el carrito se arrastraba de costado. Se quita el padding
+   lateral/inferior del modal (cada bloque ya tiene el suyo). El carrusel de
+   sugerencias tiene su propio scroll y sigue deslizando normal. */
+${M}{overflow-x:hidden!important;overscroll-behavior:contain;padding-left:0!important;padding-right:0!important;padding-bottom:0!important}
+${M} .modal-header{width:auto!important}
+/* ---------- Botón "Iniciar compra" siempre visible ---------- */
+.sp-cart-foot{position:sticky;bottom:0;z-index:200;background:#fff;padding:12px 20px calc(2px + env(safe-area-inset-bottom));border-top:1px solid #eee;box-shadow:0 -8px 20px rgba(0,0,0,.08)}
+.sp-cart-foot .container-fluid{padding:0!important}
+.sp-cart-foot .row{margin-left:0!important;margin-right:0!important}
+.sp-cart-foot #ajax-cart-submit-div{margin-bottom:0!important}
+.sp-cart-foot .sp-cart-trust{margin:8px 0 6px}
 `;
   var st = document.createElement('style'); st.id = 'sp-cartv2-css'; st.textContent = css; document.head.appendChild(st);
 
@@ -2065,78 +2114,114 @@ ${M} .payment-discount-price-cart-container > span:nth-child(3),${M} .js-payment
     sub.after(d);
   }
 
+  // ---------- Botón de pago fijo abajo ----------
+  // Saca el bloque del botón del .modal-body y lo pone al final del form en
+  // un pie sticky: queda visible siempre, en el carrito parcial y en el
+  // completo. Sigue dentro del form, así que el submit funciona igual.
+  function pie() {
+    var sub = modal.querySelector('#ajax-cart-submit-div'); if (!sub) return;
+    var form = modal.querySelector('.js-ajax-cart-panel') || modal;
+    var foot = form.querySelector(':scope > .sp-cart-foot');
+    if (!foot) { foot = document.createElement('div'); foot.className = 'sp-cart-foot'; form.appendChild(foot); }
+    var wrap = sub.closest('.container-fluid') || sub;
+    if (wrap.parentNode !== foot) foot.appendChild(wrap);
+    if (foot !== form.lastElementChild) form.appendChild(foot);
+    var lleno = !!modal.querySelector('.js-cart-item');
+    if (foot.hidden === lleno) foot.hidden = !lleno;
+  }
+
   // ---------- Sugerencias relacionadas ----------
-  var cache = {};
-  var MARCAS = /(Audi|BMW|Mercedes(?:-Benz)?|Volkswagen|VW|Amarok|Golf|Vento|Polo|Scirocco|Toyota|Hilux|Chevrolet|Ford|Peugeot|Fiat|Renault)/i;
+  // Se arman por la CATEGORÍA FINAL de cada producto del carrito (el último
+  // eslabón del breadcrumb de su ficha, ej. Marcas > Volkswagen > Vento > MK6
+  // → /marcas/volkswagen/vento/mk61/). Nunca por palabras del nombre ni por
+  // categorías padre (Volkswagen trae productos de cualquier modelo).
+  var cache = {}, catCache = {};
   function itemsCarrito() {
     return [...modal.querySelectorAll('.js-cart-item')].map(function(it) {
-      var name = ((it.querySelector('.cart-item-name') || {}).textContent || '').replace(/\s+/g, ' ').trim();
+      var name = ((it.querySelector('.cart-item-name a, .cart-item-name') || {}).textContent || '').replace(/\s+/g, ' ').trim();
       var id = (it.getAttribute('data-store') || '').replace(/\D/g, '');
-      return { name: name, id: id };
+      var a = it.querySelector('a[href*="/productos/"]');
+      return { name: name, id: id, url: a ? a.href.split('?')[0] : '' };
     });
-  }
-  function claveVehiculo(name) {
-    var m = name.match(MARCAS); if (!m) return null;
-    var resto = name.slice(m.index + m[0].length).trim().split(/\s+/)[0] || '';
-    var modelo = resto.split('/')[0].replace(/[^\w-]/g, '');
-    var marca = m[0].replace(/^VW$/i, 'Volkswagen');
-    return { query: (marca + ' ' + modelo).trim(), label: (marca + ' ' + modelo).trim(), marca: marca };
   }
   function tipo(name) { return (name.split(/\s+/)[0] || '').toLowerCase(); }
   function img(u) { return (u || '').replace(/-1024-1024(\.\w+)$/, '-480-0$1'); }
 
-  async function buscar(q) {
-    if (cache[q]) return cache[q];
-    var html = await fetch('/search/?q=' + encodeURIComponent(q)).then(function(r){ return r.text(); });
+  // Categoría final de un producto, leída del breadcrumb de su ficha
+  function categoriaFinal(url) {
+    if (!url) return Promise.resolve(null);
+    if (!catCache[url]) {
+      catCache[url] = fetch(url).then(function(r){ return r.text(); }).then(function(html) {
+        var d = new DOMParser().parseFromString(html, 'text/html');
+        var crumbs = [...d.querySelectorAll('.breadcrumbs a.crumb')].slice(1); // sin "Inicio"
+        var last = crumbs[crumbs.length - 1];
+        if (!last) return null;
+        var nombres = crumbs.map(function(a){ return a.textContent.trim(); });
+        var esVehiculo = /^marcas$/i.test(nombres[0] || '');
+        // Título: modelo + categoría final (Golf > MK6 > MK6 GTI → "Golf MK6 GTI")
+        var label = nombres[nombres.length - 1];
+        var modelo = esVehiculo ? nombres[2] : '';
+        if (modelo && nombres.length > 3 && label.toLowerCase().indexOf(modelo.toLowerCase()) < 0) label = modelo + ' ' + label;
+        return { url: last.getAttribute('href'), label: label, vehiculo: esVehiculo };
+      }).catch(function(){ return null; });
+    }
+    return catCache[url];
+  }
+
+  // Productos de una categoría (solo con stock real: sin encargo 9999)
+  async function listar(path) {
+    if (cache[path]) return cache[path];
+    var html = await fetch(path).then(function(r){ return r.text(); });
     var d = new DOMParser().parseFromString(html, 'text/html');
     var out = [...d.querySelectorAll('.js-item-product')].map(function(it) {
       var vEl = it.querySelector('[data-variants]'); var vars = [];
       try { vars = JSON.parse(vEl.getAttribute('data-variants')); } catch (e) {}
-      var v = vars.find(function(x){ return x.available && x.stock && x.stock !== 9999 && x.stock > 0; });
+      // stock null = ilimitado en Tiendanube
+      var v = vars.find(function(x){ return x.available && x.stock !== 9999 && (x.stock === null || x.stock > 0); });
       var a = it.querySelector('a[href*="/productos/"]');
       var nm = ((it.querySelector('.js-item-name, .item-name') || {}).textContent || '').trim();
       return v ? { id: String(v.product_id), v: v, name: nm, url: a ? a.href : '#' } : null;
     }).filter(Boolean);
-    cache[q] = out; return out;
+    cache[path] = out; return out;
   }
 
-  var renderKey = '';
+  var renderKey = '', renderGen = 0, sinSug = false;
   async function sugerencias() {
     var list = modal.querySelector('.js-ajax-cart-list'); if (!list) return;
     var items = itemsCarrito();
     var sec = modal.querySelector('.sp-sug');
     if (!items.length) { if (sec) sec.remove(); renderKey = ''; return; }
-    var ultimo = items[items.length - 1];
-    var k = claveVehiculo(ultimo.name);
-    var key = items.map(function(i){ return i.id; }).join(',') + '|' + (k ? k.query : '');
-    if (key === renderKey && sec) return;
-    renderKey = key;
+    var key = items.map(function(i){ return i.id; }).join(',');
+    // sinSug: evita recrear/borrar la sección en bucle cuando no hay sugerencias
+    if (key === renderKey && (sec || sinSug)) return;
+    renderKey = key; sinSug = false;
+    var gen = ++renderGen;
     if (!sec) { sec = document.createElement('div'); sec.className = 'sp-sug'; list.after(sec); }
-    var titulo = k ? 'Completá tu ' + k.label : 'También te puede interesar';
-    sec.innerHTML = '<div class="sp-sug-head"><div><p class="sp-sug-title">' + titulo + '</p><p class="sp-sug-sub">Accesorios compatibles para sumar a tu pedido</p></div>' +
+    sec.innerHTML = '<div class="sp-sug-head"><div><p class="sp-sug-title">También te puede interesar</p><p class="sp-sug-sub">Accesorios compatibles para sumar a tu pedido</p></div>' +
       '<div class="sp-sug-nav"><button type="button" data-dir="-1" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M15 6l-6 6 6 6"/></svg></button><button type="button" data-dir="1" aria-label="Siguiente"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></button></div></div>' +
       '<div class="sp-sug-track"><div class="sp-sug-skel"></div><div class="sp-sug-skel"></div><div class="sp-sug-skel"></div></div>';
     var enCarrito = items.map(function(i){ return i.id; });
     var tiposCarrito = items.map(function(i){ return tipo(i.name); });
-    var res = [];
+    // Categorías finales de todo el carrito, empezando por lo último agregado
+    var cats = [], res = [];
     try {
-      if (k) res = await buscar(k.query);
-      if (k && res.filter(function(p){ return enCarrito.indexOf(p.id) < 0; }).length < 3) res = res.concat(await buscar(k.marca));
+      var todas = await Promise.all(items.slice().reverse().map(function(i){ return categoriaFinal(i.url); }));
+      todas.forEach(function(c){ if (c && !cats.some(function(x){ return x.url === c.url; })) cats.push(c); });
+      var listas = await Promise.all(cats.map(function(c){ return listar(c.url).catch(function(){ return []; }); }));
+      listas.forEach(function(l){ res = res.concat(l); });
     } catch (e) {}
+    if (gen !== renderGen || !sec.isConnected) return; // llegó un render más nuevo
     var vistos = {};
     var sug = res.filter(function(p) {
       if (vistos[p.id] || enCarrito.indexOf(p.id) >= 0) return false; vistos[p.id] = 1; return true;
     });
-    // Si hay productos del mismo modelo, mostrar solo esos; si no, los de la marca
-    var modelo = k ? k.query.split(' ').slice(1).join(' ').toLowerCase() : '';
-    var delModelo = modelo ? sug.filter(function(p){ return p.name.toLowerCase().indexOf(modelo) >= 0; }) : [];
-    if (delModelo.length) sug = delModelo;
-    else if (k) titulo = 'Más accesorios para tu ' + k.marca;
+    var c0 = cats[0];
+    var titulo = !c0 ? 'También te puede interesar' : c0.vehiculo ? 'Completá tu ' + c0.label : 'Más de ' + c0.label;
     sec.querySelector('.sp-sug-title').textContent = titulo;
     // primero lo complementario (otro tipo de producto), después el resto
     sug.sort(function(a, b){ return (tiposCarrito.indexOf(tipo(a.name)) >= 0) - (tiposCarrito.indexOf(tipo(b.name)) >= 0); });
     sug = sug.slice(0, 6);
-    if (!sug.length) { sec.remove(); return; }
+    if (!sug.length) { sinSug = true; sec.remove(); return; }
     var track = sec.querySelector('.sp-sug-track');
     track.innerHTML = sug.map(function(p) {
       return '<div class="sp-sug-card" data-pid="' + p.id + '">' +
@@ -2177,7 +2262,7 @@ ${M} .payment-discount-price-cart-container > span:nth-child(3),${M} .js-payment
     }, 300);
   }
 
-  function refrescar() { header(); trust(); sugerencias(); }
+  function refrescar() { header(); trust(); pie(); sugerencias(); }
   refrescar();
   if (window.__spCartObs) window.__spCartObs.disconnect();
   var t;
