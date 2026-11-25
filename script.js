@@ -2808,3 +2808,80 @@ ${M} .modal-header{width:auto!important}
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arrancar);
   else arrancar();
 })();
+
+
+/* ======================================================================
+   RAPA IMPORTS · BLACK FRIDAY · Pop-up de oferta (solo rama black-friday)
+   - Solo teléfono y tablet (hasta 1024px o pantallas táctiles sin mouse).
+   - Aparece 5 s después de entrar, una vez por sesión del navegador.
+   - Se cierra con la cruz, tocando afuera, con Esc o tocando la imagen.
+   ====================================================================== */
+(function () {
+  var IMG = 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/oferta-black-friday-gti-a62170e5a3302f880b17956177285732-1024-1024.webp';
+  var KEY = 'rapa-bf-popup-visto';
+  var DEMORA = 5000;
+
+  function esMobileOTablet() {
+    return window.matchMedia && window.matchMedia('(max-width: 1024px), (hover: none) and (pointer: coarse)').matches;
+  }
+  function yaVisto() { try { return sessionStorage.getItem(KEY) === '1'; } catch (e) { return false; } }
+  function marcarVisto() { try { sessionStorage.setItem(KEY, '1'); } catch (e) {} }
+
+  function mostrar() {
+    if (yaVisto() || !esMobileOTablet() || document.querySelector('.bf-pop')) return;
+    if (/\/password\/?$/.test(location.pathname)) return;
+    marcarVisto();
+    var css = `
+.bf-pop{position:fixed;inset:0;z-index:100001;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.72);opacity:0;transition:opacity .3s}
+.bf-pop.on{opacity:1}
+.bf-pop-box{position:relative;width:min(88vw,460px);transform:scale(.9);transition:transform .35s cubic-bezier(.2,.9,.3,1.2)}
+.bf-pop.on .bf-pop-box{transform:scale(1)}
+.bf-pop-img{display:block;width:100%;height:auto;aspect-ratio:1/1;border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.6);cursor:pointer}
+.bf-pop-close{position:absolute;top:-14px;right:-10px;width:38px;height:38px;border-radius:50%;border:0;background:#fff;color:#111;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.45)}
+.bf-pop-close svg{width:16px;height:16px;stroke:#111}
+body.bf-pop-abierto{overflow:hidden}
+`;
+    var st = document.createElement('style'); st.id = 'bf-pop-css'; st.textContent = css; document.head.appendChild(st);
+
+    var pop = document.createElement('div');
+    pop.className = 'bf-pop';
+    pop.setAttribute('role', 'dialog');
+    pop.setAttribute('aria-modal', 'true');
+    pop.setAttribute('aria-label', 'Oferta Black Friday');
+    pop.innerHTML = '<div class="bf-pop-box">' +
+      '<img class="bf-pop-img" src="' + IMG + '" alt="Black Friday: 25% OFF en toda la tienda y envío gratis en todos los productos">' +
+      '<button type="button" class="bf-pop-close" aria-label="Cerrar oferta"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>' +
+      '</div>';
+
+    function cerrar() {
+      pop.classList.remove('on');
+      document.body.classList.remove('bf-pop-abierto');
+      document.removeEventListener('keydown', onKey);
+      setTimeout(function() { pop.remove(); }, 300);
+    }
+    function onKey(e) { if (e.key === 'Escape') cerrar(); }
+    pop.addEventListener('click', function(e) {
+      // Cruz, fondo oscuro o la imagen ("Comprá ahora"): cierra y deja comprar
+      if (e.target === pop || e.target.closest('.bf-pop-close') || e.target.closest('.bf-pop-img')) cerrar();
+    });
+    document.addEventListener('keydown', onKey);
+
+    // Mostrar recién cuando la imagen cargó, para que no aparezca vacío
+    var img = pop.querySelector('.bf-pop-img');
+    function abrir() {
+      document.body.appendChild(pop);
+      document.body.classList.add('bf-pop-abierto');
+      requestAnimationFrame(function() { requestAnimationFrame(function() { pop.classList.add('on'); }); });
+    }
+    if (img.complete) abrir(); else { img.onload = abrir; img.onerror = function() {}; }
+  }
+
+  function arrancar() {
+    if (yaVisto() || !esMobileOTablet()) return;
+    // Precarga la imagen durante la espera
+    var pre = new Image(); pre.src = IMG;
+    setTimeout(mostrar, DEMORA);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arrancar);
+  else arrancar();
+})();
