@@ -3,7 +3,8 @@
 // ---------------------------------------------------------------------
 // Script de vista previa usado para diseñar la portada de Black Friday
 // en vivo sobre rapaimports.com (navegador integrado / consola).
-// NO está conectado a producción: no lo carga script.js ni Tiendanube.
+// NO está conectado a producción. La versión real vive en script.js de la
+// rama black-friday (módulo "BLACK FRIDAY" al final del archivo).
 //
 // Qué hace en la home:
 //  - Oculta la sección "El cambio está en tus manos" (antes/después).
