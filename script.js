@@ -1860,7 +1860,11 @@
   document.querySelectorAll('#sp2-preview-css').forEach(e => e.remove());
   document.body.classList.add('sp-v3');
   var B = 'body.sp-v3 #single-product';
-  var F = 'body.sp-v3:not(.producto-encargo) #single-product #product_form .form-row.mb-2:has(.js-addtocart)';
+  // Barra de compra fija: se marca con la clase .sp-buybar desde JS en vez
+  // de usar :has(.js-addtocart). Safari (iPhone) a veces no reevalúa :has()
+  // cuando la página cambia el DOM y la barra "se desenganchaba": volvía a
+  // su lugar original a mitad de página hasta el próximo repintado.
+  var F = 'body.sp-v3:not(.producto-encargo) #single-product .sp-buybar';
   var css = `
 /* Sin breadcrumb */
 ${B} .breadcrumbs{display:none!important}
@@ -1882,7 +1886,7 @@ ${B} .js-rapa-ahorra{margin:10px 0 0!important;height:auto!important;padding-bot
 ${B} .js-cuotas-encargo-row{margin-bottom:10px!important}
 ${B} .js-free-shipping-minimum-message{margin-bottom:10px!important}
 /* Carrito fijo abajo con + y - (no aplica a productos por encargo) */
-${F}{position:fixed;left:0;right:0;bottom:0;z-index:1000;margin:0!important;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#fff;box-shadow:0 -6px 20px rgba(0,0,0,.12);display:flex;flex-wrap:nowrap;align-items:center;gap:10px}
+${F}{position:fixed!important;left:0!important;right:0!important;bottom:0!important;top:auto!important;transform:none!important;z-index:1000;margin:0!important;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#fff;box-shadow:0 -6px 20px rgba(0,0,0,.12);display:flex;flex-wrap:nowrap;align-items:center;gap:10px}
 ${F} > .col-4{width:118px!important;flex:0 0 118px!important;max-width:none;padding:0}
 ${F} > .col-8{flex:1 1 auto;max-width:none;padding:0!important}
 ${F} > .col-12{position:absolute;left:12px;right:12px;bottom:100%;width:auto;flex:none;padding:0}
@@ -1903,9 +1907,15 @@ body.sp-v3:not(.producto-encargo) .js-btn-fixed-bottom.btn-whatsapp{bottom:88px!
     var h1 = info.querySelector('.js-product-name');
     if (rev && h1 && rev.nextElementSibling !== h1) h1.parentNode.insertBefore(rev, h1);
   }
-  moverResenas();
+  function marcarBarra() {
+    var btn = info.querySelector('#product_form .js-addtocart');
+    var row = btn && btn.closest('.form-row.mb-2');
+    if (row && !row.classList.contains('sp-buybar')) row.classList.add('sp-buybar');
+  }
+  function alCambiar() { moverResenas(); marcarBarra(); }
+  alCambiar();
   if (window.__sp2Obs) window.__sp2Obs.disconnect();
-  window.__sp2Obs = new MutationObserver(moverResenas);
+  window.__sp2Obs = new MutationObserver(alCambiar);
   window.__sp2Obs.observe(info, { subtree: true, childList: true });
 
   // ===================================================================
