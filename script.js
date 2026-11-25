@@ -2156,13 +2156,7 @@ ${M} .modal-header{width:auto!important}
         var crumbs = [...d.querySelectorAll('.breadcrumbs a.crumb')].slice(1); // sin "Inicio"
         var last = crumbs[crumbs.length - 1];
         if (!last) return null;
-        var nombres = crumbs.map(function(a){ return a.textContent.trim(); });
-        var esVehiculo = /^marcas$/i.test(nombres[0] || '');
-        // Título: modelo + categoría final (Golf > MK6 > MK6 GTI → "Golf MK6 GTI")
-        var label = nombres[nombres.length - 1];
-        var modelo = esVehiculo ? nombres[2] : '';
-        if (modelo && nombres.length > 3 && label.toLowerCase().indexOf(modelo.toLowerCase()) < 0) label = modelo + ' ' + label;
-        return { url: last.getAttribute('href'), label: label, vehiculo: esVehiculo };
+        return { url: last.getAttribute('href') };
       }).catch(function(){ return null; });
     }
     return catCache[url];
@@ -2197,7 +2191,7 @@ ${M} .modal-header{width:auto!important}
     renderKey = key; sinSug = false;
     var gen = ++renderGen;
     if (!sec) { sec = document.createElement('div'); sec.className = 'sp-sug'; list.after(sec); }
-    sec.innerHTML = '<div class="sp-sug-head"><div><p class="sp-sug-title">También te puede interesar</p><p class="sp-sug-sub">Accesorios compatibles para sumar a tu pedido</p></div>' +
+    sec.innerHTML = '<div class="sp-sug-head"><div><p class="sp-sug-title">Complementá tu compra</p><p class="sp-sug-sub">Accesorios compatibles para tu vehículo</p></div>' +
       '<div class="sp-sug-nav"><button type="button" data-dir="-1" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M15 6l-6 6 6 6"/></svg></button><button type="button" data-dir="1" aria-label="Siguiente"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></button></div></div>' +
       '<div class="sp-sug-track"><div class="sp-sug-skel"></div><div class="sp-sug-skel"></div><div class="sp-sug-skel"></div></div>';
     var enCarrito = items.map(function(i){ return i.id; });
@@ -2215,9 +2209,6 @@ ${M} .modal-header{width:auto!important}
     var sug = res.filter(function(p) {
       if (vistos[p.id] || enCarrito.indexOf(p.id) >= 0) return false; vistos[p.id] = 1; return true;
     });
-    var c0 = cats[0];
-    var titulo = !c0 ? 'También te puede interesar' : c0.vehiculo ? 'Completá tu ' + c0.label : 'Más de ' + c0.label;
-    sec.querySelector('.sp-sug-title').textContent = titulo;
     // primero lo complementario (otro tipo de producto), después el resto
     sug.sort(function(a, b){ return (tiposCarrito.indexOf(tipo(a.name)) >= 0) - (tiposCarrito.indexOf(tipo(b.name)) >= 0); });
     sug = sug.slice(0, 6);
