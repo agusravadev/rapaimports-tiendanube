@@ -198,7 +198,7 @@
         // Badge absoluto — esquina superior derecha del contenedor
         var badge = document.createElement('span');
         badge.className = 'transfer-badge';
-        badge.textContent = '25% OFF';
+        badge.textContent = '35% OFF';
         container.appendChild(badge);
       });
     }
@@ -1124,7 +1124,7 @@
       priceContainer.appendChild(row);
     }
 
-    // === "AHORRA 25%" arriba del recuadro de transferencia ===
+    // === "AHORRA 35%" arriba del recuadro de transferencia ===
     // Va dentro de .price-container, entre la fila de reseñas (order 3) y el
     // recuadro de transferencia (order 5); ver style.css.
     //
@@ -1139,16 +1139,16 @@
 
     // Descuento por transferencia calculado de los precios reales, para no
     // mostrar un número fijo que podría no coincidir con el del producto.
-    // Si no se puede leer, cae en 25 (el descuento configurado en la tienda).
+    // Si no se puede leer, cae en 35 (el descuento configurado en la tienda).
     function porcentajeTransferencia() {
       var single = document.querySelector('#single-product');
-      if (!single) return 25;
+      if (!single) return 35;
       var trans = single.querySelector('.js-payment-discount-price-product[data-priceraw-without-shipping]');
       var reg = single.querySelector('.js-price-display[data-product-price]');
-      if (!trans || !reg) return 25;
+      if (!trans || !reg) return 35;
       var t = parseInt(trans.getAttribute('data-priceraw-without-shipping'), 10);
       var r = parseInt(reg.getAttribute('data-product-price'), 10);
-      if (!t || !r || t >= r) return 25;
+      if (!t || !r || t >= r) return 35;
       return Math.round((1 - t / r) * 100);
     }
 
@@ -2413,7 +2413,7 @@ ${M} .modal-header{width:auto!important}
 
     function fmt(n) { return '$' + Math.round(n).toLocaleString('es-AR'); }
     function precioCombo() { var el = document.querySelector('#price_display'); var raw = el && parseInt(el.getAttribute('data-product-price'), 10); return raw ? raw / 100 : CFG.precio; }
-    function precioTransfer() { var el = document.querySelector('.js-payment-discount-price-product'); var raw = el && parseInt(el.getAttribute('data-priceraw-without-shipping'), 10); return raw ? raw / 100 : Math.round(precioCombo() * 0.75); }
+    function precioTransfer() { var el = document.querySelector('.js-payment-discount-price-product'); var raw = el && parseInt(el.getAttribute('data-priceraw-without-shipping'), 10); return raw ? raw / 100 : Math.round(precioCombo() * 0.65); }
 
     // Cuentas: precio de lista de cada producto por separado vs combo vs combo por transferencia
     // Se recalcula en cada cambio: el valor del alerón depende del acabado
@@ -3045,7 +3045,7 @@ body.bf-pop-abierto{overflow:hidden}
     pop.setAttribute('aria-modal', 'true');
     pop.setAttribute('aria-label', 'Oferta Black Friday');
     pop.innerHTML = '<div class="bf-pop-box">' +
-      '<img class="bf-pop-img" src="' + IMG + '" alt="Black Friday: 25% OFF en toda la tienda y envío gratis en todos los productos">' +
+      '<img class="bf-pop-img" src="' + IMG + '" alt="Black Friday: 35% OFF en toda la tienda y envío gratis en todos los productos">' +
       '<button type="button" class="bf-pop-close" aria-label="Cerrar oferta"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>' +
       '</div>';
 

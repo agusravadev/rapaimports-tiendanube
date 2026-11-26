@@ -108,7 +108,7 @@ body.producto-encargo #single-product .price-container::after {
 	width: 100%;
 }
 
-/* "AHORRA 25%" entre la fila de reseñas (order 3) y el recuadro de
+/* "AHORRA 35%" entre la fila de reseñas (order 3) y el recuadro de
    transferencia (order 5). Lo inyecta initAhorraTransferencia() en script.js.
    El subrayado replica el de saferazor (.text-button): 1px de ancho completo,
    2px por debajo del texto, en el color del texto al 40% de opacidad. Allá
@@ -187,7 +187,7 @@ body.producto-encargo #single-product .price-container::after {
 	border: 1px solid #bbf7d0 !important;
 	border-radius: 4px !important;
 	padding: 8px 14px 12px !important;
-	/* Sin margen propio: la separación hasta "AHORRA 25%" queda en los 10px
+	/* Sin margen propio: la separación hasta "AHORRA 35%" queda en los 10px
 	   de gap del .price-container. */
 	margin-top: 0 !important;
 	margin-bottom: 0 !important;
@@ -1462,7 +1462,7 @@ body.es-volante #single-product .cuotas-encargo-row {
    Las cards reciben la clase .item-volante desde script.html
    (detección por slug de URL en marcarProductosVolanteListado). */
 
-/* Ocultar bloque de transferencia (precio con 25% OFF) en cards de volantes */
+/* Ocultar bloque de transferencia (precio con 35% OFF) en cards de volantes */
 .item-product.item-volante .js-payment-discount-price-product-container,
 .item-product.item-volante .payment-discount-price-product-container {
 	display: none !important;
