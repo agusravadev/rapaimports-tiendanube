@@ -2522,11 +2522,14 @@ ${M} .modal-header{width:auto!important}
     // ---------- Banner Black Friday + countdown ----------
     var hero = document.createElement('div'); hero.className = 'cbf-hero';
     hero.innerHTML = '<div class="cbf-hero-tag"><b>BLACK <span>FRIDAY</span></b><small>Combo exclusivo</small></div>' +
-      '<div class="cbf-clock" role="timer" aria-label="La oferta termina en"><div class="u"><b data-h>00</b><small>hs</small></div><span class="s">:</span><div class="u"><b data-m>00</b><small>min</small></div><span class="s">:</span><div class="u"><b data-s>00</b><small>seg</small></div></div>';
+      '<div class="cbf-clock" role="timer" aria-label="La oferta termina en"><div class="u"><b data-d>0</b><small>días</small></div><span class="s">:</span><div class="u"><b data-h>00</b><small>hs</small></div><span class="s">:</span><div class="u"><b data-m>00</b><small>min</small></div><span class="s">:</span><div class="u"><b data-s>00</b><small>seg</small></div></div>';
     var ph = sp.querySelector('section.page-header'); ph.parentNode.insertBefore(hero, ph);
     function pad(n) { return (n < 10 ? '0' : '') + n; }
-    function tick() { var off = -3 * 3600 * 1000, now = Date.now() + off; var fin = Math.floor(now / 86400000) * 86400000 + 86400000; var r = Math.max(0, Math.floor((fin - now) / 1000));
-      hero.querySelector('[data-h]').textContent = pad(Math.floor(r / 3600)); hero.querySelector('[data-m]').textContent = pad(Math.floor(r % 3600 / 60)); hero.querySelector('[data-s]').textContent = pad(r % 60); }
+    // Fin real de la promo: lunes 30/11/2026 23:59:59 hora Argentina (mismo FIN en la home y en el producto)
+    var FIN = Date.UTC(2026, 10, 30, 23 + 3, 59, 59);
+    function tick() { var r = Math.max(0, Math.floor((FIN - Date.now()) / 1000));
+      hero.querySelector('[data-d]').textContent = Math.floor(r / 86400);
+      hero.querySelector('[data-h]').textContent = pad(Math.floor(r % 86400 / 3600)); hero.querySelector('[data-m]').textContent = pad(Math.floor(r % 3600 / 60)); hero.querySelector('[data-s]').textContent = pad(r % 60); }
     tick(); setInterval(tick, 1000);
 
     // ---------- Ahorro: combo + transferencia ----------
@@ -2877,20 +2880,24 @@ ${M} .modal-header{width:auto!important}
     return box;
   }
 
-  // Countdown hasta las 23:59:59 de hoy en hora Argentina (mismo formato que el
-  // de Combos del tema, que no se crea si la sección no tiene banners)
+  // Countdown hasta el fin real de la promo: lunes 30/11/2026 23:59:59 hora
+  // Argentina (mismo FIN que el cartel del producto y la página de combos).
+  // Usa data-bf (no data-cd) para que el countdown diario del tema no lo pise.
+  var FIN = Date.UTC(2026, 10, 30, 23 + 3, 59, 59);
   function crearCountdown() {
     var box = document.createElement('div'); box.className = 'combos-countdown'; box.setAttribute('role', 'timer');
     box.innerHTML = '<span class="combos-countdown-label">La oferta termina en</span><span class="combos-countdown-clock">' +
-      '<span class="combos-countdown-unit"><b data-cd="h">00</b><small>horas</small></span><span class="combos-countdown-sep">:</span>' +
-      '<span class="combos-countdown-unit"><b data-cd="m">00</b><small>min</small></span><span class="combos-countdown-sep">:</span>' +
-      '<span class="combos-countdown-unit"><b data-cd="s">00</b><small>seg</small></span></span>';
+      '<span class="combos-countdown-unit"><b data-bf="d">0</b><small>días</small></span><span class="combos-countdown-sep">:</span>' +
+      '<span class="combos-countdown-unit"><b data-bf="h">00</b><small>horas</small></span><span class="combos-countdown-sep">:</span>' +
+      '<span class="combos-countdown-unit"><b data-bf="m">00</b><small>min</small></span><span class="combos-countdown-sep">:</span>' +
+      '<span class="combos-countdown-unit"><b data-bf="s">00</b><small>seg</small></span></span>';
     function pad(n) { return (n < 10 ? '0' : '') + n; }
     function tick() {
-      var now = Date.now() - 3 * 3600 * 1000, fin = Math.floor(now / 86400000) * 86400000 + 86400000, r = Math.max(0, Math.floor((fin - now) / 1000));
-      box.querySelector('[data-cd="h"]').textContent = pad(Math.floor(r / 3600));
-      box.querySelector('[data-cd="m"]').textContent = pad(Math.floor(r % 3600 / 60));
-      box.querySelector('[data-cd="s"]').textContent = pad(r % 60);
+      var r = Math.max(0, Math.floor((FIN - Date.now()) / 1000));
+      box.querySelector('[data-bf="d"]').textContent = Math.floor(r / 86400);
+      box.querySelector('[data-bf="h"]').textContent = pad(Math.floor(r % 86400 / 3600));
+      box.querySelector('[data-bf="m"]').textContent = pad(Math.floor(r % 3600 / 60));
+      box.querySelector('[data-bf="s"]').textContent = pad(r % 60);
     }
     tick(); setInterval(tick, 1000);
     return box;
@@ -2955,8 +2962,10 @@ ${M} .modal-header{width:auto!important}
       wrapper = document.createElement('div'); wrapper.className = 'banners-carousel-wrapper';
       row.parentNode.insertBefore(wrapper, row); wrapper.appendChild(row);
     }
-    var cd = wrapper.querySelector('.combos-countdown');
-    if (!cd) { cd = crearCountdown(); wrapper.insertBefore(cd, row); }
+    // Countdown propio hasta el fin real de la promo (reemplaza al diario del tema)
+    var cdTema = wrapper.querySelector('.combos-countdown');
+    var cd = crearCountdown();
+    if (cdTema) cdTema.replaceWith(cd); else wrapper.insertBefore(cd, row);
 
     if (!document.getElementById('bf-css')) {
       var st = document.createElement('style'); st.id = 'bf-css'; st.textContent = CSS; document.head.appendChild(st);
@@ -2984,7 +2993,7 @@ ${M} .modal-header{width:auto!important}
     combos.insertBefore(parts, combos.firstChild);
 
     // Countdown existente: estilo BF + segundos animados
-    var seg = cd.querySelector('[data-cd="s"]');
+    var seg = cd.querySelector('[data-bf="s"]');
     if (seg && seg.parentElement) seg.parentElement.classList.add('is-sec');
 
     ponerCombos(row);
@@ -3007,13 +3016,175 @@ ${M} .modal-header{width:auto!important}
 
 
 /* ======================================================================
+   RAPA IMPORTS · BLACK FRIDAY · Producto y cards (solo rama black-friday)
+   - Ficha de producto (menos combos): el recuadro de transferencia pasa a
+     una franja Black Friday compacta (-35% OFF, precio con transferencia y
+     ahorro real) y debajo de las
+     opciones con cuenta regresiva real hasta el fin de la promo, el % OFF por
+     transferencia y el precio con transferencia que muestra Tiendanube.
+   - Cards del listado (menos combos): el bloque verde de transferencia pasa
+     a estilo Black Friday. El precio lo sigue calculando Tiendanube.
+   ====================================================================== */
+(function () {
+  var PCT = 35;
+  // Fin de la promo: lunes 30/11/2026 23:59:59 hora Argentina (UTC-3).
+  // Mismo FIN que la home y la página de los combos.
+  var FIN = Date.UTC(2026, 10, 30, 23 + 3, 59, 59);
+  var COMBOS = [381089521, 383485810, 383486312, 383485694];
+
+  if (Date.now() > FIN) return;
+
+  // Franja de arriba: no en encargo ni volantes (tienen su propio diseño de ese bloque)
+  var P = 'body.bf-prod-on:not(.producto-encargo):not(.es-volante) #single-product';
+  var CSS = `
+body.bf-prod-on .item-product:not(.bf-no) .payment-discount-price-product-container{background:radial-gradient(120% 90% at 50% 0%,#2a0508 0%,#0b0b0b 70%)!important;border:1.5px solid #e30613!important;box-shadow:0 6px 18px rgba(227,6,19,.22)!important;padding:26px 10px 11px!important}
+body.bf-prod-on .item-product:not(.bf-no) .payment-discount-price-product-container::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.16) 50%,transparent 65%);transform:translateX(-120%);animation:bfCardShine 3.8s ease-in-out infinite}
+@keyframes bfCardShine{0%,60%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+body.bf-prod-on .item-product:not(.bf-no) .transfer-badge{background:#e30613!important;font-size:0!important;padding:4px 12px!important;letter-spacing:0!important}
+body.bf-prod-on .item-product:not(.bf-no) .transfer-badge::before{content:"BLACK FRIDAY";font-size:9.5px;font-weight:900;letter-spacing:.14em;color:#fff}
+body.bf-prod-on .item-product:not(.bf-no) .js-payment-discount-price-product{color:#fff!important}
+body.bf-prod-on .item-product:not(.bf-no) .js-payment-discount-name-product{font-size:0!important;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:4px;margin-top:4px;white-space:normal!important}
+body.bf-prod-on .item-product:not(.bf-no) .js-payment-discount-name-product::before{content:"${PCT}% OFF";font-size:11px;font-weight:900;color:#fff;background:#e30613;border-radius:4px;padding:3px 7px;line-height:1.1}
+body.bf-prod-on .item-product:not(.bf-no) .js-payment-discount-name-product::after{content:"con transferencia";font-size:10.5px;font-weight:600;color:#bdbdbd}
+
+.bfp{position:relative;overflow:hidden;margin:18px 0 8px;padding:16px 16px 14px;border-radius:14px;background:radial-gradient(130% 120% at 0% 0%,#3a0509 0%,#0b0b0b 55%,#000 100%);color:#fff;font-family:Montserrat,sans-serif;box-shadow:0 12px 30px rgba(0,0,0,.25);isolation:isolate}
+.bfp::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.1) 50%,transparent 65%);transform:translateX(-120%);animation:bfCardShine 4.2s ease-in-out infinite}
+.bfp-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.bfp-tag{display:flex;flex-direction:column;line-height:1}
+.bfp-tag b{font-size:19px;font-weight:900;letter-spacing:.02em}
+.bfp-tag b span{color:#e30613}
+.bfp-tag small{margin-top:4px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;color:#9a9a9a}
+.bfp-clock{display:flex;gap:4px}
+.bfp-u{min-width:36px;padding:5px 2px 4px;border-radius:7px;background:#fff;color:#111;text-align:center;border-bottom:2px solid #e30613}
+.bfp-u b{display:block;font-size:16px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums}
+.bfp-u small{display:block;margin-top:2px;font-size:7.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#777}
+.bfp-u.s b{animation:bfpTick 1s ease-out infinite}
+@keyframes bfpTick{0%{color:#e30613;transform:scale(1.12)}40%{color:#111;transform:none}}
+.bfp-mid{display:flex;align-items:center;gap:12px;margin-top:14px;padding-top:14px;border-top:1px dashed rgba(255,255,255,.18)}
+.bfp-pct{flex:0 0 auto;display:flex;align-items:center;gap:4px;padding:8px 12px;border-radius:12px;background:linear-gradient(135deg,#ff1a2b,#b3000c);box-shadow:0 6px 18px rgba(227,6,19,.4);animation:bfpPulse 2.2s ease-in-out infinite}
+.bfp-pct b{font-size:34px;font-weight:900;line-height:.85;letter-spacing:-.04em}
+.bfp-pct span{font-size:14px;font-weight:900;line-height:1}
+@keyframes bfpPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.bfp-txt{min-width:0}
+.bfp-txt b{display:block;font-size:14px;font-weight:800;line-height:1.2}
+.bfp-txt small{display:block;margin-top:3px;font-size:11.5px;color:#bdbdbd;line-height:1.3}
+.bfp-txt small em{font-style:normal;color:#fff;font-weight:700}
+.bfp-price{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}
+.bfp-price span{font-size:12px;color:#d4d4d4}
+.bfp-price b{font-size:20px;font-weight:900;color:#4ade80;white-space:nowrap;font-variant-numeric:tabular-nums}
+/* Franja de transferencia (arriba, en lugar de "AHORRA X%" + recuadro verde) */
+${P} .rapa-ahorra{display:none!important}
+${P} .payment-discount-price-product-container{display:grid!important;grid-template-columns:auto minmax(0,1fr);grid-auto-rows:auto;column-gap:12px;row-gap:3px;align-items:center;position:relative!important;overflow:hidden!important;margin-top:6px!important;padding:10px 14px 10px 10px!important;border:0!important;border-radius:12px!important;background:radial-gradient(140% 160% at 0% 0%,#3a0509 0%,#0b0b0b 60%,#000 100%)!important;box-shadow:0 8px 22px rgba(0,0,0,.18)!important;isolation:isolate}
+${P} .payment-discount-price-product-container::after{content:"%";position:absolute;right:-4px;bottom:-30px;z-index:-1;font:900 104px/1 Montserrat,sans-serif;color:rgba(227,6,19,.16);transform:rotate(-12deg);pointer-events:none}
+${P} .payment-discount-price-product-container::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.12) 50%,transparent 65%);transform:translateX(-120%);animation:bfCardShine 4s ease-in-out infinite}
+${P} .bft-pct{grid-column:1;grid-row:1/span 3;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:74px;padding:7px 8px 8px;border-radius:9px;background:linear-gradient(135deg,#ff1a2b,#b3000c);box-shadow:0 4px 14px rgba(227,6,19,.45);color:#fff;font-family:Montserrat,sans-serif;line-height:1}
+${P} .bft-pct::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-45deg,rgba(255,255,255,.09) 0 6px,transparent 6px 12px);pointer-events:none}
+${P} .bft-pct small{position:relative;font-size:7.5px;font-weight:900;letter-spacing:.14em;opacity:.9}
+${P} .bft-pct b{position:relative;margin-top:3px;font-size:26px;font-weight:900;letter-spacing:-.04em}
+${P} .bft-pct i{position:relative;margin-top:2px;font-style:normal;font-size:9px;font-weight:900;letter-spacing:.12em}
+${P} .js-payment-discount-price-product{grid-column:2;color:#fff!important;font-size:24px!important;font-weight:900!important;letter-spacing:-.02em!important;line-height:1!important}
+${P} .payment-discount-price-product-container>span:nth-child(2),${P} .js-payment-discount-installments{display:none!important}
+${P} .js-payment-discount-name-product{grid-column:2;color:#bdbdbd!important;font-size:12px!important;font-weight:600!important;text-transform:lowercase!important;line-height:1.2}
+${P} .js-payment-discount-name-product::before{content:"con "}
+${P} .js-transfer-savings-label{grid-column:2;display:inline-flex!important;align-self:start;justify-self:start;margin:2px 0 0!important;padding:3px 8px;border-radius:999px;background:rgba(74,222,128,.14);color:#4ade80!important;font-size:11px!important;font-weight:800!important;letter-spacing:.04em;line-height:1.2}
+${P} .js-transfer-savings-label strong{margin-left:4px;color:#4ade80}
+
+@media(min-width:768px){.bfp{padding:18px 20px 16px}.bfp-tag b{font-size:22px}.bfp-u{min-width:42px}.bfp-u b{font-size:18px}}
+@media(prefers-reduced-motion:reduce){.bfp::after,.bfp-pct,.bfp-u.s b,body.bf-prod-on .item-product .payment-discount-price-product-container::after,${P} .payment-discount-price-product-container::before{animation:none}}
+`;
+
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function restante() { return Math.max(0, Math.floor((FIN - Date.now()) / 1000)); }
+
+  function marcarCombos() {
+    document.querySelectorAll('.js-item-product[data-product-id]').forEach(function (it) {
+      if (COMBOS.indexOf(+it.getAttribute('data-product-id')) > -1) {
+        var card = it.closest('.item-product') || it; card.classList.add('bf-no'); it.classList.add('bf-no');
+      }
+    });
+  }
+
+  function num(t) { return parseInt((t || '').replace(/[^\d,]/g, '').split(',')[0], 10) || 0; }
+
+  // Etiqueta "-35%" dentro del recuadro de transferencia y "AHORRAS" con los precios
+  // que se ven en pantalla (el atributo data-priceraw queda viejo al cambiar de variante).
+  function franjaTransferencia() {
+    if (!window.LS || !LS.product || COMBOS.indexOf(LS.product.id) > -1) return;
+    var sp = document.querySelector('#single-product'); if (!sp) return;
+    var c = sp.querySelector('.payment-discount-price-product-container'); if (!c) return;
+    if (!c.querySelector('.bft-pct')) {
+      var tag = document.createElement('span'); tag.className = 'bft-pct';
+      tag.innerHTML = '<small>BLACK FRIDAY</small><b>-' + PCT + '%</b><i>OFF</i>';
+      c.appendChild(tag); // al final: no corre el orden de los spans nativos
+    }
+    var reg = num((sp.querySelector('#price_display') || {}).textContent);
+    var tr = num((c.querySelector('.js-payment-discount-price-product') || {}).textContent);
+    var lab = c.querySelector('.js-transfer-savings-label strong');
+    if (lab && tr && reg > tr) { var v = '$' + (reg - tr).toLocaleString('es-AR'); if (lab.textContent !== v) lab.textContent = v; }
+  }
+
+  function cartelProducto() {
+    if (!window.LS || !LS.product || COMBOS.indexOf(LS.product.id) > -1) return;
+    var form = document.querySelector('#single-product #product_form');
+    if (!form || document.querySelector('.bfp')) return;
+    var box = document.createElement('div'); box.className = 'bfp';
+    box.innerHTML =
+      '<div class="bfp-top"><div class="bfp-tag"><b>BLACK <span>FRIDAY</span></b><small>Hasta el lunes 30/11</small></div>' +
+      '<div class="bfp-clock" role="timer" aria-label="La oferta termina en">' +
+        '<div class="bfp-u"><b data-t="d">0</b><small>días</small></div><div class="bfp-u"><b data-t="h">00</b><small>hs</small></div>' +
+        '<div class="bfp-u"><b data-t="m">00</b><small>min</small></div><div class="bfp-u s"><b data-t="s">00</b><small>seg</small></div></div></div>' +
+      '<div class="bfp-mid"><div class="bfp-pct"><b>' + PCT + '%</b><span>OFF</span></div>' +
+        '<div class="bfp-txt"><b>Pagando con transferencia</b><small>Precio especial <em>solo por Black Friday</em>. Se aplica al elegir el medio de pago.</small></div></div>' +
+      '<div class="bfp-price"><span>Con transferencia te queda en</span><b data-t="p"></b></div>';
+    form.parentNode.insertBefore(box, form.nextSibling);
+    function tick() {
+      var r = restante();
+      if (!r) { box.remove(); return; }
+      box.querySelector('[data-t="d"]').textContent = Math.floor(r / 86400);
+      box.querySelector('[data-t="h"]').textContent = pad(Math.floor(r % 86400 / 3600));
+      box.querySelector('[data-t="m"]').textContent = pad(Math.floor(r % 3600 / 60));
+      box.querySelector('[data-t="s"]').textContent = pad(r % 60);
+      // Precio con transferencia tal cual lo calcula Tiendanube (cambia con la variante)
+      var tp = document.querySelector('#single-product .js-payment-discount-price-product');
+      var txt = tp && tp.textContent.trim();
+      box.querySelector('.bfp-price').style.display = txt ? '' : 'none';
+      if (txt) box.querySelector('[data-t="p"]').textContent = txt.replace(/,00$/, '');
+    }
+    tick(); setInterval(tick, 1000);
+  }
+
+  function aplicar() {
+    if (!document.getElementById('bf-prod-css')) {
+      var st = document.createElement('style'); st.id = 'bf-prod-css'; st.textContent = CSS; document.head.appendChild(st);
+    }
+    document.body.classList.add('bf-prod-on');
+    marcarCombos();
+    cartelProducto();
+    franjaTransferencia();
+  }
+
+  function arrancar() {
+    aplicar();
+    setTimeout(aplicar, 1500);
+    // Tiendanube y el script reescriben el recuadro al cambiar de variante
+    if (document.querySelector('#single-product')) setInterval(franjaTransferencia, 700);
+    // Cards que se cargan después (scroll infinito, filtros)
+    var t; new MutationObserver(function () { clearTimeout(t); t = setTimeout(marcarCombos, 200); })
+      .observe(document.body, { childList: true, subtree: true });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arrancar);
+  else arrancar();
+})();
+
+
+/* ======================================================================
    RAPA IMPORTS · BLACK FRIDAY · Pop-up de oferta (solo rama black-friday)
    - Solo teléfono y tablet (hasta 1024px o pantallas táctiles sin mouse).
    - Aparece 5 s después de entrar, una vez por sesión del navegador.
    - Se cierra con la cruz, tocando afuera, con Esc o tocando la imagen.
    ====================================================================== */
 (function () {
-  var IMG = 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/oferta-black-friday-gti-a62170e5a3302f880b17956177285732-1024-1024.webp';
+  var IMG = 'https://dcdn-us.mitiendanube.com/stores/007/678/416/products/oferta-black-friday_-35-off-eaaa5102c6771e9a5d17956982513179-1024-1024.webp';
   var KEY = 'rapa-bf-popup-visto';
   var DEMORA = 5000;
 
