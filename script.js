@@ -3036,16 +3036,25 @@ ${M} .modal-header{width:auto!important}
 
   // Franja de arriba: no en encargo ni volantes (tienen su propio diseño de ese bloque)
   var P = 'body.bf-prod-on:not(.producto-encargo):not(.es-volante) #single-product';
+  // Cards del listado (menos combos)
+  var C = 'body.bf-prod-on .item-product:not(.bf-no)';
   var CSS = `
-body.bf-prod-on .item-product:not(.bf-no) .payment-discount-price-product-container{background:radial-gradient(120% 90% at 50% 0%,#2a0508 0%,#0b0b0b 70%)!important;border:1.5px solid #e30613!important;box-shadow:0 6px 18px rgba(227,6,19,.22)!important;padding:26px 10px 11px!important}
-body.bf-prod-on .item-product:not(.bf-no) .payment-discount-price-product-container::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.16) 50%,transparent 65%);transform:translateX(-120%);animation:bfCardShine 3.8s ease-in-out infinite}
+/* Cards: recuadro de transferencia estilo "Combo exclusivo" con reloj en vivo */
+${C} .payment-discount-price-product-container{position:relative!important;overflow:visible!important;background:#0d0d0d!important;border:0!important;border-radius:12px!important;box-shadow:0 6px 16px rgba(0,0,0,.18)!important;padding:13px 8px 9px!important;margin-top:16px!important;gap:2px!important}
+${C} .payment-discount-price-product-container::after{content:"";position:absolute;inset:0;pointer-events:none;clip-path:inset(0 round 12px);background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.12) 50%,transparent 70%);transform:translateX(-100%);animation:bfcShine 3.2s ease-in-out infinite}
+@keyframes bfcShine{0%,60%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
 @keyframes bfCardShine{0%,60%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
-body.bf-prod-on .item-product:not(.bf-no) .transfer-badge{background:#e30613!important;font-size:0!important;padding:4px 12px!important;letter-spacing:0!important}
-body.bf-prod-on .item-product:not(.bf-no) .transfer-badge::before{content:"BLACK FRIDAY";font-size:9.5px;font-weight:900;letter-spacing:.14em;color:#fff}
-body.bf-prod-on .item-product:not(.bf-no) .js-payment-discount-price-product{color:#fff!important}
-body.bf-prod-on .item-product:not(.bf-no) .js-payment-discount-name-product{font-size:0!important;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:4px;margin-top:4px;white-space:normal!important}
-body.bf-prod-on .item-product:not(.bf-no) .js-payment-discount-name-product::before{content:"${PCT}% OFF";font-size:11px;font-weight:900;color:#fff;background:#e30613;border-radius:4px;padding:3px 7px;line-height:1.1}
-body.bf-prod-on .item-product:not(.bf-no) .js-payment-discount-name-product::after{content:"con transferencia";font-size:10.5px;font-weight:600;color:#bdbdbd}
+${C} .transfer-badge{display:none!important}
+${C} .bfc-top{position:absolute;top:-9px;left:50%;z-index:3;transform:translateX(-50%);line-height:1}
+${C} .bfc-clock{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:999px;background:#e30613;box-shadow:0 3px 8px rgba(227,6,19,.35);color:#fff;font:800 9.5px/1 Montserrat,sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap}
+${C} .bfc-clock svg{flex:0 0 auto;width:9px;height:9px;fill:#fff}
+${C} .bfc-bf{order:0;margin-bottom:3px;font:900 9px/1 Montserrat,sans-serif;letter-spacing:.1em;color:#fff}
+${C} .bfc-bf span{color:#e30613}
+${C} .js-payment-discount-price-product{font-size:20px!important;font-weight:900!important;letter-spacing:-.6px!important;color:transparent!important;background-image:linear-gradient(100deg,#d6d6d6 0%,#d6d6d6 38%,#fff 50%,#d6d6d6 62%,#d6d6d6 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 6px rgba(255,255,255,.18));animation:bfcTxt 2.6s linear infinite}
+@keyframes bfcTxt{0%{background-position:100% 0}100%{background-position:-150% 0}}
+${C} .js-payment-discount-name-product{display:block!important;margin:0!important;font-size:0!important;line-height:1.1!important}
+${C} .js-payment-discount-name-product::after{content:"con transferencia · -${PCT}%";font-size:9.5px;font-weight:600;color:#a3a3a3}
+${C} .bfc-ahorro{order:3;display:inline-block;margin-top:4px;padding:3px 8px;border-radius:999px;background:#16a34a;box-shadow:0 2px 8px rgba(22,163,74,.35);color:#fff;font-size:10px;font-weight:800;line-height:1.25;white-space:nowrap}
 
 .bfp{position:relative;overflow:hidden;margin:18px 0 8px;padding:16px 16px 14px;border-radius:14px;background:radial-gradient(130% 120% at 0% 0%,#3a0509 0%,#0b0b0b 55%,#000 100%);color:#fff;font-family:Montserrat,sans-serif;box-shadow:0 12px 30px rgba(0,0,0,.25);isolation:isolate}
 .bfp::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.1) 50%,transparent 65%);transform:translateX(-120%);animation:bfCardShine 4.2s ease-in-out infinite}
@@ -3090,7 +3099,7 @@ ${P} .js-transfer-savings-label{grid-column:2;display:inline-flex!important;alig
 ${P} .js-transfer-savings-label strong{margin-left:4px;color:#4ade80}
 
 @media(min-width:768px){.bfp{padding:18px 20px 16px}.bfp-tag b{font-size:22px}.bfp-u{min-width:42px}.bfp-u b{font-size:18px}}
-@media(prefers-reduced-motion:reduce){.bfp::after,.bfp-pct,.bfp-u.s b,body.bf-prod-on .item-product .payment-discount-price-product-container::after,${P} .payment-discount-price-product-container::before{animation:none}}
+@media(prefers-reduced-motion:reduce){.bfp::after,.bfp-pct,.bfp-u.s b,body.bf-prod-on .item-product .payment-discount-price-product-container::after,${C} .js-payment-discount-price-product,${P} .payment-discount-price-product-container::before{animation:none}}
 `;
 
   function pad(n) { return (n < 10 ? '0' : '') + n; }
@@ -3101,6 +3110,31 @@ ${P} .js-transfer-savings-label strong{margin-left:4px;color:#4ade80}
       if (COMBOS.indexOf(+it.getAttribute('data-product-id')) > -1) {
         var card = it.closest('.item-product') || it; card.classList.add('bf-no'); it.classList.add('bf-no');
       }
+    });
+  }
+
+  // Cards: reloj, "BLACK FRIDAY" y "Ahorrás $X" (precio de la card menos el de transferencia)
+  var ICONO_RELOJ = '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 10.4 3.2 1.9-.8 1.3L11 13V6.5h2z"/></svg>';
+  function textoReloj() {
+    var r = restante();
+    return Math.floor(r / 86400) + 'd ' + pad(Math.floor(r % 86400 / 3600)) + ':' + pad(Math.floor(r % 3600 / 60)) + ':' + pad(r % 60);
+  }
+  function tarjetas() {
+    document.querySelectorAll('.item-product:not(.bf-no)').forEach(function (it) {
+      var pc = it.querySelector('.payment-discount-price-product-container'); if (!pc) return;
+      if (!pc.querySelector('.bfc-top')) {
+        var top = document.createElement('div'); top.className = 'bfc-top';
+        top.innerHTML = '<span class="bfc-clock">' + ICONO_RELOJ + '<b data-bfc>' + textoReloj() + '</b></span>';
+        var bf = document.createElement('span'); bf.className = 'bfc-bf'; bf.innerHTML = 'BLACK <span>FRIDAY</span>';
+        pc.insertBefore(bf, pc.firstChild); pc.insertBefore(top, pc.firstChild);
+      }
+      var reg = num((it.querySelector('.js-price-display') || {}).textContent);
+      var tr = num((pc.querySelector('.js-payment-discount-price-product') || {}).textContent);
+      var a = pc.querySelector('.bfc-ahorro');
+      if (!(tr && reg > tr)) { if (a) a.remove(); return; }
+      if (!a) { a = document.createElement('span'); a.className = 'bfc-ahorro'; pc.appendChild(a); }
+      var v = 'Ahorrás $' + (reg - tr).toLocaleString('es-AR');
+      if (a.textContent !== v) a.textContent = v;
     });
   }
 
@@ -3159,6 +3193,7 @@ ${P} .js-transfer-savings-label strong{margin-left:4px;color:#4ade80}
     }
     document.body.classList.add('bf-prod-on');
     marcarCombos();
+    tarjetas();
     cartelProducto();
     franjaTransferencia();
   }
@@ -3168,9 +3203,20 @@ ${P} .js-transfer-savings-label strong{margin-left:4px;color:#4ade80}
     setTimeout(aplicar, 1500);
     // Tiendanube y el script reescriben el recuadro al cambiar de variante
     if (document.querySelector('#single-product')) setInterval(franjaTransferencia, 700);
-    // Cards que se cargan después (scroll infinito, filtros)
-    var t; new MutationObserver(function () { clearTimeout(t); t = setTimeout(marcarCombos, 200); })
-      .observe(document.body, { childList: true, subtree: true });
+    // Reloj de las cards
+    setInterval(function () {
+      if (!restante()) { document.querySelectorAll('.bfc-top,.bfc-bf,.bfc-ahorro').forEach(function (e) { e.remove(); }); document.body.classList.remove('bf-prod-on'); return; }
+      var txt = textoReloj();
+      document.querySelectorAll('[data-bfc]').forEach(function (e) { e.textContent = txt; });
+    }, 1000);
+    // Cards que se cargan después (scroll infinito, filtros, cambio de color).
+    // Se ignoran los cambios del propio reloj para no recalcular cada segundo.
+    var t; new MutationObserver(function (ms) {
+      for (var i = 0; i < ms.length; i++) {
+        var el = ms[i].target.nodeType === 1 ? ms[i].target : ms[i].target.parentElement;
+        if (!(el && el.closest && el.closest('.bfc-clock'))) { clearTimeout(t); t = setTimeout(function () { marcarCombos(); tarjetas(); }, 200); return; }
+      }
+    }).observe(document.body, { childList: true, subtree: true });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arrancar);
   else arrancar();
