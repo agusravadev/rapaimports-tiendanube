@@ -2700,7 +2700,7 @@ ${M} .modal-header{width:auto!important}
    - Sube Combos al primer lugar con fondo oscuro, título BLACK FRIDAY,
      el countdown de Combos (lo crea initBannersCategoriaCarousel) y 3
      beneficios: 25% OFF transferencia · Envío GRATIS · Hasta 6 cuotas.
-   - Combos en grilla, todos visibles sin deslizar (2 columnas en
+   - Combos (lista COMBOS_HOME, desde los productos) en grilla, todos visibles sin deslizar (2 columnas en
      celular, una por combo en computadora), con cinta "Black Friday",
      marca/modelo debajo, inclinación 3D y un foco que los recorre.
    Para volver a la portada normal: cargar script.js desde @main.
@@ -2761,6 +2761,8 @@ ${M} .modal-header{width:auto!important}
 .bf-combos .js-promotional-banner-container.is-on .textbanner::before,.bf-combos .js-promotional-banner-container:hover .textbanner::before{opacity:1}
 .bf-combos .js-promotional-banner-container.is-press .textbanner{--sc:.97;transition-duration:.12s}
 .bf-combos .bf-ribbon{bottom:10px;font-size:9px;padding:5px 8px}
+.bf-combos .bf-card-combo .textbanner,.bf-combos .bf-card-combo .textbanner-image{height:auto!important;min-height:0!important;padding:0!important;background:#fff}
+.bf-combos .bf-card-combo img{position:static!important;display:block;width:100%!important;height:auto!important;object-fit:contain!important;transform:none!important}
 .bf-combos .row>.bf-solo{grid-column:1/-1;justify-self:center;width:calc(50% - 5px)!important}
 .bf-tag{display:flex;flex-direction:column;align-items:center;gap:3px;margin-top:14px;font-family:Montserrat,sans-serif;text-align:center;text-decoration:none!important}
 .bf-tag-k{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#8c8c8c;transition:color .3s}
@@ -2811,6 +2813,45 @@ ${M} .modal-header{width:auto!important}
     { match: /accesorios/i, marca: 'Ver todo', modelo: 'Accesorios' }
   ];
 
+  // Combos de la portada: se arman desde los productos, no desde los banners
+  // del tema (Tiendanube deja cargar solo 3). Para sumar o sacar un combo,
+  // editar esta lista: link del producto + imagen (sin el sufijo -640-0.webp).
+  var IMG_STORE = '//dcdn-us.mitiendanube.com/stores/007/678/416/';
+  var COMBOS_HOME = [
+    // Golf: arte "COMBO GOLF" que estaba como banner (la foto del producto es otra)
+    { url: '/productos/combo-difusor-aleron-para-golf/', img: 'themes/amazonas/2-img-8452390246088470711-1795617628-1d30d6b23c5a33b67ea91ff2d3fbda6b1795617628' },
+    { url: '/productos/como-bmw-serie-1-1784k/', img: 'products/combo-bmw-serie-1-hatch-6b3f74aa728d7ab3f517956422846654' },
+    { url: '/productos/combo-bmw-serie-2-1qwkz/', img: 'products/combo-bmw-serie-2_-difusor-y-aleran-6d1e764d2430e9292a17956423891891' },
+    { url: '/productos/combo-mercedes-a-w177-1lymm/', img: 'products/combo-mercedes-a-class_-kit-completo-cca92ddf0edafe64b417956422496733' }
+  ];
+  function ponerCombos(row) {
+    row.innerHTML = COMBOS_HOME.map(function(c, i) {
+      return '<div class="js-promotional-banner-container bf-card-combo">' +
+        '<div class="textbanner box-rounded"><a class="textbanner-link" href="' + c.url + '" aria-label="Ver combo">' +
+        '<div class="textbanner-image"><img class="textbanner-image-background" src="' + IMG_STORE + c.img + '-640-0.webp" alt=""' + (i > 1 ? ' loading="lazy"' : '') + '></div>' +
+        '</a></div></div>';
+    }).join('');
+  }
+
+  // Countdown hasta las 23:59:59 de hoy en hora Argentina (mismo formato que el
+  // de Combos del tema, que no se crea si la sección no tiene banners)
+  function crearCountdown() {
+    var box = document.createElement('div'); box.className = 'combos-countdown'; box.setAttribute('role', 'timer');
+    box.innerHTML = '<span class="combos-countdown-label">La oferta termina en</span><span class="combos-countdown-clock">' +
+      '<span class="combos-countdown-unit"><b data-cd="h">00</b><small>horas</small></span><span class="combos-countdown-sep">:</span>' +
+      '<span class="combos-countdown-unit"><b data-cd="m">00</b><small>min</small></span><span class="combos-countdown-sep">:</span>' +
+      '<span class="combos-countdown-unit"><b data-cd="s">00</b><small>seg</small></span></span>';
+    function pad(n) { return (n < 10 ? '0' : '') + n; }
+    function tick() {
+      var now = Date.now() - 3 * 3600 * 1000, fin = Math.floor(now / 86400000) * 86400000 + 86400000, r = Math.max(0, Math.floor((fin - now) / 1000));
+      box.querySelector('[data-cd="h"]').textContent = pad(Math.floor(r / 3600));
+      box.querySelector('[data-cd="m"]').textContent = pad(Math.floor(r % 3600 / 60));
+      box.querySelector('[data-cd="s"]').textContent = pad(r % 60);
+    }
+    tick(); setInterval(tick, 1000);
+    return box;
+  }
+
   // Grilla de combos: 2 columnas en celular (todos visibles sin deslizar), una
   // columna por combo en computadora, marca debajo de cada uno, inclinación 3D al
   // tocar/pasar el mouse y un foco que recorre los combos de a uno.
@@ -2859,10 +2900,19 @@ ${M} .modal-header{width:auto!important}
     var home = document.querySelector('.js-home-sections-container');
     if (!home) return true; // no es la home: nada que hacer
     var combos = home.querySelector('[data-store="home-banner-promotional"]');
-    var wrapper = combos && combos.querySelector('.banners-carousel-wrapper');
-    var cd = wrapper && wrapper.querySelector('.combos-countdown');
-    if (!wrapper || !cd) return false; // el carrusel todavía no se armó
+    if (!combos) return true; // la home no tiene la sección Combos
     if (combos.classList.contains('bf-combos')) return true; // idempotente
+    var row = combos.querySelector('.row');
+    if (!row) return false;
+    var wrapper = combos.querySelector('.banners-carousel-wrapper');
+    if (!wrapper) {
+      // Con banners cargados, esperar a que el carrusel del tema arme su wrapper
+      if (row.querySelector('.js-promotional-banner-container')) return false;
+      wrapper = document.createElement('div'); wrapper.className = 'banners-carousel-wrapper';
+      row.parentNode.insertBefore(wrapper, row); wrapper.appendChild(row);
+    }
+    var cd = wrapper.querySelector('.combos-countdown');
+    if (!cd) { cd = crearCountdown(); wrapper.insertBefore(cd, row); }
 
     if (!document.getElementById('bf-css')) {
       var st = document.createElement('style'); st.id = 'bf-css'; st.textContent = CSS; document.head.appendChild(st);
@@ -2901,12 +2951,7 @@ ${M} .modal-header{width:auto!important}
       '<div class="bf-block"><span class="bf-block-k">Cuotas</span><span class="bf-block-v">Hasta 6</span><span class="bf-block-c">con tarjeta</span></div>';
     cd.after(perks);
 
-    // Cintas "Black Friday"
-    combos.querySelectorAll('.textbanner').forEach(function(tb) {
-      var r = document.createElement('span'); r.className = 'bf-ribbon'; r.textContent = 'Black Friday'; tb.appendChild(r);
-    });
-    var row = wrapper.querySelector('.row');
-    if (!row) return true;
+    ponerCombos(row);
     armarGrilla(combos, row);
     return true;
   }
