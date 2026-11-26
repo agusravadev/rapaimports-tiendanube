@@ -2698,8 +2698,8 @@ ${M} .modal-header{width:auto!important}
    Portada de Black Friday en la home, sobre la sección Combos:
    - Oculta "El cambio está en tus manos" (antes/después).
    - Sube Combos al primer lugar con fondo oscuro, título BLACK FRIDAY,
-     el countdown de Combos (lo crea initBannersCategoriaCarousel) y 3
-     beneficios: 25% OFF transferencia · Envío GRATIS · Hasta 6 cuotas.
+     el countdown de Combos y, debajo de los combos, el cupón "Y en toda
+     la tienda" (OFF por transferencia · Envío gratis · Hasta 6 cuotas).
    - Combos (lista COMBOS_HOME, desde los productos) en grilla, todos visibles sin deslizar (2 columnas en
      celular, una por combo en computadora), con cinta "Black Friday",
      marca/modelo debajo, inclinación 3D y un foco que los recorre.
@@ -2788,19 +2788,46 @@ ${M} .modal-header{width:auto!important}
 .bf-hero{padding-top:30px}
 @media(min-width:768px){.bf-hero{padding-top:48px}}
 .bf-particles span{color:#8a1018}
-.bf-perks{display:grid!important;grid-template-columns:repeat(3,1fr);gap:12px;max-width:720px;margin:6px auto 28px;padding:0 16px!important;border:0!important}
-.bf-block{display:flex;flex-direction:column;align-items:center;text-align:center;padding:14px 10px 13px;background:rgba(22,22,22,.92);border:1px solid rgba(255,255,255,.1);border-radius:8px;font-family:Montserrat,sans-serif}
-.bf-block-k{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#8c8c8c}
-.bf-block-v{margin:6px 0 4px;font-size:24px;font-weight:800;line-height:1;color:#fff;white-space:nowrap}
-.bf-block-c{font-size:12px;font-weight:500;color:#b3b3b3}
-.bf-green{color:#3bb273}
-@media(max-width:767px){
- .bf-perks{gap:6px;margin:4px auto 20px;padding:0 12px!important}
- .bf-block{padding:11px 4px 10px}
- .bf-block-k{font-size:8.5px;letter-spacing:.12em}
- .bf-block-v{font-size:17px;margin:5px 0 3px}
- .bf-block-c{font-size:10px;line-height:1.25}
-}
+/* Cupón "Y en toda la tienda" (debajo de los combos; no aplica a combos) */
+.bf-store{max-width:560px;margin:34px auto 0;padding:0 14px;font-family:Montserrat,sans-serif;color:#fff;text-align:center}
+.bf-store-k{display:flex;align-items:center;gap:12px;justify-content:center;font-size:12px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#fff;margin-bottom:14px}
+.bf-store-k::before,.bf-store-k::after{content:"";flex:1;max-width:70px;height:1px;background:linear-gradient(90deg,transparent,#e30613)}
+.bf-store-k::after{background:linear-gradient(90deg,#e30613,transparent)}
+.bf-ticket{position:relative;display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#ff1a2b 0%,#e30613 45%,#9e0010 100%);box-shadow:0 18px 40px rgba(227,6,19,.35),inset 0 1px 0 rgba(255,255,255,.25);text-align:left;isolation:isolate}
+.bf-ticket::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.3) 50%,transparent 65%);transform:translateX(-120%);animation:bfTk 3.6s ease-in-out infinite}
+@keyframes bfTk{0%,55%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+.bf-notch{position:absolute;left:calc(51.9% - 11px);width:22px;height:22px;border-radius:50%;background:#0b0b0b;z-index:3}
+.bf-notch.t{top:-11px}.bf-notch.b{bottom:-11px}
+.bf-tk-main{position:relative;padding:18px 16px 16px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
+.bf-tk-main::after{content:"";position:absolute;right:0;top:14px;bottom:14px;border-right:2px dashed rgba(255,255,255,.45)}
+.bf-tk-num{display:flex;align-items:center;line-height:.8;font-weight:900}
+.bf-tk-num b{font-size:clamp(46px,13.5vw,96px);letter-spacing:-.05em;text-shadow:0 4px 18px rgba(0,0,0,.25);animation:bfNum 2.4s ease-in-out infinite}
+.bf-tk-num span{margin-left:5px;font-size:clamp(18px,5.2vw,26px);line-height:1}
+@keyframes bfNum{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.bf-tk-main p{margin:10px 0 0;font-size:clamp(10px,2.9vw,12px);font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:rgba(255,255,255,.92)}
+.bf-tk-main p em{font-style:normal;background:#000;color:#fff;padding:2px 6px;border-radius:4px}
+.bf-tk-side{display:flex;flex-direction:column;justify-content:center;align-items:stretch;gap:10px;padding:14px 10px 14px 12px;background:rgba(0,0,0,.18)}
+.bf-tk-row{display:flex;align-items:center;justify-content:center;gap:8px}
+.bf-tk-ic{flex:0 0 28px;width:28px;height:28px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center}
+.bf-tk-ic svg{width:15px;height:15px;fill:#e30613}
+.bf-tk-row b{display:block;font-size:clamp(11px,3.3vw,16px);font-weight:900;line-height:1.05;text-transform:uppercase}
+.bf-tk-row small{display:block;font-size:clamp(9.5px,2.7vw,12px);color:rgba(255,255,255,.85);margin-top:2px}
+.bf-tk-row.is-ship{position:relative;overflow:hidden;background:#fff;border-radius:10px;padding:9px 10px;box-shadow:0 6px 16px rgba(0,0,0,.25)}
+.bf-tk-row.is-ship>span:last-child{display:flex;flex-direction:column;align-items:flex-start}
+.bf-tk-row.is-ship .bf-tk-ic{flex-basis:34px;width:34px;height:34px;background:#16a34a;overflow:hidden}
+.bf-tk-row.is-ship .bf-tk-ic svg{width:20px;height:20px;fill:#fff;animation:bfTruck 1.8s ease-in-out infinite}
+@keyframes bfTruck{0%,100%{transform:translateX(0)}50%{transform:translateX(2px)}70%{transform:translateX(-1px)}}
+.bf-tk-row.is-ship b{color:#16a34a;font-size:clamp(19px,5.6vw,26px);letter-spacing:-.01em;line-height:1}
+.bf-tk-row.is-ship small{color:#555}
+.bf-tk-row.is-ship small.k{margin:0 0 2px;color:#111;font-size:clamp(12px,3.4vw,14px);font-weight:900;letter-spacing:.1em;line-height:1;text-transform:uppercase}
+.bf-tk-row.is-ship::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 40%,rgba(22,163,74,.18) 50%,transparent 60%);transform:translateX(-120%);animation:bfTk 3.6s ease-in-out .6s infinite}
+.bf-store-cta{display:inline-flex;align-items:center;gap:10px;margin-top:16px;padding:12px 18px;border-radius:999px;background:#fff;color:#111!important;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;text-decoration:none!important;box-shadow:0 8px 22px rgba(0,0,0,.35);transition:transform .2s}
+.bf-store-cta:hover{transform:translateY(-2px)}
+.bf-store-cta i{display:inline-flex;width:24px;height:24px;border-radius:50%;background:#e30613;align-items:center;justify-content:center}
+.bf-store-cta svg{width:12px;height:12px;fill:#fff}
+.bf-store-note{margin:12px 0 0;font-size:11px;color:#8c8c8c}
+@media(min-width:768px){.bf-store{margin-top:44px}.bf-tk-main{padding:24px 22px 22px 26px}}
+@media(prefers-reduced-motion:reduce){.bf-ticket::after,.bf-tk-num b,.bf-tk-row.is-ship::after,.bf-tk-row.is-ship .bf-tk-ic svg{animation:none}}
 `;
 
   // Marca y modelo que se muestran debajo de cada combo, según el link del banner
@@ -2831,6 +2858,23 @@ ${M} .modal-header{width:auto!important}
         '<div class="textbanner-image"><img class="textbanner-image-background" src="' + IMG_STORE + c.img + '-640-0.webp" alt=""' + (i > 1 ? ' loading="lazy"' : '') + '></div>' +
         '</a></div></div>';
     }).join('');
+  }
+
+  // Cupón "Y en toda la tienda": beneficios de los productos individuales
+  // (no aplica a combos). Cambiar el % acá si cambia el descuento por transferencia.
+  var PCT_TRANSFERENCIA = 35;
+  function crearCupon() {
+    var box = document.createElement('div'); box.className = 'bf-store';
+    box.innerHTML = '<div class="bf-store-k">Y en toda la tienda</div>' +
+      '<div class="bf-ticket"><span class="bf-notch t"></span><span class="bf-notch b"></span>' +
+        '<div class="bf-tk-main"><div class="bf-tk-num"><b>' + PCT_TRANSFERENCIA + '%</b><span>OFF</span></div><p>Pagando con <em>transferencia</em></p></div>' +
+        '<div class="bf-tk-side">' +
+          '<div class="bf-tk-row is-ship"><span class="bf-tk-ic"><svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg></span><span><small class="k">Envío</small><b>Gratis</b><small>a todo el país</small></span></div>' +
+          '<div class="bf-tk-row"><span class="bf-tk-ic"><svg viewBox="0 0 24 24"><path d="M2 6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2zm2 1v2h16V7zm0 5v6h16v-6zm2 3h5v1.5H6z"/></svg></span><span><b>Hasta 6 cuotas</b><small>con tarjeta</small></span></div>' +
+        '</div></div>' +
+      '<a class="bf-store-cta" href="/productos/">Ver todos los productos<i><svg viewBox="0 0 24 24"><path d="M13 5l7 7-7 7-1.4-1.4 4.6-4.6H4v-2h12.2l-4.6-4.6z"/></svg></i></a>' +
+      '<p class="bf-store-note">Válido en productos individuales. No aplica a los combos.</p>';
+    return box;
   }
 
   // Countdown hasta las 23:59:59 de hoy en hora Argentina (mismo formato que el
@@ -2943,16 +2987,9 @@ ${M} .modal-header{width:auto!important}
     var seg = cd.querySelector('[data-cd="s"]');
     if (seg && seg.parentElement) seg.parentElement.classList.add('is-sec');
 
-    // Beneficios
-    var perks = document.createElement('div'); perks.className = 'bf-perks';
-    perks.innerHTML =
-      '<div class="bf-block"><span class="bf-block-k">Descuento</span><span class="bf-block-v">25% OFF</span><span class="bf-block-c">por transferencia</span></div>' +
-      '<div class="bf-block"><span class="bf-block-k">Envío</span><span class="bf-block-v bf-green">GRATIS</span><span class="bf-block-c">a todo el país</span></div>' +
-      '<div class="bf-block"><span class="bf-block-k">Cuotas</span><span class="bf-block-v">Hasta 6</span><span class="bf-block-c">con tarjeta</span></div>';
-    cd.after(perks);
-
     ponerCombos(row);
     armarGrilla(combos, row);
+    wrapper.appendChild(crearCupon());
     return true;
   }
 
