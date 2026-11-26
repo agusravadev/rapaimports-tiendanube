@@ -2285,19 +2285,17 @@ ${M} .modal-header{width:auto!important}
 
 
 // ============================================================
-// Combo Black Friday: "Combo Difusor + Alerón para Golf"
-// Solo actúa en el single product del combo (LS.product.id 381089521).
+// Combos Black Friday (Golf, BMW Serie 1, BMW Serie 2, Mercedes A W177)
+// Actúa solo en el single product de cada combo (ver COMBOS, por LS.product.id).
 // Agrega banner Black Friday con countdown, bloque de ahorro
 // (combo + transferencia) y la sección "Este combo contiene" con la
-// personalización del alerón y del pomo. Si el combo tiene variantes
-// cargadas con las propiedades "Alerón - Acabado", "Pomo - Color" y
-// "Pomo - Acabado", sincroniza los <select> nativos para que la
-// configuración llegue en el pedido.
+// personalización de cada producto incluido. Si el combo tiene variantes
+// cargadas con las mismas propiedades que los grupos (ej: "Alerón - Acabado"),
+// sincroniza los <select> nativos para que la configuración llegue en el pedido.
 // ============================================================
 (function () {
   function initComboBlackFriday() {
-    var COMBO_ID = 381089521;
-    if (!window.LS || !LS.product || LS.product.id !== COMBO_ID) return;
+    if (!window.LS || !LS.product) return;
     if (document.querySelector('.cbf-contiene')) return;
     var sp = document.querySelector('#single-product');
     if (!sp || !sp.querySelector('#product_form') || !sp.querySelector('.js-price-container') || !sp.querySelector('section.page-header')) return;
@@ -2313,17 +2311,26 @@ ${M} .modal-header{width:auto!important}
       { v: 'Simil fibra de carbono', img: TEXTURA.carbono }
     ];
 
-    var ITEMS = [
-      { key: 'aleron', nombre: 'Alerón Oettinger Golf GTI MK7/7.5', valor: 210000, url: '/productos/aleron-oettinger-golf-gti/',
+    // Grupo "Acabado" estándar (piano / carbono) con la propiedad de variante del combo
+    function acabado(prop) {
+      return { prop: prop, label: 'Acabado', tipo: 'material', opciones: ACABADOS };
+    }
+
+    var COMBOS = {
+      // Combo Difusor + Alerón para Golf
+      381089521: {
+        precio: 410960,
+      items: [
+      { key: 'aleron', nombre: 'Alerón Oettinger Golf GTI MK7/7.5', del: 'del alerón', valor: 210000, url: '/productos/aleron-oettinger-golf-gti/',
         img: CDN + 'dab75253-3add-439a-b61d-21f369891484-a35ecb95ce2aeeaa0d17791936830290-1024-1024.webp',
         imgPor: { 'Negro piano brillante': CDN + 'dab75253-3add-439a-b61d-21f369891484-a35ecb95ce2aeeaa0d17791936830290-1024-1024.webp',
                   'Simil fibra de carbono': CDN + '-672a59dd144dacfaea17831435543611-1024-1024.webp' },
         // Precio de lista del alerón por separado según acabado (ficha individual)
         valorPor: { 'Negro piano brillante': 210000, 'Simil fibra de carbono': 250000 },
         grupos: [ { prop: 'Alerón - Acabado', label: 'Acabado', tipo: 'material', opciones: ACABADOS } ] },
-      { key: 'difusor', nombre: 'Difusor trasero Golf GTI/TSI MK7', valor: 234000, url: '/productos/difusor-mk7/',
+      { key: 'difusor', nombre: 'Difusor trasero Golf GTI/TSI MK7', del: 'del difusor', valor: 234000, url: '/productos/difusor-mk7/',
         img: CDN + 'diseno-sin-titulo-26-188a4107918ac45e7917792287902507-1024-1024.webp', fijo: 'Negro piano brillante', grupos: [] },
-      { key: 'pomo', nombre: 'Pomo palanca AT estilo MK8', valor: 94000, regalo: true, url: '/productos/pomo-palanca-de-cambio-negro-brillante-at-estilo-mk8/',
+      { key: 'pomo', nombre: 'Pomo palanca AT estilo MK8', del: 'del pomo', valor: 94000, regalo: true, url: '/productos/pomo-palanca-de-cambio-negro-brillante-at-estilo-mk8/',
         img: CDN + '7e6d6041-60f2-4b10-9c94-dcd2e1747e65-31d4ded3f8822c77e317862533620107-1024-1024.webp',
         imgs: {
           'Blanco|Negro piano brillante': CDN + '7e6d6041-60f2-4b10-9c94-dcd2e1747e65-31d4ded3f8822c77e317862533620107-1024-1024.webp',
@@ -2335,14 +2342,77 @@ ${M} .modal-header{width:auto!important}
             { v: 'Blanco', img: CDN + '7e6d6041-60f2-4b10-9c94-dcd2e1747e65-31d4ded3f8822c77e317862533620107-100-0.webp' },
             { v: 'Rojo', img: CDN + '5f959644-4342-4b73-ba77-53e270257b0d-7530502c2a7bc5c0a917862537367824-100-0.webp' } ] },
           { prop: 'Pomo - Acabado', label: 'Acabado', tipo: 'material', opciones: ACABADOS } ] }
-    ];
+    ]
+      },
+
+      // Combo BMW Serie 1 Hatch: difusor + alerón + lip delantero de regalo
+      383485810: {
+        precio: 516000,
+        items: [
+          { key: 'difusor', nombre: 'Difusor trasero BMW Serie 1 F20 LCI', del: 'del difusor', url: '/productos/difusor-trasero-para-bmw-serie-1-f20-lci-standard/',
+            img: CDN + '-3ba4188fd94e8f46af17890078588512-1024-1024.webp',
+            imgPor: { 'Negro piano brillante': CDN + '-3ba4188fd94e8f46af17890078588512-1024-1024.webp',
+                      'Simil fibra de carbono': CDN + '-a4697ae000873e0d7517890078588512-1024-1024.webp' },
+            valor: 306000, valorPor: { 'Negro piano brillante': 306000, 'Simil fibra de carbono': 335000 },
+            grupos: [ acabado('Difusor - Acabado') ] },
+          { key: 'aleron', nombre: 'Alerón BMW Serie 1 F20/F21', del: 'del alerón', url: '/productos/spoiler-de-techo-para-bmw-serie-1-f20-f21/',
+            img: CDN + '3-7b499edd399a279ef617890077377590-1024-1024.webp',
+            valor: 210000, valorPor: { 'Negro piano brillante': 210000, 'Simil fibra de carbono': 225000 },
+            grupos: [ acabado('Alerón - Acabado') ] },
+          { key: 'lip', nombre: 'Lip delantero BMW Serie 1 F20/F21 LCI', del: 'del lip delantero', regalo: true, url: '/productos/splitter-delantero-para-bmw-serie-1-f20-f21-lci/',
+            img: CDN + '2-e7bf2e0a25170c423617890075611241-1024-1024.webp',
+            imgPor: { 'Negro piano brillante': CDN + '2-e7bf2e0a25170c423617890075611241-1024-1024.webp',
+                      'Simil fibra de carbono': CDN + '1-7a0bba5abcf8ea200717890075608520-1024-1024.webp' },
+            valor: 210000, valorPor: { 'Negro piano brillante': 210000, 'Simil fibra de carbono': 225000 },
+            grupos: [ acabado('Lip - Acabado') ] }
+        ]
+      },
+
+      // Combo BMW Serie 2: difusor + alerón con 15% OFF
+      383486312: {
+        precio: 381650,
+        items: [
+          { key: 'difusor', nombre: 'Difusor trasero BMW Serie 2 F22/F23 M Sport', del: 'del difusor', url: '/productos/difusor-trasero-bmw-f22-f23-m-sport/',
+            img: CDN + '5-0151f35d7c1e13d4b217885888184329-1024-1024.webp',
+            valor: 266000, valorPor: { 'Negro piano brillante': 266000, 'Simil fibra de carbono': 280000 },
+            grupos: [ acabado('Difusor - Acabado') ] },
+          { key: 'aleron', nombre: 'Alerón BMW Serie 2 F22 / M2 F87', del: 'del alerón', url: '/productos/aleron-spoiler-bmw-f22-f87/',
+            img: CDN + '-2124cea222f4edfa1d17834592041907-1024-1024.webp',
+            imgPor: { 'Negro piano brillante': CDN + '-2124cea222f4edfa1d17834592041907-1024-1024.webp',
+                      'Simil fibra de carbono': CDN + '-308c8d51414b2e8f1c17834592051278-1024-1024.webp' },
+            valor: 183000, valorPor: { 'Negro piano brillante': 183000, 'Simil fibra de carbono': 203000 },
+            grupos: [ acabado('Alerón - Acabado') ] }
+        ]
+      },
+
+      // Combo Mercedes A W177: alerón + kit difusor + cachas de regalo
+      383485694: {
+        precio: 1040000,
+        items: [
+          { key: 'aleron', nombre: 'Alerón Mercedes-Benz Clase A W177 AMG', del: 'del alerón', url: '/productos/aleron-mercedes-benz-w177-clase-a-a250-a45-amg-ni3cc/',
+            img: CDN + 'aleron1-26669867ebdb17362917915951895964-1024-1024.webp',
+            valor: 210000, valorPor: { 'Negro piano brillante': 210000, 'Simil fibra de carbono': 265000 },
+            grupos: [ acabado('Alerón - Acabado') ] },
+          { key: 'difusor', nombre: 'Kit difusor trasero Clase A W177 AMG Line', del: 'del difusor', url: '/productos/kit-difusor-wi77/',
+            img: CDN + 'a35-cd89388d5608e4b44017891915864313-1024-1024.webp', valor: 830000, fijo: 'Negro piano brillante', grupos: [] },
+          { key: 'cachas', nombre: 'Cachas de espejo Clase A W177', del: 'de las cachas', regalo: true, url: '/productos/carcasas-espejo-mercedes-clase-a-w177-cla-c118/',
+            img: CDN + '7-79ab96848fbc5dd42017890073900768-1024-1024.webp',
+            valor: 185000, valorPor: { 'Negro piano brillante': 185000, 'Simil fibra de carbono': 210000 },
+            grupos: [ acabado('Cachas - Acabado') ] }
+        ]
+      }
+    };
+    var CFG = COMBOS[LS.product.id];
+    if (!CFG) return;
+    var COMBO_ID = LS.product.id;
+    var ITEMS = CFG.items;
 
     var STORE_KEY = 'rapa_combo_' + COMBO_ID;
     var sel = {};
     try { sel = JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {}; } catch (e) { sel = {}; }
 
     function fmt(n) { return '$' + Math.round(n).toLocaleString('es-AR'); }
-    function precioCombo() { var el = document.querySelector('#price_display'); var raw = el && parseInt(el.getAttribute('data-product-price'), 10); return raw ? raw / 100 : 410960; }
+    function precioCombo() { var el = document.querySelector('#price_display'); var raw = el && parseInt(el.getAttribute('data-product-price'), 10); return raw ? raw / 100 : CFG.precio; }
     function precioTransfer() { var el = document.querySelector('.js-payment-discount-price-product'); var raw = el && parseInt(el.getAttribute('data-priceraw-without-shipping'), 10); return raw ? raw / 100 : Math.round(precioCombo() * 0.75); }
 
     // Cuentas: precio de lista de cada producto por separado vs combo vs combo por transferencia
@@ -2464,7 +2534,7 @@ ${M} .modal-header{width:auto!important}
     save.innerHTML =
       '<div class="cbf-save-top"><b>🔥 Ahorrás hasta<em>$0</em></b><span class="cbf-save-pill"><span data-a="pct"></span><small>OFF</small></span></div>' +
       '<div class="cbf-save-rows">' +
-        '<div><span>Por separado (alerón + difusor + pomo)</span><span><s data-a="separado"></s></span></div>' +
+        '<div><span>Por separado (' + ITEMS.map(function (i) { return i.del.replace(/^(del|de las) /, ''); }).join(' + ') + ')</span><span><s data-a="separado"></s></span></div>' +
         '<div><span>Ahorro por llevar el combo</span><span data-a="combo"></span></div>' +
         '<div><span>Ahorro extra pagando por transferencia</span><span data-a="transfer"></span></div>' +
       '</div>';
@@ -2580,7 +2650,7 @@ ${M} .modal-header{width:auto!important}
         chosen.className = 'cbf-chosen' + (ok ? '' : ' pending');
         card.classList.toggle('done', ok); card.querySelector('.cbf-status').innerHTML = ok ? check : chevron;
         var img = card.querySelector('.cbf-thumb img'), src = it.img;
-        if (it.imgs) src = it.imgs[(sel[it.key]['Pomo - Color'] || 'Blanco') + '|' + (sel[it.key]['Pomo - Acabado'] || 'Negro piano brillante')] || it.img;
+        if (it.imgs) src = it.imgs[it.grupos.map(function (g) { return sel[it.key][g.prop] || g.opciones[0].v; }).join('|')] || it.img;
         else if (it.imgPor) src = it.imgPor[sel[it.key][it.grupos[0].prop]] || it.img;
         if (img.getAttribute('src') !== src) {
           if (anim && changedKey === it.key) { img.classList.add('swap'); setTimeout(function () { img.onload = function () { img.classList.remove('swap'); }; img.src = src; }, 180); }
@@ -2607,7 +2677,7 @@ ${M} .modal-header{width:auto!important}
       if (pend.length) { e.preventDefault(); e.stopImmediatePropagation();
         var c = box.querySelector('.cbf-item[data-key="' + pend[0].key + '"]'); c.classList.remove('err'); void c.offsetWidth; c.classList.add('err');
         abrir(pend[0].key); box.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        toast('Elegí las opciones del ' + pend[0].nombre.split(' ')[0].toLowerCase() + ' para continuar'); return; }
+        toast('Elegí las opciones ' + pend[0].del + ' para continuar'); return; }
     }, true);
   }
 
@@ -2630,8 +2700,9 @@ ${M} .modal-header{width:auto!important}
    - Sube Combos al primer lugar con fondo oscuro, título BLACK FRIDAY,
      el countdown de Combos (lo crea initBannersCategoriaCarousel) y 3
      beneficios: 25% OFF transferencia · Envío GRATIS · Hasta 6 cuotas.
-   - Cinta "Black Friday" y brillo en cada banner; en mobile, "Deslizá
-     para ver más combos" + puntos.
+   - Combos en grilla, todos visibles sin deslizar (2 columnas en
+     celular, una por combo en computadora), con cinta "Black Friday",
+     marca/modelo debajo, inclinación 3D y un foco que los recorre.
    Para volver a la portada normal: cargar script.js desde @main.
    ====================================================================== */
 (function () {
@@ -2675,23 +2746,32 @@ ${M} .modal-header{width:auto!important}
 @keyframes bf-shine{0%,60%{left:-60%}100%{left:130%}}
 .bf-ribbon{position:absolute;bottom:16px;left:0;z-index:3;background:#e30613;color:#fff;font:900 11px/1 Montserrat,sans-serif;letter-spacing:.12em;text-transform:uppercase;padding:7px 11px;box-shadow:0 4px 12px rgba(0,0,0,.4);border-radius:0 4px 4px 0}
 
-.bf-swipe,.bf-dots{display:none}
-@media(max-width:767px){
-  .bf-title .bf-outline{-webkit-text-stroke:1.5px #fff}
-  .bf-swipe{display:flex;align-items:center;justify-content:center;gap:10px;margin:16px 0 0;color:#fff;font:700 12px Montserrat,sans-serif;letter-spacing:.14em;text-transform:uppercase}
-  .bf-swipe-hand{display:inline-flex;animation:bf-hand 1.6s ease-in-out infinite}
-  .bf-swipe-hand svg{width:22px;height:22px;fill:#fff}
-  .bf-swipe-chev{display:inline-flex;gap:2px}
-  .bf-swipe-chev i{width:7px;height:7px;border-right:2px solid #e30613;border-top:2px solid #e30613;transform:rotate(45deg);animation:bf-chev 1.2s infinite}
-  .bf-swipe-chev i:nth-child(2){animation-delay:.15s}.bf-swipe-chev i:nth-child(3){animation-delay:.3s}
-  @keyframes bf-hand{0%,100%{transform:translateX(8px)}50%{transform:translateX(-10px)}}
-  @keyframes bf-chev{0%,100%{opacity:.2}50%{opacity:1}}
-  .bf-dots{display:flex;justify-content:center;gap:8px;margin-top:12px}
-  .bf-dots i{width:8px;height:8px;border-radius:999px;background:rgba(255,255,255,.3);transition:all .3s}
-  .bf-dots i.on{width:26px;background:#e30613}
-  .bf-combos .banners-carousel-wrapper>.row>.js-promotional-banner-container:not(.banner-clone){animation:bf-peek 1.4s ease-in-out .8s 2}
-  @keyframes bf-peek{0%,100%{transform:translateX(0)}45%{transform:translateX(-38px)}}
-}
+@media(max-width:767px){.bf-title .bf-outline{-webkit-text-stroke:1.5px #fff}}
+
+/* Grilla de combos: todos visibles de entrada (sin carrusel) */
+.bf-combos{padding-bottom:34px!important}
+.bf-combos .banners-carousel-wrapper{padding:0 10px!important}
+.bf-combos .banners-carousel-wrapper>.row{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 10px;overflow:visible!important;margin:0 auto!important;padding:6px 0 0!important;max-width:1100px;perspective:900px;transform:none!important}
+.bf-combos .banners-carousel-wrapper>.row>.banner-clone{display:none!important}
+.bf-combos .banners-carousel-wrapper>.row>.js-promotional-banner-container{width:auto!important;max-width:none!important;flex:none!important;padding:0!important;animation:none!important;transform:none!important;transform-style:preserve-3d}
+.bf-combos .js-promotional-banner-container img{width:100%!important;height:auto!important}
+.bf-combos .js-promotional-banner-container .textbanner{margin-bottom:0!important;border-radius:10px!important;outline:0!important;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(var(--ty,0px)) scale(var(--sc,1));transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s;box-shadow:0 10px 26px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08);will-change:transform}
+.bf-combos .js-promotional-banner-container .textbanner::before{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;border-radius:inherit;background:radial-gradient(circle at var(--gx,50%) var(--gy,0%),rgba(255,255,255,.35),transparent 55%);opacity:0;transition:opacity .3s}
+.bf-combos .js-promotional-banner-container.is-on .textbanner,.bf-combos .js-promotional-banner-container:hover .textbanner{--ty:-6px;box-shadow:0 22px 40px rgba(0,0,0,.65),0 0 0 2px #e30613,0 0 34px rgba(227,6,19,.45)}
+.bf-combos .js-promotional-banner-container.is-on .textbanner::before,.bf-combos .js-promotional-banner-container:hover .textbanner::before{opacity:1}
+.bf-combos .js-promotional-banner-container.is-press .textbanner{--sc:.97;transition-duration:.12s}
+.bf-combos .bf-ribbon{bottom:10px;font-size:9px;padding:5px 8px}
+.bf-combos .row>.bf-solo{grid-column:1/-1;justify-self:center;width:calc(50% - 5px)!important}
+.bf-tag{display:flex;flex-direction:column;align-items:center;gap:3px;margin-top:14px;font-family:Montserrat,sans-serif;text-align:center;text-decoration:none!important}
+.bf-tag-k{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#8c8c8c;transition:color .3s}
+.bf-tag-n{position:relative;font-size:22px;font-weight:900;line-height:1;text-transform:uppercase;color:#fff;letter-spacing:-.01em;transition:color .3s,text-shadow .3s}
+.bf-tag-n::after{content:"";position:absolute;left:50%;bottom:-7px;width:0;height:3px;border-radius:3px;background:#e30613;transform:translateX(-50%);transition:width .35s}
+.is-on .bf-tag-n,.js-promotional-banner-container:hover .bf-tag-n{color:#e30613;text-shadow:0 0 18px rgba(227,6,19,.55)}
+.is-on .bf-tag-n::after,.js-promotional-banner-container:hover .bf-tag-n::after{width:60%}
+.is-on .bf-tag-k{color:#fff}
+@media(min-width:768px){.bf-combos .banners-carousel-wrapper>.row{gap:34px 26px}.bf-tag-n{font-size:28px}.bf-tag-k{font-size:10px}.bf-combos .bf-ribbon{font-size:11px;padding:7px 11px;bottom:16px}}
+@media(min-width:1024px){.bf-combos .banners-carousel-wrapper>.row{grid-template-columns:repeat(var(--bf-cols,2),minmax(0,1fr));max-width:min(1200px,calc(var(--bf-cols,2)*380px))}.bf-combos .row>.bf-solo{grid-column:auto;width:auto!important}}
+@media(prefers-reduced-motion:reduce){.bf-combos .js-promotional-banner-container .textbanner{transition:none}}
 
 @media(min-width:768px){.combos-countdown-unit{min-width:70px}.combos-countdown-unit b{font-size:32px}}
 @media(max-width:767px){.bf-title{font-size:64px}}
@@ -2720,6 +2800,60 @@ ${M} .modal-header{width:auto!important}
  .bf-block-c{font-size:10px;line-height:1.25}
 }
 `;
+
+  // Marca y modelo que se muestran debajo de cada combo, según el link del banner
+  var MARCAS = [
+    { match: /serie-?1/i, marca: 'BMW', modelo: 'Serie 1' },
+    { match: /serie-?2/i, marca: 'BMW', modelo: 'Serie 2' },
+    { match: /mercedes|w177/i, marca: 'Mercedes-Benz', modelo: 'Clase A' },
+    { match: /golf/i, marca: 'Volkswagen', modelo: 'Golf' },
+    { match: /audi/i, marca: 'Audi', modelo: 'Audi' },
+    { match: /accesorios/i, marca: 'Ver todo', modelo: 'Accesorios' }
+  ];
+
+  // Grilla de combos: 2 columnas en celular (todos visibles sin deslizar), una
+  // columna por combo en computadora, marca debajo de cada uno, inclinación 3D al
+  // tocar/pasar el mouse y un foco que recorre los combos de a uno.
+  function armarGrilla(combos, row) {
+    row.scrollLeft = 0;
+    var reales = [].slice.call(row.querySelectorAll('.js-promotional-banner-container:not(.banner-clone)'));
+    if (!reales.length) return;
+    combos.style.setProperty('--bf-cols', Math.min(reales.length, 4));
+    if (reales.length % 2) reales[reales.length - 1].classList.add('bf-solo');
+    reales.forEach(function(b, i) {
+      var a = b.querySelector('a'), href = a ? a.getAttribute('href') : '';
+      var t = ((b.querySelector('.js-promotional-banner-title') || {}).textContent || '').trim();
+      var info = MARCAS.filter(function(x) { return x.match.test(href + ' ' + t); })[0] || { marca: 'Combo', modelo: t || ('Combo ' + (i + 1)) };
+      var tag = document.createElement('a'); tag.className = 'bf-tag'; tag.href = a ? a.href : '#';
+      tag.innerHTML = '<span class="bf-tag-k">' + info.marca + '</span><span class="bf-tag-n">' + info.modelo + '</span>';
+      b.appendChild(tag);
+      var tb = b.querySelector('.textbanner'); if (!tb) return;
+      function tilt(x, y) {
+        var r = tb.getBoundingClientRect(), px = (x - r.left) / r.width, py = (y - r.top) / r.height;
+        tb.style.setProperty('--ry', ((px - .5) * 14) + 'deg'); tb.style.setProperty('--rx', ((.5 - py) * 14) + 'deg');
+        tb.style.setProperty('--gx', (px * 100) + '%'); tb.style.setProperty('--gy', (py * 100) + '%');
+      }
+      function reset() { tb.style.setProperty('--rx', '0deg'); tb.style.setProperty('--ry', '0deg'); b.classList.remove('is-press'); }
+      b.addEventListener('pointermove', function(e) { if (e.pointerType === 'mouse') tilt(e.clientX, e.clientY); });
+      b.addEventListener('pointerleave', reset);
+      b.addEventListener('touchstart', function(e) { var p = e.touches[0]; b.classList.add('is-press', 'is-on'); tilt(p.clientX, p.clientY); }, { passive: true });
+      b.addEventListener('touchend', reset, { passive: true });
+      b.addEventListener('touchcancel', reset, { passive: true });
+    });
+    // Foco automático: cada combo se ilumina por turno (llama la atención sin hover)
+    if (reales.length < 2 || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+    var k = 0;
+    function spot() {
+      reales.forEach(function(b, j) {
+        var tb = b.querySelector('.textbanner'); if (!tb) return;
+        b.classList.toggle('is-on', j === k);
+        if (j === k) { tb.style.setProperty('--ry', (k % 2 ? -5 : 5) + 'deg'); tb.style.setProperty('--rx', '4deg'); }
+        else if (!b.matches(':hover')) { tb.style.setProperty('--ry', '0deg'); tb.style.setProperty('--rx', '0deg'); }
+      });
+      k = (k + 1) % reales.length;
+    }
+    spot(); setInterval(spot, 2200);
+  }
 
   function aplicarBlackFriday() {
     var home = document.querySelector('.js-home-sections-container');
@@ -2767,33 +2901,13 @@ ${M} .modal-header{width:auto!important}
       '<div class="bf-block"><span class="bf-block-k">Cuotas</span><span class="bf-block-v">Hasta 6</span><span class="bf-block-c">con tarjeta</span></div>';
     cd.after(perks);
 
-    // Cintas, swipe y puntos
+    // Cintas "Black Friday"
     combos.querySelectorAll('.textbanner').forEach(function(tb) {
       var r = document.createElement('span'); r.className = 'bf-ribbon'; r.textContent = 'Black Friday'; tb.appendChild(r);
     });
     var row = wrapper.querySelector('.row');
     if (!row) return true;
-    var swipe = document.createElement('div'); swipe.className = 'bf-swipe';
-    swipe.innerHTML = '<span class="bf-swipe-hand"><svg viewBox="0 0 24 24"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V10h.5V8.5a1.5 1.5 0 0 1 3 0V10h.5V9.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-6 6h-1.2a6 6 0 0 1-4.6-2.2L4 15.6a1.5 1.5 0 0 1 2.2-2L9 16z"/></svg></span>Deslizá para ver más combos<span class="bf-swipe-chev"><i></i><i></i><i></i></span>';
-    wrapper.insertBefore(swipe, row);
-    var reales = row.querySelectorAll('.js-promotional-banner-container:not(.banner-clone)').length;
-    var dots = document.createElement('div'); dots.className = 'bf-dots';
-    for (var d = 0; d < reales; d++) dots.appendChild(document.createElement('i'));
-    row.after(dots);
-    function updDots() {
-      if (!reales) return;
-      var first = row.querySelector('.js-promotional-banner-container');
-      var step = (first && first.getBoundingClientRect().width) || 1;
-      var idx = Math.round(row.scrollLeft / step);
-      var real = ((idx - 1) % reales + reales) % reales;
-      dots.querySelectorAll('i').forEach(function(el, k) { el.classList.toggle('on', k === real); });
-    }
-    row.addEventListener('scroll', updDots, { passive: true });
-    // Las copias del loop infinito se clonan con la imagen a medio cargar
-    combos.querySelectorAll('.banner-clone img.lazyloading').forEach(function(im) {
-      im.classList.remove('lazyloading'); im.classList.add('lazyloaded'); im.style.opacity = 1;
-    });
-    setTimeout(updDots, 120);
+    armarGrilla(combos, row);
     return true;
   }
 
