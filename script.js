@@ -2754,11 +2754,11 @@ ${M} .modal-header{width:auto!important}
 /* Grilla de combos: todos visibles de entrada (sin carrusel) */
 .bf-combos{padding-bottom:34px!important}
 .bf-combos .banners-carousel-wrapper{padding:0 10px!important}
-.bf-combos .banners-carousel-wrapper>.row{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 10px;overflow:visible!important;margin:0 auto!important;padding:6px 0 0!important;max-width:1100px;perspective:900px;transform:none!important}
+.bf-combos .banners-carousel-wrapper>.row{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 10px;overflow:visible!important;margin:0 auto!important;padding:6px 0 0!important;max-width:1100px;transform:none!important}
 .bf-combos .banners-carousel-wrapper>.row>.banner-clone{display:none!important}
-.bf-combos .banners-carousel-wrapper>.row>.js-promotional-banner-container{width:auto!important;max-width:none!important;flex:none!important;padding:0!important;animation:none!important;transform:none!important;transform-style:preserve-3d}
+.bf-combos .banners-carousel-wrapper>.row>.js-promotional-banner-container{width:auto!important;max-width:none!important;flex:none!important;padding:0!important;animation:none!important;transform:none!important}
 .bf-combos .js-promotional-banner-container img{width:100%!important;height:auto!important}
-.bf-combos .js-promotional-banner-container .textbanner{margin-bottom:0!important;border-radius:10px!important;outline:0!important;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(var(--ty,0px)) scale(var(--sc,1));transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s;box-shadow:0 10px 26px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08);will-change:transform}
+.bf-combos .js-promotional-banner-container .textbanner{margin-bottom:0!important;border-radius:10px!important;outline:0!important;transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(var(--ty,0px)) scale(var(--sc,1));transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s;box-shadow:0 10px 26px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08);will-change:transform}
 .bf-combos .js-promotional-banner-container .textbanner::before{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;border-radius:inherit;background:radial-gradient(circle at var(--gx,50%) var(--gy,0%),rgba(255,255,255,.35),transparent 55%);opacity:0;transition:opacity .3s}
 .bf-combos .js-promotional-banner-container.is-on .textbanner,.bf-combos .js-promotional-banner-container:hover .textbanner{--ty:-6px;box-shadow:0 22px 40px rgba(0,0,0,.65),0 0 0 2px #e30613,0 0 34px rgba(227,6,19,.45)}
 .bf-combos .js-promotional-banner-container.is-on .textbanner::before,.bf-combos .js-promotional-banner-container:hover .textbanner::before{opacity:1}
