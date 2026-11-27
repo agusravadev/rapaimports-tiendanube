@@ -2791,7 +2791,7 @@ ${M} .modal-header{width:auto!important}
 .bf-hero{padding-top:30px}
 @media(min-width:768px){.bf-hero{padding-top:48px}}
 .bf-particles span{color:#8a1018}
-/* Cupón "Y en toda la tienda" (debajo de los combos; no aplica a combos) */
+/* Cupón "Y en toda la tienda" (debajo de los combos) */
 .bf-store{max-width:560px;margin:34px auto 0;padding:0 14px;font-family:Montserrat,sans-serif;color:#fff;text-align:center}
 .bf-store-k{display:flex;align-items:center;gap:12px;justify-content:center;font-size:12px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#fff;margin-bottom:14px}
 .bf-store-k::before,.bf-store-k::after{content:"";flex:1;max-width:70px;height:1px;background:linear-gradient(90deg,transparent,#e30613)}
@@ -2828,7 +2828,6 @@ ${M} .modal-header{width:auto!important}
 .bf-store-cta:hover{transform:translateY(-2px)}
 .bf-store-cta i{display:inline-flex;width:24px;height:24px;border-radius:50%;background:#e30613;align-items:center;justify-content:center}
 .bf-store-cta svg{width:12px;height:12px;fill:#fff}
-.bf-store-note{margin:12px 0 0;font-size:11px;color:#8c8c8c}
 @media(min-width:768px){.bf-store{margin-top:44px}.bf-tk-main{padding:24px 22px 22px 26px}}
 @media(prefers-reduced-motion:reduce){.bf-ticket::after,.bf-tk-num b,.bf-tk-row.is-ship::after,.bf-tk-row.is-ship .bf-tk-ic svg{animation:none}}
 `;
@@ -2863,8 +2862,7 @@ ${M} .modal-header{width:auto!important}
     }).join('');
   }
 
-  // Cupón "Y en toda la tienda": beneficios de los productos individuales
-  // (no aplica a combos). Cambiar el % acá si cambia el descuento por transferencia.
+  // Cupón "Y en toda la tienda". Cambiar el % acá si cambia el descuento por transferencia.
   var PCT_TRANSFERENCIA = 35;
   function crearCupon() {
     var box = document.createElement('div'); box.className = 'bf-store';
@@ -2875,8 +2873,7 @@ ${M} .modal-header{width:auto!important}
           '<div class="bf-tk-row is-ship"><span class="bf-tk-ic"><svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg></span><span><small class="k">Envío</small><b>Gratis</b><small>a todo el país</small></span></div>' +
           '<div class="bf-tk-row"><span class="bf-tk-ic"><svg viewBox="0 0 24 24"><path d="M2 6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2zm2 1v2h16V7zm0 5v6h16v-6zm2 3h5v1.5H6z"/></svg></span><span><b>Hasta 6 cuotas</b><small>con tarjeta</small></span></div>' +
         '</div></div>' +
-      '<a class="bf-store-cta" href="/productos/">Ver todos los productos<i><svg viewBox="0 0 24 24"><path d="M13 5l7 7-7 7-1.4-1.4 4.6-4.6H4v-2h12.2l-4.6-4.6z"/></svg></i></a>' +
-      '<p class="bf-store-note">Válido en productos individuales. No aplica a los combos.</p>';
+      '<a class="bf-store-cta" href="/productos/">Ver todos los productos<i><svg viewBox="0 0 24 24"><path d="M13 5l7 7-7 7-1.4-1.4 4.6-4.6H4v-2h12.2l-4.6-4.6z"/></svg></i></a>';
     return box;
   }
 
